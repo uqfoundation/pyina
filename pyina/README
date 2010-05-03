@@ -1,0 +1,50 @@
+This package contains the beginnings of a parallel-mapping implementation
+for a mpi-based launcher.
+
+This package was adapted from the pyina branch of mystic.
+It requires:
+ - pyre.mpi (built from svn@danse.us/pyre/branches/mpi-lib)
+ - journal (part of pythia-0.8; see http://danse.us/trac/pyre)
+ - dill (part of pathos; see http://dev.danse.us/trac/pathos)
+
+ez_map provides a parallel map that hides mpi within a "map" and "launcher"
+ - ez_map: writes mapped_function to temporary sourcefile (.py)
+ - ez_map2: writes mapped_function to temporary picklefile (.pik)
+
+parallel_map provides a parallel map that exposes mpi to the user
+ - parallel_map: sends jobs one-by-one to available nodes
+ - parallel_map2: divides jobs evenly; sends once to each node
+
+##############################################################################
+
+WARNING:
+To run pyina code, you _must_ have your console configured for MPI.
+  * Start mpd
+     $ mpd &
+  * Configure master and slaves
+     $ mpi_world.py -slaves [node1,node2,node3]
+
+
+NOTE:
+It is convienent to set a shell alias for the launch of
+the mpipython jobs.  Something like the following (for bash):
+    $ alias mpython1='mpiexec -np 1 `which mpipython.exe`'
+    $ alias mpython2='mpiexec -np 2 `which mpipython.exe`'
+    $ ...
+
+
+NOTE:
+There's also a convienent script to tear down your mpi environment.
+  * Kill all
+      $ mpi_world -kill
+
+
+NOTE:
+If jobs exit uncleanly, you may need to run some cleanup scripts.
+  * Clean up
+      $ /opt/mpich/gnu/sbin/cleanipcs
+      $ cluster-fork /opt/mpich/gnu/sbin/cleanipcs
+      $ cluster-fork killall mpipython.exe
+
+
+# end of file

@@ -1,0 +1,14 @@
+pyina: a MPI-based parallel mapper and launcher
+
+Current release:
+    pyina-0.1a1
+
+Installation:
+    $ mm
+
+License:
+    >>> print pyina.__license__
+
+More information:
+    http://www.cacr.caltech.edu/~mmckerns/
+

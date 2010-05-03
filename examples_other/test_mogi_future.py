@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+#
+# 
+
+"""
+Similar to test_mogi2, but with capabilities factored into a MasterSlaveController class
+
+"""
+raise NotImplementedError, "tests the desired (i.e. future) mpisolver interface..."
+
+from pyina.solvers import mpisolver
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S')
+
+if __name__ == "__main__":
+    import journal
+    journal.info("mpirun").activate()
+    journal.debug("simple").activate()
+    #journal.debug("pyina.receiveString").activate()
+    from mystic.models import mogi; forward_mogi = mogi.evaluate
+    
+    app = mpisolver.MasterSlaveController()
+    app.forward_model = forward_mogi
+    app.inventory.launcher.inventory.nodes = 4
+    app.run()
+
+# End of file
