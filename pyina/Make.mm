@@ -25,14 +25,12 @@ update: clean
 
 EXPORT_PYTHON_MODULES = \
     __init__.py \
-    _ppserver_config.py \
     mpiconsts.py \
     parallel_map.py \
     parallel_map2.py \
     ez_map.py \
     launchers.py \
     mappers.py \
-    pp_map.py \
     tools.py \
 
 
