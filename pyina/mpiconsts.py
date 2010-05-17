@@ -17,7 +17,7 @@ MPI Constants
 # this file is imported by top level __init__, hell can break
 # loose if we use absollute imports
 import _pyina
-from mystic import const as mpi
+import const as mpi
 import sys
 
 mpi.mpiconsts = _pyina.mpiconsts()
