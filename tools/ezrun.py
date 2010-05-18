@@ -13,8 +13,9 @@ if __name__ == '__main__':
 
     from pyina.parallel_map import parallel_map
     import dill as pickle #XXX: to address costfactories
-    import mpi, pyina, sys
-    world = mpi.world()
+    import sys
+    from pyina import mpi
+    world = mpi.world
 
    # funcname, arglist, outfilename = sys.argv[1], sys.argv[2], sys.argv[3]
 

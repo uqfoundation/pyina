@@ -17,26 +17,11 @@ mpi_libdir = os.environ['MPI_LIBDIR']
 
 if platform[:3] == 'win':
     MPILIBS = []
-    module1 = Extension('_pyina',
-                       ['pyinamodule\\dummy.cc',
-                        'pyinamodule\_pyina.cc'],
-                       include_dirs=['pyinamodule', mpi_incdir],
-                       libraries=MPILIBS,
-                       library_dirs=[mpi_libdir],
-                       )
 else: #platform = linux or mac
     MPILIBS = []
     #if platform[:6] == 'darwin':
         #MPILIBS.remove('...')
         #MPILIBS.append('...')
-
-    module1 = Extension('_pyina',
-                       ['pyinamodule/dummy.cc',
-                        'pyinamodule/_pyina.cc'],
-                       include_dirs=['pyinamodule', mpi_incdir],
-                       libraries=MPILIBS,
-                       library_dirs=[mpi_libdir],
-                       )
 
 setup(name="pyina",
     version="0.1a1",
@@ -53,7 +38,6 @@ setup(name="pyina",
 
     packages=['pyina','pyina.tools','pyina.applications'],
     package_dir={'pyina':'pyina','pyina.tools':'tools','pyina.applications':'applications'},
-    ext_modules=[module1],
 
     scripts=[])
 

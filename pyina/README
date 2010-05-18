@@ -3,8 +3,7 @@ for a mpi-based launcher.
 
 This package was adapted from the pyina branch of mystic.
 It requires:
- - pyre.mpi (built from svn@danse.us/pyre/branches/mpi-lib)
- - journal (part of pythia-0.8; see http://danse.us/trac/pyre)
+ - mpi4py (see http://code.google.com/p/mpi4py)
  - dill (part of pathos; see http://dev.danse.us/trac/pathos)
 
 ez_map provides a parallel map that hides mpi within a "map" and "launcher"
@@ -27,9 +26,9 @@ To run pyina code, you _must_ have your console configured for MPI.
 
 NOTE:
 It is convienent to set a shell alias for the launch of
-the mpipython jobs.  Something like the following (for bash):
-    $ alias mpython1='mpiexec -np 1 `which mpipython.exe`'
-    $ alias mpython2='mpiexec -np 2 `which mpipython.exe`'
+the mpi-python jobs.  Something like the following (for bash):
+    $ alias mpython1='mpiexec -np 1 `which python`'
+    $ alias mpython2='mpiexec -np 2 `which python`'
     $ ...
 
 
@@ -44,7 +43,7 @@ If jobs exit uncleanly, you may need to run some cleanup scripts.
   * Clean up
       $ /opt/mpich/gnu/sbin/cleanipcs
       $ cluster-fork /opt/mpich/gnu/sbin/cleanipcs
-      $ cluster-fork killall mpipython.exe
+      $ cluster-fork killall python
 
 
 # end of file

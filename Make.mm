@@ -3,7 +3,6 @@
 PROJECT = pyina
 
 BUILD_DIRS = \
-    pyinamodule \
     pyina \
     tools \
     applications \

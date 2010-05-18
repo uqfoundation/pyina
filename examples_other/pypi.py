@@ -8,7 +8,7 @@ __doc__ = """
 # numerically, and in parallel.
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which mpipython.exe`'
+alias mpython='mpirun -np [#nodes] `which python`'
 mpython pypi.py
 
 # A few warnings:
@@ -32,16 +32,16 @@ integration_points = (arange(1,n+1)-0.5)/n
 def f(x):
     return 4.0/(1.0+x*x)
 
-from pyina.parallel_map import parallel_map
-from pyina.parallel_map2 import parallel_map as parallel_map2
+#from pyina.parallel_map import parallel_map
+from pyina.parallel_map2 import parallel_map
 
 
 if __name__ == '__main__':
 
-    import mpi
-    out = parallel_map2(f, integration_points)
+    from pyina import mpi
+    out = parallel_map(f, integration_points)
     
-    if mpi.world().rank == 0:
+    if mpi.world.rank == 0:
         print "approxmiate pi : ", sum(out)/n
 
 # end of file

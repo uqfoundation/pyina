@@ -17,14 +17,23 @@ Main function exported are::
 
 """
 
-def ensure_mpi(doc = "Requires mpipython."):
+def ensure_mpi(size = 1, doc = None):
     """
- ensure that mpipython is being called
+ ensure that mpi-enabled python is being called with the appropriate size
+
+ inputs:
+   - size: minimum required size of the MPI world [default = 1]
+   - doc: error string to throw if size restriction is violated
     """
-    import mpi, sys
-    from mystic import helputil
-    if mpi.world().size == 0:
-        helputil.paginate(doc)
+    if doc == None:
+        doc = "Error: Requires MPI-enabled python with size >= %s" % size
+    from mpi4py import MPI as mpi
+    world = mpi.COMM_WORLD
+    mpisize = world.Get_size()
+    mpirank = world.Get_rank()
+    if mpisize < size:
+        if mpirank == 0: print doc
+        import sys
         sys.exit()
     return
 
@@ -48,6 +57,7 @@ def get_workload(myid, nproc, popsize):
 
 
 if __name__=='__main__':
+   #ensure_mpi(size=3)
     import doctest
     doctest.testmod(verbose=True)
 

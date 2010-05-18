@@ -25,10 +25,9 @@ EXPORT_BINS = \
     nodes.py \
     test1.py \
     test2.py \
-    test3.py \
     test_pmap.py \
     test_parallelmap.py \
-    logging.py \
+    log.py \
     test_ports.py \
     test_mogi_bcast.py \
 #   test_mogi_future.py \

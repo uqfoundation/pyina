@@ -68,10 +68,10 @@ download the tarball, unzip, and run the installer::
     $ python setup py install
 
 You will be warned of any missing dependencies and/or settings after
-you run the "build" step above. Pyina depends on dill, (mystic), (journal),
-and pyre.mpi, so you should install them first. A version of MPI must
-also be installed. The launchers that post to a scheduler will throw
-errors if the underlying scheduler is not available, although a scheduler
+you run the "build" step above. Pyina depends on dill and mpi4py,
+so you should install them first. A version of MPI must also be
+installed. The launchers that post to a scheduler will throw errors
+if the underlying scheduler is not available, although a scheduler
 is not required for pyina to execute.
 
 Alternately, pyina can be installed with easy_install::
@@ -84,12 +84,13 @@ Requirements
 
 Pyina requires::
     - python, version >= 2.5, version < 3.0
+    - mpi4py, version >= 1.2.1
     - dill, version >= 0.1a1
-    - pyre, version >= 0.8  (pyre.journal, pyre.mpi)
-    - mystic, version >= 0.1a1
 
 Optional requirements::
     - setuptools, version >= 0.6
+    - pyre, version >= 0.8
+    - mystic, version >= 0.1a1
 
 
 Usage Notes
@@ -112,14 +113,10 @@ Mapping strategies are found here:
     - pyina.pyina.parallel_map2 [the equal-portion strategy]
 
 
-To run pyina code, you _must_ use a python compiled for your version of MPI.
-Openmpi usually works with standard python; however, mpich usually requires
-a special compile of python which is provided as "mpipython.exe".
-
 If may also be convienent to set a shell alias for the launch of 'raw'
-mpipython jobs. Set something like the following (for bash):
-    $ alias mpython1='mpiexec -np 1 `which mpipython.exe`'
-    $ alias mpython2='mpiexec -np 2 `which mpipython.exe`'
+mpi-python jobs. Set something like the following (for bash):
+    $ alias mpython1='mpiexec -np 1 `which python`'
+    $ alias mpython2='mpiexec -np 2 `which python`'
     $ ...
 
 
@@ -175,7 +172,10 @@ following paper in your publication::
      http://dev.danse.us/trac/pathos
 
 """
-from mpiconsts import mpi
+# shortcuts
+from mpi4py import MPI as mpi
+mpi.world = mpi.COMM_WORLD
+# (also: mpi.world.rank, mpi.world.size)
 
 # launchers
 import launchers

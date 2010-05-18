@@ -5,7 +5,7 @@ __doc__ = """
 # BE VERY CAREFUL with this script, as it executes system calls. 
 # To run:
 
-mpipython.exe parallel_batch.py [batchfile.txt] [#nodes]
+python parallel_batch.py [batchfile.txt] [#nodes]
 """
 
 def runshell(input):

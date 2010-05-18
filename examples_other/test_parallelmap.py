@@ -10,7 +10,7 @@ doc = """
 
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which mpipython.exe`'
+alias mpython='mpirun -np [#nodes] `which python`'
 mpython test_parallelmap.py
 """
 
@@ -19,10 +19,10 @@ if __name__ == "__main__":
     from pyina.parallel_map import parallel_map
     from pyina.parallel_map2 import parallel_map as parallel_map2
 
-    import mpi, pyina
-    world = mpi.world()
+    from pyina import mpi, ensure_mpi
+    world = mpi.world
 
-    pyina.ensure_mpi(doc)
+    ensure_mpi()
 
     def func(input):
         """
@@ -40,9 +40,9 @@ if __name__ == "__main__":
         """
         This function just calls popen on the input string, and the stdout is printed.
         """
-        import mpi
+        from pyina import mpi
         from os import popen
-        print "%d of %d: executing: %s" % (mpi.world().rank, mpi.world().size, input)
+        print "%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input)
         popen(input).readlines()
         return 0
 

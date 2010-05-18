@@ -4,13 +4,13 @@ __doc__ = """
 # get all nodes to report
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which mpipython.exe`'
+alias mpython='mpirun -np [#nodes] `which python`'
 mpython nodes.py
 """
 
 
-import mpi
-world = mpi.world()
+from pyina import mpi
+world = mpi.world
 print "Node (%d) of %d " % (world.rank, world.size)
 
 # End of file

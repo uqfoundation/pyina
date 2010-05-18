@@ -3,9 +3,9 @@
 # 
 doc = """
 # Tests parallel, master-slave. Version 0
-# To run:
+# To run:  (use #nodes >= 2)
 
-alias mpython='mpirun -np [#nodes] `which mpipython.exe`'
+alias mpython='mpirun -np [#nodes] `which python`'
 mpython test_pmap.py
 """
 # pick either mapping strategy
@@ -21,14 +21,15 @@ if __name__ == "__main__":
     # This will print the actions of destructors inside pyina
     #journal.debug("pyina.fini").activate()
 
-    import mpi, pyina
-    world = mpi.world()
+    from pyina import mpi, ensure_mpi
+    world = mpi.world
 
-    pyina.ensure_mpi(doc)
+    ensure_mpi(size=2, doc=doc)
 
     def func(input):
-        import mpi, time
-        world = mpi.world()
+        import time
+        from pyina import mpi
+        world = mpi.world
         time.sleep(0.0001)
         return "-%d" % world.rank
 

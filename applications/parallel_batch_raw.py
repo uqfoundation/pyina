@@ -5,7 +5,7 @@ __doc__ = """
 # BE VERY CAREFUL with this script, as it executes system calls. 
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which mpipython.exe`'
+alias mpython='mpirun -np [#nodes] `which python`'
 mpython parallel_batch_raw.py [batchfile.txt]
 """
 
@@ -13,9 +13,9 @@ def runshell(input):
     """
     This function just calls popen on the input string, and the stdout is printed.
     """
-    import mpi
+    from pyina import mpi
     from os import popen
-    print "%d of %d: executing: %s" % (mpi.world().rank, mpi.world().size, input)
+    print "%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input)
     popen(input).readlines()
     return 0
 
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     try:
         from pyina.parallel_map2 import parallel_map as parallel_map2
 
-        import mpi
-        world = mpi.world()
+        from pyina import mpi
+        world = mpi.world
     
         inputlist = []
         if world.rank == 0:

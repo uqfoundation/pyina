@@ -19,7 +19,6 @@ EXPORT_BINS = \
     parallel_batch.py \
     machines_raw.py \
     machines.py \
-    mpiversion.py \
     mpi_world.py \
     mpd_trace.py \
 

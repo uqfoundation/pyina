@@ -4,8 +4,10 @@
 This is just a helper to parallel_map to further simplify 
 parallel programming.
 
-I want the user to be able to do this under serial python.
+Primarily ez_map provides an standard interface for
+parallel_map, and allows use under serial python.
 
+###########################
 from pyina import ez_map
 
 def host(id):
@@ -14,6 +16,7 @@ def host(id):
 
 results = ez_map(host, range(100), nnodes = 10)
 print '\n'.join(results)
+###########################
 
 Implementation Notes:
 
@@ -97,7 +100,7 @@ ezdefaults ={ 'timelimit' : '00:02',
               'errfile' : 'errors.out',
               'jobfile' : 'jobid',
               'queue' : 'normal',
-              'python' : '`which mpipython.exe`' ,
+              'python' : '`which python`' ,
               'nodes' : '1',
               'progargs' : '',
               'tmpdir' : '.'

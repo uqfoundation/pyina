@@ -6,32 +6,30 @@
 # simple test of mpi communication to ports
 # To run:
 
-mpirun -np 4 `which mpipython.exe` test_ports.py
+mpirun -np 4 `which python` test_ports.py
 """
 
-import pyina, mystic
+import mystic
 from mpi.Application import Application
 import logging
-
-#logging.basicConfig(level=logging.DEBUG,
-#                    format='%(asctime)s %(levelname)s %(message)s',
-#                    datefmt='%a, %d %b %Y %H:%M:%S')
 
 class SimpleApp(Application):
 
     def main(self):
-        import mpi
+        from pyina import mpi
 
-        world = mpi.world()
+        world = mpi.world
         logging.info("I am rank %d of %d" % (world.rank, world.size))
         if world.rank == 0:
             for peer in range(1, world.size):
-                port = world.port(pyina.mpi.MPI_ANY_SOURCE, tag=17)
+                #FIXME: How to set up a port in mpi4py?
+                port = world.port(mpi.ANY_SOURCE, tag=17)
                 message = port.receive()
                 print "[%d/%d]: received {%s}" % (world.rank, world.size, message)
         else:
             s = "My message is this: I am node %d " % world.rank
             logging.debug("%s" % s)
+            #FIXME: How to set up a port in mpi4py?
             port = world.port(peer=0, tag=17)
             port.send("%s" % s)
 

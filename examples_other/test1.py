@@ -1,66 +1,63 @@
-#!/usr/bin/env mpipython.exe
+#!/usr/bin/env python
 #
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-#                               Patrick Hung, Caltech
-#                        (C) 1998-2006  All Rights Reserved
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
+# 
 
 """
-# Some basic tests.
+# Testing pyina.mpi.world.recv
 # To run:
 
-mpipython.exe test1.py
-"""
+python test1.py
+""" 
 
-from pyina import _pyina
-import mpi
+from mpi.Application import Application
+import logging
+import pyina
 
-def test1():
-    """
-tests whether the module complains properly.
+MPI_ANY_SOURCE = pyina.mpi.ANY_SOURCE
 
->>> _pyina.test(1)
-Traceback (most recent call last):
-  File "<stdin>", line 1, in ?
-TypeError: Expecting a CObject as argument 0
-    """
-    pass
+class SimpleApp(Application):
 
+    class Inventory(Application.Inventory):
+        import pyre.inventory
+        nseg = pyre.inventory.int("nseg", default=200)
+        nseg.meta['tip'] = 'divides the interval [0,1] into how many segments ?'
 
-def test2():
-    """
-tests whether the module complains properly.
+    def main(self):
+        from pyina import mpi
 
->>> _pyina.test('hello')
-Traceback (most recent call last):
-  File "<stdin>", line 1, in ?
-TypeError: Expecting a CObject as argument 0
-    """
-    pass
+        nsegs = self.inventory.nseg
+        world = mpi.world
+        logging.info("I am rank %d of %d" % (world.rank, world.size))
+        if world.rank == 0:
+            for peer in range(1, world.size):
+                status = mpi.Status()
+                message = world.recv(source=MPI_ANY_SOURCE,tag=17)
+                print "[%d/%d]: received {%s}" % (world.rank, world.size, message)
+        else:
+            s = "My message is this: I am node %d " % world.rank
+            logging.debug("%s" % s)
+            world.send(s, 0, 17)
 
-def test3():
-    """
-tests whether the module can accept a Commuicator CObject.
+        return
 
->>> x = mpi.world()
->>> c = _pyina.test(x.handle())
-    """
-    pass
+    def _defaults(self):
+        self.inventory.launcher.inventory.nodes = 4
 
-def test4():
-    """
-tests MPI_ANY_TAG
-
->>> assert(_pyina.mpiconsts())
-    """
-    pass
+    def __init__(self):
+        Application.__init__(self, "simple")
+        return
 
 
-if __name__=='__main__':
-    import doctest
-    doctest.testmod(verbose=True)
+# main
+
+if __name__ == "__main__":
+    import journal
+    journal.info("mpirun").activate()
+    journal.debug("simple").activate()
+    journal.info("pyina.mpi.world.recv").activate()
+    journal.debug("pyina.mpi.world.recv").activate()
+
+    app = SimpleApp()
+    app.run()
 
 # End of file

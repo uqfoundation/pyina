@@ -4,7 +4,7 @@ __doc__ = """
 # print rank - hostname info
 # To run:
 
-mpipython.exe machines.py [#nodes]
+python machines.py [#nodes]
 """
 
 def host(id):

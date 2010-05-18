@@ -30,7 +30,7 @@ def launch(command,quiet=True):
 def alias(nnodes):
     "set a bash shell alias to configure mpiexec to run python on nnodes"
     node = str(nnodes)
-    alias = "mpython%s='mpiexec -np %s `which mpipython.exe`'" % (node,node)
+    alias = "mpython%s='mpiexec -np %s `which python`'" % (node,node)
     command = "alias %s" % alias
     print command
     raise NotImplementedError #FIXME: alias doesn't stick to user's console
