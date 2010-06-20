@@ -78,6 +78,14 @@ except ImportError:
 #   print "    mystic %s (optional)" % mystic_version
     print "***********************************************************\n"
 
+try:
+    import mpi4py
+except ImportError:
+    print """
+For special instructions on installing '%s', please see:
+  http://mpi4py.scipy.org/docs/usrman/install.html
+""" % 'mpi4py'
+
 
 if __name__=='__main__':
     pass
