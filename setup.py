@@ -52,7 +52,7 @@ pypar_version = '>=2.1.4'
 mystic_version = '>=0.2a1'
 if has_setuptools:
     setup_code += """
-        install_requires = ('mpi4py%s','dill%s),
+        install_requires = ('mpi4py%s','dill%s'),
 """ % (mpi4py_version, dill_version)
 
 # close 'setup' call
