@@ -4,13 +4,13 @@ PROJECT = pyina
 
 BUILD_DIRS = \
     pyina \
-    tools \
-    applications \
+    scripts \
 
 OTHER_DIRS = \
     tests \
     examples \
     examples_other \
+    applications \
 
 RECURSE_DIRS = $(BUILD_DIRS) $(OTHER_DIRS)
 

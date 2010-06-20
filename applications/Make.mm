@@ -9,23 +9,19 @@ PROJ_CLEAN =
 #--------------------------------------------------------------------------
 #
 
-all: export
+#all: export
+all: clean
 
 #--------------------------------------------------------------------------
 #
 
 EXPORT_BINS = \
-    parallel_batch_raw.py \
-    parallel_batch.py \
     machines_raw.py \
-    machines.py \
-    mpi_world.py \
     mpd_trace.py \
+    parallel_batch.py \
+    parallel_batch_raw.py \
 
 export:: export-binaries release-binaries
 
-
-# version
-# $Id: Make.mm,v 1.4 2007/08/06 06:17:22 patrickh Exp $
 
 # End of file

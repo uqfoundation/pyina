@@ -1,28 +1,31 @@
 #!/usr/bin/env python
 #
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-#                               Mike McKerns, Caltech
-#                        (C) 1998-2010  All Rights Reserved
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
+# Michael McKerns
+# mmckerns@caltech.edu
 
-from distutils.core import setup, Extension
+# check if easy_install is available
+try:
+#   import __force_distutils__ #XXX: uncomment to force use of distutills
+    from setuptools import setup
+    has_setuptools = True
+except ImportError:
+    from distutils.core import setup
+    has_setuptools = False
+
+# platform-specific instructions
 from sys import platform
-import os
-
-mpi_incdir = os.environ['MPI_INCDIR']
-mpi_libdir = os.environ['MPI_LIBDIR']
-
 if platform[:3] == 'win':
-    MPILIBS = []
+    pass
 else: #platform = linux or mac
-    MPILIBS = []
-    #if platform[:6] == 'darwin':
-        #MPILIBS.remove('...')
-        #MPILIBS.append('...')
+     if platform[:6] == 'darwin':
+         # mpi4py has difficulty building on a Mac
+         # see special installation instructions here:
+         # http://mpi4py.scipy.org/docs/usrman/install.html
+         pass
+     pass
 
+# build the 'setup' call
+setup_code = """
 setup(name="pyina",
     version="0.1a1",
     maintainer="Mike McKerns",
@@ -36,10 +39,45 @@ setup(name="pyina",
         "Development Status :: 2 - Pre-Alpha",
         "Topic :: Physics Programming"),
 
-    packages=['pyina','pyina.tools','pyina.applications'],
-    package_dir={'pyina':'pyina','pyina.tools':'tools','pyina.applications':'applications'},
+    packages=['pyina'],
+    package_dir={'pyina':'pyina'},
+    scripts=['scripts/ezrun.py','scripts/ezrun2.py',
+             'scripts/machines.py','scripts/mpi_world.py'],
+"""
 
+# add dependencies
+dill_version = '>=0.1a1'
+mpi4py_version = '>=1.2.1'
+pypar_version = '>=2.1.4'
+mystic_version = '>=0.2a1'
+if has_setuptools:
+    setup_code += """
+        install_requires = ('mpi4py%s','dill%s),
+""" % (mpi4py_version, dill_version)
+
+# close 'setup' call
+setup_code += """
+    zip_safe=True,
     scripts=[])
+"""
+
+# exec the 'setup' code
+exec setup_code
+
+# if dependencies are missing, print a warning
+try:
+    import dill
+    import mpi4py
+    #import pypar
+    #import mystic
+except ImportError:
+    print "\n***********************************************************"
+    print "WARNING: One of the following dependencies is unresolved:"
+    print "    dill %s" % dill_version
+    print "    mpi4py %s" % mpi4py_version
+#   print "    pypar %s (optional)" % pypar_version
+#   print "    mystic %s (optional)" % mystic_version
+    print "***********************************************************\n"
 
 
 if __name__=='__main__':
