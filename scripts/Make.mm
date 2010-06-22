@@ -1,6 +1,6 @@
 # -*- Makefile -*-
 
-PROJECT = pythia
+PROJECT = pyina
 PACKAGE = scripts
 
 PROJ_TIDY += *.log *.out xx.*
