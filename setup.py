@@ -68,14 +68,12 @@ try:
     import dill
     import mpi4py
     #import pypar
-    #import mystic
 except ImportError:
     print "\n***********************************************************"
     print "WARNING: One of the following dependencies is unresolved:"
     print "    dill %s" % dill_version
     print "    mpi4py %s" % mpi4py_version
 #   print "    pypar %s (optional)" % pypar_version
-#   print "    mystic %s (optional)" % mystic_version
     print "***********************************************************\n"
 
 try:
