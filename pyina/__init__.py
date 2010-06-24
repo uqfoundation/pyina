@@ -135,6 +135,8 @@ More Information
 
 Please see http://dev.danse.us/trac/pathos/pyina for further information.
 """
+__version__ = '0.1a1'
+__author__ = 'Mike McKerns'
 
 __license__ = """
 This software is part of the open-source DANSE project at the California
