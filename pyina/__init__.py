@@ -42,10 +42,13 @@ issues is maintained at http://dev.danse.us/trac/pathos/query.
 Major Features
 ==============
 
-Pyina provides ...
-    -
-    -
-    - 
+Pyina provides a highly configurable parallel map-reduce interface
+to running MPI jobs, with::
+    - an map-reduce interface that extends the python 'map' standard
+    - the ability to submit batch jobs to a selection of schedulers
+    - the ability to customize node and process launch configurations
+    - the ability to launch parallel MPI jobs with standard python
+    - ease in selecting different strategies for processing a work list
 
 
 Current Release
@@ -72,9 +75,9 @@ download the tarball, unzip, and run the installer::
 You will be warned of any missing dependencies and/or settings after
 you run the "build" step above. Pyina depends on dill and mpi4py,
 so you should install them first. A version of MPI must also be
-installed. The launchers that post to a scheduler will throw errors
-if the underlying scheduler is not available, although a scheduler
-is not required for pyina to execute.
+installed. Pyina's launchers that submit to a scheduler will throw errors
+if the underlying scheduler is not available, however a scheduler is not
+required for pyina to execute.
 
 Alternately, pyina can be installed with easy_install::
     [download]
@@ -110,13 +113,18 @@ Important classes and functions are found here::
     - pyina.pyina.mappers       [all available strategies] 
     - pyina.pyina.launchers     [all available launchers] 
 
-Mapping strategies are found here:
+Mapping strategies are found here::
     - pyina.pyina.parallel_map  [the card-dealer strategy]
     - pyina.pyina.parallel_map2 [the equal-portion strategy]
 
+Pyina also provides two convience scripts that help navigate the
+MPI environment. These scripts are installed to a directory on the
+user's $PATH, and thus can be run from anywhere::
+    - machines.py               [list the available MPI nodes]
+    - mpi_world.py              [setup/teardown of the MPI environment]
 
 If may also be convienent to set a shell alias for the launch of 'raw'
-mpi-python jobs. Set something like the following (for bash):
+mpi-python jobs. Set something like the following (for bash)::
     $ alias mpython1='mpiexec -np 1 `which python`'
     $ alias mpython2='mpiexec -np 2 `which python`'
     $ ...
@@ -193,9 +201,9 @@ import parallel_map, parallel_map2
 # tools
 from tools import *
 
-#def copyright():
-#    """print copyright and reference"""
-#    print __license__[-439:]
-#    return
+def copyright():
+    """print copyright and reference"""
+    print __license__[-417:]
+    return
 
 # end of file
