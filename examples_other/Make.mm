@@ -28,6 +28,7 @@ EXPORT_BINS = \
     test_pmap.py \
     test_parallelmap.py \
     log.py \
+    mpd_trace.py \
     test_ports.py \
     test_mogi_bcast.py \
 #   test_mogi_future.py \

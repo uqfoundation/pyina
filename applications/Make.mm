@@ -17,7 +17,6 @@ all: clean
 
 EXPORT_BINS = \
     machines_raw.py \
-    mpd_trace.py \
     parallel_batch.py \
     parallel_batch_raw.py \
 

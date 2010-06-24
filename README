@@ -4,7 +4,8 @@ Current release:
     pyina-0.1a1
 
 Installation:
-    $ mm
+    $ python setup.py build
+    $ python setup.py install
 
 License:
     >>> print pyina.__license__

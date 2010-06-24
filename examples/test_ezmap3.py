@@ -7,10 +7,17 @@ def host(id):
     import socket
     return "Rank: %d -- %s" % (id, socket.gethostname())
 
+print "Explicitly using the MPI launcher, we will execute..."
 from pyina.launchers import mpirun_launcher as mylauncher
-res = ez_map(host, range(10), nnodes=4, launcher=mylauncher, \
-                                       mapper=carddealer_mapper)
-                                       #mapper=equalportion_mapper)
-print '\n'.join(res)
+print "10 items on 4 nodes using carddealer_mapper:"
+res1 = ez_map(host, range(10), nnodes=4, launcher=mylauncher, \
+                                        mapper=carddealer_mapper)
+print '\n'.join(res1)
+print ''
+
+print "10 items on 4 nodes using equalportion_mapper:"
+res2 = ez_map(host, range(10), nnodes=4, launcher=mylauncher, \
+                                        mapper=equalportion_mapper)
+print '\n'.join(res2)
 
 # end of file

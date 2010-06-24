@@ -1,6 +1,9 @@
 #!/usr/bin/env python
-#
-# 
+ 
+"""
+run three basic tests of the MPI installation
+"""
+
 import os
 CPI = "~/src/mpich-1.0.7/examples/cpi"
 
