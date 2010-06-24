@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 __doc__ = """
-# print rank - hostname info
+# print a listing of compute nodes as (rank, hostname)
 # To run:
 
 python machines.py [#nodes]

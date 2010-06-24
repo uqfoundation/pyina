@@ -1,48 +1,56 @@
 #!/usr/bin/env python
 
 """
-This is just a helper to parallel_map to further simplify 
-parallel programming.
+The ez_map function is a helper to parallel_map to further
+simplify parallel programming.  Primarily ez_map provides
+a standard interface for parallel_map, and facilitates
+running parallel jobs with serial python.
 
-Primarily ez_map provides an standard interface for
-parallel_map, and allows use under serial python.
 
-###########################
-from pyina import ez_map
+Usage
+=====
 
-def host(id):
-    import socket
-    return "Rank: %d -- %s" % (id, socket.gethostname())
+A call to ez_map will roughly follow this example::
 
-results = ez_map(host, range(100), nnodes = 10)
-print '\n'.join(results)
-###########################
+    >>> # get the parallel mapper
+    >>> from pyina.ez_map import ez_map
 
-Implementation Notes:
+    >>> # construct a target function
+    >>> def host(id):
+    ...     import socket
+    ...     return "Rank: %d -- %s" % (id, socket.gethostname())
 
- -- parallel application is launched via helper (ezrun.py) called
- by os.system
+    >>> # launch the parallel map of the target function
+    >>> results = ez_map(host, range(100), nnodes = 10)
+    >>> print '\n'.join(results)
 
- -- the system call that submits the mpi job must be blocking for now.
-  Reason 1) If the main program exits before the parallel job starts,
-  the temp files (see below) will be lost.
-  Reason 2) User is supposed to want to use the return value of the map,
-  so this shouldn't be a big deal.
-  Reason 3) Needs to implement some kind of 'deferred' mechanism, or 
-  job monitoring, if we allow the call to be asynchronous.
+
+Implementation
+==============
+
+A parallel application is launched by using a helper script (e.g. `ezrun.py`)
+as an intermediary between the MPI implementation of the parallel map
+(e.g. `pyina.parallel_map.parallel_map') and the user's serial python.
+
+The system call that submits the mpi job is blocking.  Reasons are::
+    1) If the main program exits before the parallel job starts,
+       any temp files used by ez_map will be lost.
+    2) User is supposed to want to use the return value of the map,
+       so blocking at the result of map shouldn't be a big hinderance.
+    3) If we were to allow the call to be asynchronous, we would need
+       to implement some kind of 'deferred' mechanism or job monitoring.
  
- -- argument movement (for the mapper function, for the argument list, and
- for the results coming back) are all done via temp files.
-   So... be aware of what you are sending / receiving.
+Argument movement for the argument list and the returned results
+pickled, while the mapped function is either saved to and imported
+from a temporary file (e.g. `pyina.ez_map.ez_map`), or transferred
+through serialization (e.g. `pyina.ez_map.ez_map2`).  Either implementation
+has it's own advantages and weaknesses, and one mapper may succeed in
+a case where the other may fail.
 
- -- So, the file system is written to when ...
-    1) Before the mpi job starts, when the temp files are written
-    2) When the mpi job ends, when results are pickled.
-
- -- helper ezrun.py is located in the pyina.applications directory
 """
 
 def parse_from_history(object):
+    """extract code blocks from a code object using stored history"""
     import readline, inspect
     lbuf = readline.get_current_history_length()
     code = [readline.get_history_item(i)+'\n' for i in range(1,lbuf)]
@@ -59,10 +67,11 @@ def parse_from_history(object):
     return codeblocks
 
 def src(object):
-    """
-    -   This src is different from my normal src function. This 
-        one is designed to work on simple functions (not any general callables.)
-    -   The advantage of this one is that it will work on functions defined interactively.
+    """Extract source code from python code object.
+
+This function is designed to work with simple functions, and will not
+work on any general callable. However, this function can extract source
+code from functions that are defined interactively.
     """
     import inspect
     # no try/except (like the normal src function)
@@ -201,8 +210,18 @@ Further Input:
 def ez_map2(func, *arglist, **kwds):
     """higher-level map interface for selected mapper and launcher
 
-same functionality as ez_map, however function 'func' and arguments 'arglist'
-are stored and sent as pickled strings."""
+maps function 'func' across arguments 'arglist'.  arguments and results
+are stored and sent as pickled strings, the function 'func' is also stored
+and sent as pickled strings.  This is different than 'ez_map', in that
+it does not use temporary files to store the mapped function.
+
+Further Input:
+  - nnodes -- the number of parallel nodes
+  - launcher -- the launcher object
+  - mapper -- the mapper object
+  - timelimit -- string representation of maximum run time (e.g. '00:02')
+  - queue -- string name of selected queue (e.g. 'normal')
+"""
     import dill as pickle
     import os.path, tempfile, os
     # mapper = None (allow for use of default mapper)
@@ -260,6 +279,6 @@ are stored and sent as pickled strings."""
     
 
 if __name__ == '__main__':
-    print "simple tests are in examples_other/test_ezmap*.py"
+    print "simple tests are in examples/test_ezmap*.py"
 
 # end of file

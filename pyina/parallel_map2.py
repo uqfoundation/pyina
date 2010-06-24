@@ -3,7 +3,7 @@
 debug = False
 
 doc = """
-# Does map in parallel.
+# Does map in parallel using the equalportion strategy.
 #
 # usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
 #
@@ -21,6 +21,7 @@ from pyina.tools import get_workload
 
 #def parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD ):
 def parallel_map(func, *seq, **kwds):
+    """parallel mapping using the equalportion mapping strategy"""
     master = 0
     if kwds.has_key('master'): master=kwds['master']
     if kwds.has_key('comm'): comm=kwds['comm']

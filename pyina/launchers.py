@@ -19,6 +19,7 @@ def launch(command):
     
 def mpirun_tasks(nodes):
     """
+Helper function.
 compute mpirun task_string from node string of pattern = N[:TYPE][:ppn=P]
 For example, mpirun_tasks("3:core4:ppn=2") yields 6
     """
@@ -37,6 +38,7 @@ For example, mpirun_tasks("3:core4:ppn=2") yields 6
 
 def srun_tasks(nodes):
     """
+Helper function.
 compute srun task_string from node string of pattern = N[:ppn=P][,partition=X]
 For example, srun_tasks("3:ppn=2,partition=foo") yields '3 -N2'
     """

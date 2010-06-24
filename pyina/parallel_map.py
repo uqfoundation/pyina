@@ -5,7 +5,8 @@ debug = False
 import logging
 
 doc = """
-# Does map in parallel, master-slave. Version 0
+# Does map in parallel using the carddealer strategy.
+# Implemented as master-worker.
 #
 # usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
 #
@@ -18,6 +19,7 @@ from mpi4py import MPI as mpi
 
 #def parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD ):
 def parallel_map(func, *seq, **kwds):
+    """parallel mapping using the carddealer mapping strategy"""
     master = 0
     if kwds.has_key('master'): master=kwds['master']
     if kwds.has_key('comm'): comm=kwds['comm']

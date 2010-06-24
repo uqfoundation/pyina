@@ -8,7 +8,7 @@ tiny function wrapper to make ez_map interface for mappers more standard
 provides:
  mapper_str = mapper()  interface
 
-(for a standard map function, use parallel_map directly) 
+(for a the raw map function, use parallel_map directly) 
 """
 
 

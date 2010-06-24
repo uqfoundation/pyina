@@ -12,25 +12,27 @@
 """
 pyina: a MPI-based parallel mapper and launcher
 
-The pyina package provides several basic tools to make MPI-based high-performance
-computing more accessable to the end user.  The goal of pyina is to allow the user
-to extend their package to MPI-based high-performance computing with minimal
-refactoring of their own code.
+The pyina package provides several basic tools to make MPI-based
+high-performance computing more accessable to the end user. The goal
+of pyina is to allow the user to extend their package to MPI-based
+high-performance computing with minimal refactoring of their own code.
 
-The central element of pyina is the parallel map-reduce algorithm.  Pyina provides two strategies for executing the parallel-map, where a stragegy is the algorithm
-for distributing the work list of jobs across the availble nodes.  These strategies
-can be used in the "raw" (i.e. directly) to provide map-reduce to a user's own
-mpi-active code.  However, pyina also provides the "ez_map" interface, which
-provides a map-reduce interface that does not expose MPI internals to the user.
-With ez_map, the user can launch their code using MPI with nearly zero refactoring
-of their own code.
+The central element of pyina is the parallel map-reduce algorithm.
+Pyina provides two strategies for executing the parallel-map,
+where a strategy is the algorithm for distributing the work list of
+jobs across the availble nodes.  These strategies can be used "in-the-raw"
+(i.e. directly) to provide map-reduce to a user's own mpi-aware code.
+Pyina also provides the "ez_map" interface, which is a map-reduce
+implementation that hides the MPI internals from the user. With ez_map,
+the user can launch their code in parallel using standard python and
+with nearly zero refactoring of their own code.
 
-There are several ways that a user will want to launch their MPI code -- directly
-with "mpirun" or "mpiexec", or by using a scheduler such as torque or slurm.
-Pyina provides several 'launchers' that encapsulate the different methods of
-launching a MPI job.
+There are several ways that a user typically launches their code in
+parallel -- directly with "mpirun" or "mpiexec", or by using a scheduler
+such as torque or slurm. Pyina provides several 'launchers' that
+encapsulate the different methods of launching a MPI job.
 
-Pyina is part of pathos, a python package for heterogenous computing.
+Pyina is part of pathos, a python framework for heterogenous computing.
 Pyina is in the early development stages, and any user feedback is
 highly appreciated. Contact Mike McKerns [mmckerns at caltech dot edu]
 with comments, suggestions, and any bugs you may find. A list of known
