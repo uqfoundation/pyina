@@ -7,6 +7,9 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
+"""
+prepared launchers for parallel execution
+"""
 
 import os
 
@@ -62,7 +65,7 @@ prepare launch for standard execution
 syntax:  (python) (file) (progargs)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
+    run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -76,7 +79,7 @@ prepare launch for parallel execution using mpirun
 syntax:  mpirun -np (nodes) (python) (file) (progargs)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
+    run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -90,8 +93,8 @@ prepare launch for parallel execution using srun
 syntax:  srun -n(nodes) (python) (file) (progargs)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
- - fine-grained resource utilization with: {'nodes':'4 -N1', ...}
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4 -N1', ...}
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -105,8 +108,8 @@ prepare launch for torque submission using mpirun
 syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
- - fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -121,8 +124,8 @@ prepare launch for moab submission using srun
 syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
- - fine-grained resource utilization with: {'nodes':'4:ppn=1,partition=xx', ...}
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4:ppn=1,partition=xx', ...}
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -137,7 +140,7 @@ prepare launch for Myrinet / LSF submission of parallel python using mpich_mx
 syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_mx -q (queue) -J (progname) mpich_mx_wrapper (python) (file) (progargs)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
+    run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -152,7 +155,7 @@ prepare launch for Myrinet / LSF submission of parallel python using mpich_gm
 syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_gm -q (queue) -J (progname) gmmpirun_wrapper (python) (file) (progargs)
 
 NOTES:
- - run non-python commands with: {'python':'', ...} 
+    run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)

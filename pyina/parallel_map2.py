@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 #
-debug = False
-
-doc = """
-# Does map in parallel using the equalportion strategy.
-#
-# usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
-#
-# Breaks up the input sequence [seq] into nproc pieces (in a balanced
-# manner when len(nseq) isn't divisble by nproc) and sends them to the nodes.
-
-# This doesn't scale well with the number of processors because
-# of the 1 to many sends, and then the many to 1 gather.
 """
+Does map in parallel using the equalportion strategy.
+
+usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
+
+Breaks up the input sequence [seq] into nproc pieces (in a balanced
+manner when len(nseq) isn't divisble by nproc) and sends them to the nodes.
+
+This doesn't scale well with the number of processors because
+of the 1 to many sends, and then the many to 1 gather.
+"""
+debug = False
 
 import logging
 

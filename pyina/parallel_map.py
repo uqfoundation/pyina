@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 #
+"""
+Does map in parallel using the carddealer strategy.
+Implemented as master-worker.
+
+usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
+
+Deals out one item from the input sequence [seq] to each available
+resource, and waits to deal out the next item in the seq until one
+of the nodes is free (i.e. work is allocated as nodes become free).
+"""
 debug = False
 
 import logging
-
-doc = """
-# Does map in parallel using the carddealer strategy.
-# Implemented as master-worker.
-#
-# usage: parallel_map(func, seq, master = 0, comm = mpi.COMM_WORLD )
-#
-# Deals out one item from the input sequence [seq] to each available
-# resource, and waits to deal out the next item in the seq until one
-# of the nodes is free (i.e. work is allocated as nodes become free).
-"""
 
 from mpi4py import MPI as mpi
 

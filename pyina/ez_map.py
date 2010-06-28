@@ -22,7 +22,7 @@ A call to ez_map will roughly follow this example::
 
     >>> # launch the parallel map of the target function
     >>> results = ez_map(host, range(100), nnodes = 10)
-    >>> print '\n'.join(results)
+    >>> print "\n".join(results)
 
 
 Implementation
@@ -138,12 +138,12 @@ are stored and sent as pickled strings, while function 'func' is inspected
 and written as a source file to be imported.
 
 Further Input:
-  - nnodes -- the number of parallel nodes
-  - launcher -- the launcher object
-  - mapper -- the mapper object
-  - timelimit -- string representation of maximum run time (e.g. '00:02')
-  - queue -- string name of selected queue (e.g. 'normal')
-"""
+    nnodes -- the number of parallel nodes
+    launcher -- the launcher object
+    mapper -- the mapper object
+    timelimit -- string representation of maximum run time (e.g. '00:02')
+    queue -- string name of selected queue (e.g. 'normal')
+    """
     import dill as pickle
     import os.path, tempfile, os
     # mapper = None (allow for use of default mapper)
@@ -216,11 +216,11 @@ and sent as pickled strings.  This is different than 'ez_map', in that
 it does not use temporary files to store the mapped function.
 
 Further Input:
-  - nnodes -- the number of parallel nodes
-  - launcher -- the launcher object
-  - mapper -- the mapper object
-  - timelimit -- string representation of maximum run time (e.g. '00:02')
-  - queue -- string name of selected queue (e.g. 'normal')
+    nnodes -- the number of parallel nodes
+    launcher -- the launcher object
+    mapper -- the mapper object
+    timelimit -- string representation of maximum run time (e.g. '00:02')
+    queue -- string name of selected queue (e.g. 'normal')
 """
     import dill as pickle
     import os.path, tempfile, os

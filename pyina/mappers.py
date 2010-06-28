@@ -2,7 +2,7 @@
 #
 # mmckerns@caltech.edu
 #
-doc = """
+"""
 tiny function wrapper to make ez_map interface for mappers more standard
 
 provides:
