@@ -95,8 +95,8 @@ Pyina requires::
 
 Optional requirements::
     - setuptools, version >= 0.6
-    - pyre, version >= 0.8
-    - mystic, version >= 0.1a1
+    - pyre, version == 0.8
+    - mystic, version >= 0.2a1
 
 
 Usage Notes
