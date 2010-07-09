@@ -9,10 +9,10 @@
 #
 
 """
-Various mpipython tools
+Various mpi python tools
 
 Main function exported are::
-    - ensure_mpi: make sure that the script is called through mpipython
+    - ensure_mpi: make sure the script is called by mpi-enabled python
     - get_workload: get the workload the processor is responsible for
 
 """

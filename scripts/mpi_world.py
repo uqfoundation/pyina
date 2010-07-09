@@ -4,11 +4,11 @@
 __doc__ = """setup mpi python environment
 options:
     -help             print this message
-    -alias nnodes     set bash aliases for mpipython (nnodes is X in '-np X')
     -slaves nodes     set mpi world (nodes is the list of slave nodes)
     -kill             tear down mpi world
 
 NOTE: make sure 'mpd &' was run before setting slave nodes!"""
+#   -alias nnodes     set bash aliases for mpiexec (nnodes is X in '-np X')
 
 import os
 
@@ -83,12 +83,12 @@ if __name__=="__main__":
             nodes = sys.argv[-1]
             nodes = nodes.strip('[()]').split(',')
             set_slaves(nodes,MASTERINFO)
-        elif sys.argv[-2] == "-alias": 
-            print "setting up mpi python..."
-            nodes = sys.argv[-1]
-            nodes = nodes.strip('[()]').split(',')
-            for node in nodes:
-                alias(int(node))
+       #elif sys.argv[-2] == "-alias": 
+       #    print "setting up mpi python..."
+       #    nodes = sys.argv[-1]
+       #    nodes = nodes.strip('[()]').split(',')
+       #    for node in nodes:
+       #        alias(int(node))
         else: # "-help"
             print __doc__
     else: # "-help"

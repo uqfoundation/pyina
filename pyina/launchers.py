@@ -171,7 +171,7 @@ defaults = { 'timelimit' : '00:02',
              'errfile' : './errors.out',
              'jobfile' : './jobid',
              'queue' : 'normal',
-             'python' : '`which mpipython.exe`' ,
+             'python' : '`which python`' ,
              'nodes' : '1',
              'progargs' : ''
            }
@@ -222,7 +222,7 @@ doc = """
 #               'errfile' :  *path of the error file*,
 #               'jobfile' :  *path of jobid file*,
 #               'queue' :  'normal',
-#               'python' :  '`which mpipython.exe`',
+#               'python' :  '`which python`',
 #               'nodes' :  '1',
 #               'progargs' :  ''
 #             }
