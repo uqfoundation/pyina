@@ -163,7 +163,7 @@ Further Input:
     # set scratch directory (most often required for queue launcher)
     if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
     else:
-        if launcher in [torque_launcher]:
+        if launcher in [torque_launcher, moab_launcher]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
     modfile = func_pickle(func)
@@ -175,7 +175,7 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher == torque_launcher:
+    if launcher in [torque_launcher, moab_launcher]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
@@ -187,10 +187,10 @@ Further Input:
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults))
 
-    if launcher == torque_launcher:
+    if launcher in [torque_launcher, moab_launcher]:
         import time
         while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
-            time.sleep(sleeptime) #XXX: wait for results to show up
+            time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
         os.system('rm -f %s' % jobfilename)
         os.system('rm -f %s' % outfilename)
         os.system('rm -f %s' % errfilename)
@@ -241,7 +241,7 @@ Further Input:
     # set scratch directory (most often required for queue launcher)
     if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
     else:
-        if launcher in [torque_launcher]:
+        if launcher in [torque_launcher, moab_launcher]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
     modfile = func_pickle2(func)
@@ -252,7 +252,7 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher == torque_launcher:
+    if launcher in [torque_launcher, moab_launcher]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
@@ -264,10 +264,10 @@ Further Input:
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults))
 
-    if launcher == torque_launcher:
+    if launcher in [torque_launcher, moab_launcher]:
         import time
         while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
-            time.sleep(sleeptime) #XXX: wait for results to show up
+            time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
         os.system('rm -f %s' % jobfilename)
         os.system('rm -f %s' % outfilename)
         os.system('rm -f %s' % errfilename)
