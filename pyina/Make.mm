@@ -30,6 +30,7 @@ EXPORT_PYTHON_MODULES = \
     ez_map.py \
     launchers.py \
     mappers.py \
+    schedulers.py \
     tools.py \
 
 

@@ -112,6 +112,7 @@ internals of pyina.
 Important classes and functions are found here::
     - pyina.pyina.ez_map        [the map-reduce API definition]
     - pyina.pyina.mappers       [all available strategies] 
+    - pyina.pyina.schedulers    [all available schedulers] 
     - pyina.pyina.launchers     [all available launchers] 
 
 Mapping strategies are found here::
@@ -192,6 +193,7 @@ mpi.world = mpi.COMM_WORLD
 
 # launchers
 import launchers
+import schedulers
 
 # mappers
 #import pp_map

@@ -112,10 +112,12 @@ ezdefaults ={ 'timelimit' : '00:02',
               'python' : '`which python`' ,
               'nodes' : '1',
               'progargs' : '',
+              'scheduler' : '',
               'tmpdir' : '.'
             }
 
 from launchers import *
+from schedulers import *
 
 def arg_pickle(arglist, suffix='.arg'):
     """ standard pickle.dump of inputs to a NamedTemporaryFile """
@@ -140,6 +142,7 @@ and written as a source file to be imported.
 Further Input:
     nnodes -- the number of parallel nodes
     launcher -- the launcher object
+    scheduler -- the scheduler object
     mapper -- the mapper object
     timelimit -- string representation of maximum run time (e.g. '00:02')
     queue -- string name of selected queue (e.g. 'normal')
@@ -157,13 +160,16 @@ Further Input:
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
     if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
     if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
-    # set the launcher (or use the given default)
+    # set the scheduler & launcher (or use the given default)
     if kwds.has_key('launcher'): launcher = kwds['launcher']
     else: launcher = mpirun_launcher  #XXX: default = non_mpi?
+    if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
+    else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
     if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
     else:
-        if launcher in [torque_launcher, moab_launcher]:
+        if launcher in [torque_launcher, moab_launcher] \
+        or scheduler in [torque_scheduler, moab_scheduler]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
     modfile = func_pickle(func)
@@ -175,7 +181,8 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher in [torque_launcher, moab_launcher]:
+    if launcher in [torque_launcher, moab_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
@@ -183,11 +190,27 @@ Further Input:
         ezdefaults['outfile'] = outfilename
         ezdefaults['errfile'] = errfilename
 
+    # get the appropriate launcher for the scheduler
+    if scheduler in [torque_scheduler] and launcher in [mpirun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler.mpirun
+    elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler.srun
+    elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler.mpirun
+    elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler.srun
+    #else: scheduler = None
+
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults))
 
-    if launcher in [torque_launcher, moab_launcher]:
+    if launcher in [torque_launcher, moab_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler]:
         import time
         while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
@@ -218,6 +241,7 @@ it does not use temporary files to store the mapped function.
 Further Input:
     nnodes -- the number of parallel nodes
     launcher -- the launcher object
+    scheduler -- the scheduler object
     mapper -- the mapper object
     timelimit -- string representation of maximum run time (e.g. '00:02')
     queue -- string name of selected queue (e.g. 'normal')
@@ -235,13 +259,16 @@ Further Input:
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
     if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
     if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
-    # set the launcher (or use the given default)
+    # set the scheduler & launcher (or use the given default)
     if kwds.has_key('launcher'): launcher = kwds['launcher']
     else: launcher = mpirun_launcher  #XXX: default = non_mpi?
+    if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
+    else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
     if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
     else:
-        if launcher in [torque_launcher, moab_launcher]:
+        if launcher in [torque_launcher, moab_launcher] \
+        or scheduler in [torque_scheduler, moab_scheduler]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
     modfile = func_pickle2(func)
@@ -252,7 +279,8 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher in [torque_launcher, moab_launcher]:
+    if launcher in [torque_launcher, moab_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
@@ -260,11 +288,27 @@ Further Input:
         ezdefaults['outfile'] = outfilename
         ezdefaults['errfile'] = errfilename
 
+    # get the appropriate launcher for the scheduler
+    if scheduler in [torque_scheduler] and launcher in [mpirun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler.mpirun
+    elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler.srun
+    elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler.mpirun
+    elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler.srun
+    #else: scheduler = None
+
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults))
 
-    if launcher in [torque_launcher, moab_launcher]:
+    if launcher in [torque_launcher, moab_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler]:
         import time
         while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?

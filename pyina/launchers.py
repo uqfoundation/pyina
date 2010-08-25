@@ -104,8 +104,9 @@ NOTES:
 
 def torque_launcher(kdict={}):
     """
-prepare launch for torque submission using mpirun
+prepare launch for torque submission using mpirun or srun
 syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -113,15 +114,22 @@ NOTES:
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-    str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    from schedulers import torque_scheduler
+    torque = torque_scheduler()  #FIXME: hackery
+    if kdict['scheduler'] == torque.srun:
+        mydict['tasks'] = srun_tasks(mydict['nodes'])
+        str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    else:
+        mydict['tasks'] = mpirun_tasks(mydict['nodes'])
+        str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
 def moab_launcher(kdict={}):
     """
-prepare launch for moab submission using srun
-syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+prepare launch for moab submission using srun or mpirun
+syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -129,8 +137,14 @@ NOTES:
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    mydict['tasks'] = srun_tasks(mydict['nodes'])
-    str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    from schedulers import moab_scheduler
+    moab = moab_scheduler()  #FIXME: hackery
+    if kdict['scheduler'] == moab.mpirun:
+        mydict['tasks'] = mpirun_tasks(mydict['nodes'])
+        str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    else:
+        mydict['tasks'] = srun_tasks(mydict['nodes'])
+        str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
@@ -173,7 +187,8 @@ defaults = { 'timelimit' : '00:02',
              'queue' : 'normal',
              'python' : '`which python`' ,
              'nodes' : '1',
-             'progargs' : ''
+             'progargs' : '',
+             'scheduler' : ''
            }
 
  
@@ -224,7 +239,8 @@ doc = """
 #               'queue' :  'normal',
 #               'python' :  '`which python`',
 #               'nodes' :  '1',
-#               'progargs' :  ''
+#               'progargs' :  '',
+#               'scheduler' :  '',
 #             }
 """ % {'launcher' : getstr({'file':__file__, 'timelimit': '00:02', 'outfile':'./results.out'}) }
 
