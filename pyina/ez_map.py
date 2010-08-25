@@ -193,16 +193,16 @@ Further Input:
     # get the appropriate launcher for the scheduler
     if scheduler in [torque_scheduler] and launcher in [mpirun_launcher]:
         launcher = torque_launcher
-        ezdefaults['scheduler'] = scheduler.mpirun
+        ezdefaults['scheduler'] = scheduler().mpirun
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
-        ezdefaults['scheduler'] = scheduler.srun
+        ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
-        ezdefaults['scheduler'] = scheduler.mpirun
+        ezdefaults['scheduler'] = scheduler().mpirun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
-        ezdefaults['scheduler'] = scheduler.srun
+        ezdefaults['scheduler'] = scheduler().srun
     #else: scheduler = None
 
     # counting on the function below to block until done.
@@ -291,16 +291,16 @@ Further Input:
     # get the appropriate launcher for the scheduler
     if scheduler in [torque_scheduler] and launcher in [mpirun_launcher]:
         launcher = torque_launcher
-        ezdefaults['scheduler'] = scheduler.mpirun
+        ezdefaults['scheduler'] = scheduler().mpirun
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
-        ezdefaults['scheduler'] = scheduler.srun
+        ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
-        ezdefaults['scheduler'] = scheduler.mpirun
+        ezdefaults['scheduler'] = scheduler().mpirun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
-        ezdefaults['scheduler'] = scheduler.srun
+        ezdefaults['scheduler'] = scheduler().srun
     #else: scheduler = None
 
     # counting on the function below to block until done.
