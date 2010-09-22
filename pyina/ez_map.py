@@ -211,8 +211,8 @@ Further Input:
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
-        import time
-        while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
+        import time                              #BLOCKING
+        while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
         os.system('rm -f %s' % jobfilename)
         os.system('rm -f %s' % outfilename)
@@ -309,8 +309,8 @@ Further Input:
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
-        import time
-        while (not os.path.exists(outfilename)): #XXX: could wait for resfile...
+        import time                              #BLOCKING
+        while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
         os.system('rm -f %s' % jobfilename)
         os.system('rm -f %s' % outfilename)
