@@ -7,7 +7,7 @@ def host(id):
     import socket
     return "Rank: %d -- %s" % (id, socket.gethostname())
 
-print "Submit a job to torque in the 'normal' queue..."
+print "Submit a non-parallel job to torque in the 'normal' queue..."
 print "Using 5 items over 10 nodes and the default mapping strategy"
 res = ez_map(host, range(5), nnodes=10, launcher=torque_launcher,\
              queue='normal', timelimit='00:10')
