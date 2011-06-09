@@ -1,0 +1,19 @@
+# NOTES ON 'external' packages:
+
+The current implementation of pyina required slight modifications
+to one external dependency. These dependencies are provided in the
+`pyina.external` directory for users installing without setuptools.
+
+To install the external packages:
+    $ unzip mpi4py-1.2.2-pyina.zip
+    $ cd mpi4py-1.2.2-pyina
+    $ python setup.py build
+    $ python setup.py install
+
+
+==================================================
+DEVELOPER's NOTES:
+==================================================
+
+'mpi4py' was edited to install better on the mac
+(see line 1411 in mpi4py/conf/mpidistutills.py)

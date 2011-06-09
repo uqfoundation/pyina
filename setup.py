@@ -13,6 +13,7 @@ except ImportError:
     has_setuptools = False
 
 # platform-specific instructions
+sdkroot_set = False
 from sys import platform
 if platform[:3] == 'win':
     pass
@@ -21,6 +22,13 @@ else: #platform = linux or mac
          # mpi4py has difficulty building on a Mac
          # see special installation instructions here:
          # http://mpi4py.scipy.org/docs/usrman/install.html
+         import os
+         try:
+             sdkroot = os.environ['SDKROOT']
+         except KeyError:
+             sdkroot = '/'
+             os.environ['SDKROOT'] = sdkroot
+             sdkroot_set = True
          pass
      pass
 
@@ -46,12 +54,15 @@ setup(name="pyina",
 # add dependencies
 dill_version = '>=0.1a1'
 mpi4py_version = '>=1.2.1'
+if platform[:6] == 'darwin':
+  mpi4py_version = '>=1.2.2-pyina'
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.2a1'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
         install_requires = ('mpi4py%s','dill%s'),
+        dependency_links = ["http://dev.danse.us/packages/"],
 """ % (mpi4py_version, dill_version)
 
 # add the scripts, and close 'setup' call
@@ -66,23 +77,39 @@ exec setup_code
 # if dependencies are missing, print a warning
 try:
     import dill
-    import mpi4py
+    import mpi4py #XXX: throws an error even though ok?
     #import pypar
 except ImportError:
     print "\n***********************************************************"
-    print "WARNING: One of the following dependencies is unresolved:"
+    print "WARNING: One of the following dependencies may be unresolved:"
     print "    dill %s" % dill_version
     print "    mpi4py %s" % mpi4py_version
 #   print "    pypar %s (optional)" % pypar_version
     print "***********************************************************\n"
 
+if sdkroot_set:
+    print "\n***********************************************************"
+    print "WARNING: One of following variables was set to a default:"
+    print "    SDKROOT %s" % sdkroot
+    print "***********************************************************\n"
+else:
+    pass
+
 try:
     import mpi4py
 except ImportError:
     print """
-For special instructions on installing '%s', please see:
+There is a bug in the mpi4py installer for MacOSX,
+and a patch has been submitted to the mpi4py developers.
+Until this patch is accepted in a release,
+a modified version of mpi4py will be available here:
+  http://dev.danse.us/packages/
+or from the "external" directory included in the pyina source distribution.
+
+Further, you may need to set the environment variable "SDKROOT",
+as shown in the instructions for installing mpi4py:
   http://mpi4py.scipy.org/docs/usrman/install.html
-""" % 'mpi4py'
+"""
 
 
 if __name__=='__main__':
