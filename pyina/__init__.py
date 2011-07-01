@@ -3,7 +3,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 #                              Mike McKerns, Caltech
-#                        (C) 1997-2010  All Rights Reserved
+#                        (C) 1997-2011  All Rights Reserved
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -55,7 +55,7 @@ to running MPI jobs, with::
 Current Release
 ===============
 
-This release version is pyina-0.1a1. You can download it here.
+This release version is pyina-0.1a2.dev. You can download it here.
 The latest version of pyina is available from::
     http://dev.danse.us/trac/pathos
 
@@ -68,8 +68,8 @@ Installation
 Pyina is packaged to install from source, so you must
 download the tarball, unzip, and run the installer::
     [download]
-    $ tar -xvzf pyina-0.1a1.tgz
-    $ cd pyina-0.1a1
+    $ tar -xvzf pyina-0.1a2.dev.tgz
+    $ cd pyina-0.1a2.dev
     $ python setup py build
     $ python setup py install
 
@@ -137,7 +137,7 @@ More Information
 
 Please see http://dev.danse.us/trac/pathos/pyina for further information.
 """
-__version__ = '0.1a1'
+__version__ = '0.1a2.dev'
 __author__ = 'Mike McKerns'
 
 __license__ = """
@@ -174,16 +174,20 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Copyright (c) 2010 California Institute of Technology. All rights reserved.
+Copyright (c) 2011 California Institute of Technology. All rights reserved.
 
 
 If you use this software to do productive scientific research that leads to
 publication, we ask that you acknowledge use of the software by citing the
-following paper in your publication::
+following in your publication::
 
-    "pathos: a framework for heterogeneous computing",
-     Michael McKerns and Michael Aivazis, unpublished;
-     http://dev.danse.us/trac/pathos
+    M.M. McKerns, L. Strand, T. Sullivan, A. Fang, M.A.G. Aivazis,
+    "Building a framework for predictive science", Proceedings of
+    the 10th Python in Science Conference, (submitted 2011).
+
+    Michael McKerns and Michael Aivazis,
+    "pathos: a framework for heterogeneous computing", 2010- ;
+    http://dev.danse.us/trac/pathos
 
 """
 # shortcuts
