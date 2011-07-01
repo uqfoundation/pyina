@@ -1,7 +1,7 @@
 pyina: a MPI-based parallel mapper and launcher
 
 Current release:
-    pyina-0.1a1
+    pyina-0.1a2.dev
 
 Installation:
     $ python setup.py build
