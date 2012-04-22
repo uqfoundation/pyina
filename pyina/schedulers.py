@@ -10,16 +10,18 @@ provides:
 """
 
 class torque_scheduler(object):
-    """torque scheduler object -- configured for mpirun, srun, or serial"""
+    """torque scheduler -- configured for mpirun, srun, aprun, or serial"""
     mpirun = "torque_mpirun"
     srun = "torque_srun"
+    aprun = "torque_aprun"
     serial = "torque_serial"
     pass
 
 class moab_scheduler(object):
-    """moab scheduler object -- configured for mpirun, srun, or serial"""
+    """moab scheduler -- configured for mpirun, srun, aprun, or serial"""
     mpirun = "moab_mpirun"
     srun = "moab_srun"
+    aprun = "moab_aprun"
     serial = "moab_serial"
     pass
 

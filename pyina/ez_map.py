@@ -197,12 +197,21 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().mpirun
+
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().srun
+
+    elif scheduler in [torque_scheduler] and launcher in [aprun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
+    elif scheduler in [moab_scheduler] and launcher in [aprun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
+
     elif scheduler in [torque_scheduler] and launcher in [serial_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().serial
@@ -301,12 +310,21 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().mpirun
+
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().srun
+
+    elif scheduler in [torque_scheduler] and launcher in [aprun_launcher]:
+        launcher = torque_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
+    elif scheduler in [moab_scheduler] and launcher in [aprun_launcher]:
+        launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
+
     elif scheduler in [torque_scheduler] and launcher in [serial_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().serial

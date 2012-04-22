@@ -59,6 +59,26 @@ For example, srun_tasks("3:ppn=2,partition=foo") yields '3 -N2'
     return tasks
 
 
+def aprun_tasks(nodes):
+    """
+Helper function.
+compute aprun task_string from node string of pattern = N[:TYPE][:ppn=P]
+For example, aprun_tasks("3:core4:ppn=2") yields '3 -N 2'
+    """
+    nodestr = str(nodes)
+    nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+    nodelst = nodestr.split(":")
+    n = int(nodelst[0])
+    nodelst = nodestr.split("ppn=")
+    if len(nodelst) > 1:
+        ppn = nodelst[1]
+        ppn = int(ppn.split(":")[0])
+        tasks = "%s -N %s" % (n, ppn)
+    else:
+        tasks = "%s" % n
+    return tasks
+
+
 def serial_launcher(kdict={}):
     """
 prepare launch for standard execution
@@ -102,11 +122,27 @@ NOTES:
     return str
 
 
+def aprun_launcher(kdict={}):
+    """
+prepare launch for parallel execution using aprun
+syntax:  aprun -n(nodes) (python) (file) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4 -N 1', ...}
+    """
+    mydict = defaults.copy()
+    mydict.update(kdict)
+    str =  """ aprun -n %(nodes)s %(python)s %(file)s %(progargs)s""" % mydict
+    return str
+
+
 def torque_launcher(kdict={}):
     """
-prepare launch for torque submission using mpirun, srun, or serial
+prepare launch for torque submission using mpirun, srun, aprun, or serial
 syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
@@ -123,6 +159,9 @@ NOTES:
     elif mydict['scheduler'] == torque.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
         str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    elif mydict['scheduler'] == torque.aprun:
+        mydict['tasks'] = aprun_tasks(mydict['nodes'])
+        str = """ echo \"aprun -n %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else:  # non-mpi launch
         str = """ echo \"%(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
@@ -130,9 +169,10 @@ NOTES:
 
 def moab_launcher(kdict={}):
     """
-prepare launch for moab submission using srun, mpirun, or serial
+prepare launch for moab submission using srun, mpirun, aprun, or serial
 syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
@@ -149,6 +189,9 @@ NOTES:
     elif mydict['scheduler'] == moab.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
         str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+    elif mydict['scheduler'] == moab.aprun:
+        mydict['tasks'] = aprun_tasks(mydict['nodes'])
+        str = """ echo \"aprun -n %(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else: # non-mpi launch
         str = """ echo \"%(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
