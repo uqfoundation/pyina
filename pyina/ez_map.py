@@ -40,7 +40,7 @@ The system call that submits the mpi job is blocking.  Reasons are::
     3) If we were to allow the call to be asynchronous, we would need
        to implement some kind of 'deferred' mechanism or job monitoring.
  
-Argument movement for the argument list and the returned results
+Argument movement for the argument list and the returned results are
 pickled, while the mapped function is either saved to and imported
 from a temporary file (e.g. `pyina.ez_map.ez_map`), or transferred
 through serialization (e.g. `pyina.ez_map.ez_map2`).  Either implementation
@@ -48,59 +48,6 @@ has it's own advantages and weaknesses, and one mapper may succeed in
 a case where the other may fail.
 
 """
-
-def parse_from_history(object):
-    """extract code blocks from a code object using stored history"""
-    import readline, inspect
-    lbuf = readline.get_current_history_length()
-    code = [readline.get_history_item(i)+'\n' for i in range(1,lbuf)]
-    lnum = 0
-    codeblocks = []
-    while lnum < len(code)-1:
-       if code[lnum].startswith('def'):    
-           block = inspect.getblock(code[lnum:])
-           lnum += len(block)
-           if block[0].startswith('def %s' % object.func_name):
-               codeblocks.append(block)
-       else:
-           lnum +=1
-    return codeblocks
-
-def src(object):
-    """Extract source code from python code object.
-
-This function is designed to work with simple functions, and will not
-work on any general callable. However, this function can extract source
-code from functions that are defined interactively.
-    """
-    import inspect
-    # no try/except (like the normal src function)
-    if hasattr(object,'func_code') and object.func_code.co_filename == '<stdin>':
-        # function is typed in at the python shell
-        lines = parse_from_history(object)[-1]
-    else:
-        lines, lnum = inspect.getsourcelines(object)
-    return ''.join(lines)
-
-def func_pickle(func):
-    """ write func source to a NamedTemporaryFile (instead of pickle.dump)
-because ezrun requires 'FUNC = <function>' to be included as module.FUNC
-
-NOTE: Keep the return value for as long as you want your file to exist !
-    """
-    import dill as pickle #XXX: to address costfactories
-    import tempfile
-    #XXX: assumes '.' is writable and on $PYTHONPATH
-    file = tempfile.NamedTemporaryFile(suffix='.py', dir=ezdefaults['tmpdir'])
-    file.write(''.join(src(func)))
-    file.write('FUNC = %s\n' % func.func_name)
-    file.flush()
-    return file
-
-def func_pickle2(func):
-    """ standard pickle.dump of function to a NamedTemporaryFile """
-    #XXX: below use '-%s.pik' % func.func_name ?
-    return arg_pickle(func, suffix='.pik')
 
 ezdefaults ={ 'timelimit' : '00:02',
               'file' : '`which ezrun2.py`',
@@ -118,15 +65,6 @@ ezdefaults ={ 'timelimit' : '00:02',
 
 from launchers import *
 from schedulers import *
-
-def arg_pickle(arglist, suffix='.arg'):
-    """ standard pickle.dump of inputs to a NamedTemporaryFile """
-    import dill as pickle
-    import tempfile
-    file = tempfile.NamedTemporaryFile(suffix=suffix, dir=ezdefaults['tmpdir'])
-    pickle.dump(arglist, file)
-    file.flush()
-    return file
 
 HOLD = []
 sleeptime = 30  #XXX: the time between checking for results
@@ -172,8 +110,14 @@ Further Input:
         or scheduler in [torque_scheduler, moab_scheduler]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
-    modfile = func_pickle(func)
-    argfile = arg_pickle(arglist)
+    from dill.temp import dump, dump_source
+    # write func source to a NamedTemporaryFile (instead of pickle.dump)
+    # ezrun requires 'FUNC = <function>' to be included as module.FUNC
+    modfile = dump_source(func, alias='FUNC', dir=ezdefaults['tmpdir'])
+    # standard pickle.dump of inputs to a NamedTemporaryFile
+    argfile = dump(arglist, suffix='.arg', dir=ezdefaults['tmpdir'])
+    # Keep the above return values for as long as you want the tempfile to exist
+
     resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
     modname = os.path.splitext(os.path.basename(modfile.name))[0] 
     ezdefaults['progargs'] = ' '.join([modname, argfile.name, resfilename, \
@@ -222,7 +166,7 @@ Further Input:
 
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
-    launch(launcher(ezdefaults))
+    launch(launcher(ezdefaults)) #FIXME: use subprocessing
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
@@ -234,7 +178,7 @@ Further Input:
         os.system('rm -f %s' % errfilename)
 
     # debuggery... output = function(inputs)
-   #os.system('cp -f %s modfile.py' % modfile.name) # function src; FUNC=func
+   #os.system('cp -f %s modfile.py' % modfile.name) # getsource; FUNC=func
    #os.system('cp -f %s argfile.py' % argfile.name) # pickled list of inputs
    #os.system('cp -f %s resfile.py' % resfilename)  # pickled list of output
 
@@ -286,8 +230,12 @@ Further Input:
         or scheduler in [torque_scheduler, moab_scheduler]:
             ezdefaults['tmpdir'] = os.path.expanduser("~")
 
-    modfile = func_pickle2(func)
-    argfile = arg_pickle(arglist)
+    from dill.temp import dump
+    # standard pickle.dump of inputs to a NamedTemporaryFile
+    modfile = dump(func, suffix='.pik', dir=ezdefaults['tmpdir'])
+    argfile = dump(arglist, suffix='.arg', dir=ezdefaults['tmpdir'])
+    # Keep the above return values for as long as you want the tempfile to exist
+
     resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
     ezdefaults['progargs'] = ' '.join([modfile.name,argfile.name,resfilename, \
                                        ezdefaults['tmpdir']])
@@ -335,7 +283,7 @@ Further Input:
 
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
-    launch(launcher(ezdefaults))
+    launch(launcher(ezdefaults)) #FIXME: use subprocessing
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
