@@ -50,8 +50,8 @@ a case where the other may fail.
 """
 
 ezdefaults ={ 'timelimit' : '00:02',
-              'file' : '`which ezrun2.py`',
-              'progname' : 'ezrun2.py',
+              'file' : '`which ezscatter.py`',
+              'progname' : 'ezscatter.py',
               'outfile' : 'results.out',
               'errfile' : 'errors.out',
               'jobfile' : 'jobid',
@@ -90,8 +90,8 @@ Further Input:
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "parallel_map": ezmap = "ezrun.py"
-        elif mapper() == "parallel_map2": ezmap = "ezrun2.py"
+        if mapper() == "parallel_map": ezmap = "ezpool.py"
+        elif mapper() == "parallel_map2": ezmap = "ezscatter.py"
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
         ezdefaults['file'] = '`which %s`' % ezmap
     # override the defaults
@@ -115,7 +115,8 @@ Further Input:
     # ezrun requires 'FUNC = <function>' to be included as module.FUNC
     modfile = dump_source(func, alias='FUNC', dir=ezdefaults['tmpdir'])
     # standard pickle.dump of inputs to a NamedTemporaryFile
-    argfile = dump(arglist, suffix='.arg', dir=ezdefaults['tmpdir'])
+    kwd = {'onall':kwds.get('onall',True)}
+    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['tmpdir'])
     # Keep the above return values for as long as you want the tempfile to exist
 
     resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
@@ -210,8 +211,8 @@ Further Input:
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "parallel_map": ezmap = "ezrun.py"
-        elif mapper() == "parallel_map2": ezmap = "ezrun2.py"
+        if mapper() == "parallel_map": ezmap = "ezpool.py"
+        elif mapper() == "parallel_map2": ezmap = "ezscatter.py"
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
         ezdefaults['file'] = '`which %s`' % ezmap
     # override the defaults
@@ -233,7 +234,8 @@ Further Input:
     from dill.temp import dump
     # standard pickle.dump of inputs to a NamedTemporaryFile
     modfile = dump(func, suffix='.pik', dir=ezdefaults['tmpdir'])
-    argfile = dump(arglist, suffix='.arg', dir=ezdefaults['tmpdir'])
+    kwd = {'onall':kwds.get('onall',True)}
+    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['tmpdir'])
     # Keep the above return values for as long as you want the tempfile to exist
 
     resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from pyina.mpi import Mpi
+from pyina.launchers import Mpi
 
-#XXX:: ez_map fails with NameError: global name 'func' is not defined
-#XXX:: ez_map2 fails with RuntimeError: maximum recursion depth exceeded
+#XXX:: can fail with NameError: global name 'func' is not defined
+#XXX:: can fail with RuntimeError: maximum recursion depth exceeded
 #from mystic.models.poly import chebyshev8cost as func
 
 def host(coeffs):

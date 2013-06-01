@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.mpi import MpiScatter, MpiPool
+from pyina.launchers import MpiScatter, MpiPool
 
 def play(Q):
     id, l = Q

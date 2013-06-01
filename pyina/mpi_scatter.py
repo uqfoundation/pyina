@@ -1,6 +1,6 @@
 from itertools import izip
 from mpi4py import MPI as mpi
-from pyina.mpi_tools import get_workload, balance_workload, lookup
+from pyina.tools import get_workload, balance_workload, lookup
 master = 0
 comm = mpi.COMM_WORLD
 size = comm.Get_size()

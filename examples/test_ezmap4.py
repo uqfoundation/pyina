@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.mpi import Mpi
+from pyina.launchers import Mpi
 
 #XXX: should not have to define "func" within mapped function
 #from mystic.models import rosen as func

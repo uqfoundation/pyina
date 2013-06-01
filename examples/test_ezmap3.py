@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.mpi import Mpi
+from pyina.launchers import Mpi
 
 def host(id):
     import socket

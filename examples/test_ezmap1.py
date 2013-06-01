@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.mpi import MpiScatter
+from pyina.launchers import MpiScatter
 
 def host(id):
     import socket

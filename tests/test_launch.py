@@ -1,4 +1,6 @@
-from pyina.mpi import defaults, SerialMapper, Mpi, Torque, TorqueMpi
+from pyina.mpi import defaults
+from pyina.launchers import SerialMapper, Mpi, TorqueMpi
+from pyina.schedulers import Torque
 
 def test_launch():
     serial = SerialMapper()

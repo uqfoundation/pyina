@@ -27,20 +27,26 @@ __license__ = """
 # shortcuts
 
 # launchers
-#import launchers
-#import schedulers
+import launchers
+import schedulers
 
 # mappers
 import mpi
-#import ez_map
-#import mappers
 
 # strategies
 import mpi_scatter, mpi_pool
-#import parallel_map, parallel_map2
 
 # tools
-from mpi_tools import *
+from tools import *
+
+# backward compatibility
+parallel_map = mpi_pool
+parallel_map.parallel_map = mpi_pool.parallel_map
+parallel_map2 = mpi_scatter
+parallel_map2.parallel_map = mpi_scatter.parallel_map
+#import ez_map
+#import mappers
+
 
 def license():
     """print license"""

@@ -17,7 +17,7 @@ if len(sys.argv) > 1: nnodes = int(sys.argv[1])
 else: nnodes = 1
 
 try:
-    from pyina.mpi import MpiPool
+    from pyina.launchers import MpiPool
     pool = MpiPool()
     pool.nodes = nnodes
     hostnames = pool.map(host, range(nnodes))

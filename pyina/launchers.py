@@ -1,21 +1,421 @@
 #!/usr/bin/env python
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-#                       Patrick Hung & Mike McKerns, Caltech
-#                        (C) 1997-2010  All Rights Reserved
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
 """
-prepared launchers for parallel execution
+This module contains prepared launchers for parallel execution, including
+bindings to some common combinations of launchers and schedulers.
+
+Base classes:
+    SerialMapper   - base class for pipe-based mapping with python
+    ParallelMapper - base class for pipe-based mapping with mpi4py
+
+Parallel launchers:
+    Mpi            - 
+    Slurm          - 
+    Alps           - 
+
+Pre-built combinations of the above launchers and schedulers:
+    TorqueMpi, TorqueSlurm, MoabMpi, MoabSlurm
+
+Pre-configured maps using the 'scatter-gather' strategy:
+    MpiScatter, SlurmScatter, AlpsScatter, TorqueMpiScatter,
+    TorqueSlurmScatter, MoabMpiScatter, MoabSlurmScatter
+
+Pre-configured maps using the 'worker pool' strategy:
+    MpiPool, SlurmPool, AlpsPool, TorqueMpiPool, TorqueSlurmPool,
+    MoabMpiPool, MoabSlurmPool
+
+Usage
+=====
+
+A typical call to a pyina mpi map will roughly follow this example:
+
+    >>> # instantiate and configure a scheduler
+    >>> from pyina.schedulers import Torque
+    >>> config = {'nodes'='32:ppn=4', 'queue':'dedicated', 'timelimit':'11:59'}
+    >>> torque = Torque(**config)
+    >>> 
+    >>> # instantiate and configure a worker pool
+    >>> from pyina.launchers import Mpi
+    >>> pool = Mpi(scheduler=torque)
+    >>>
+    >>> # do a blocking map on the chosen function
+    >>> results = pool.map(pow, [1,2,3,4], [5,6,7,8])
+
+Several common configurations are available as pre-configured maps.
+The following is identical to the above example:
+
+    >>> # instantiate and configure a pre-configured worker pool
+    >>> from pyina.launchers import TorqueMpiPool
+    >>> config = {'nodes'='32:ppn=4', 'queue':'dedicated', 'timelimit':'11:59'}
+    >>> pool = TorqueMpiPool(**config)
+    >>>
+    >>> # do a blocking map on the chosen function
+    >>> results = pool.map(pow, [1,2,3,4], [5,6,7,8])
+
+
+Notes
+=====
+
+This set of parallel maps leverage the mpi4py module, and thus has many of the
+limitations associated with that module. The function f and the sequences
+in args must be serializable. The maps provided here...
+
+<<< FIXME >>
+
+functionality when run from a script, however are somewhat limited
+when used in the python interpreter. Both imported and interactively-defined
+functions in the interpreter session may fail due to the pool failing to
+find the source code for the target function. For a work-around, try:
+
+<<< END FIXME >>>
 """
 
-import os
+__all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
+           'MpiPool', 'MpiScatter', 'SlurmPool', 'SlurmScatter', 'AlpsPool',
+           'AlpsScatter', 'TorqueMpi', 'TorqueSlurm', 'MoabMpi', 'MoabSlurm',
+           'TorqueMpiPool', 'TorqueMpiScatter', 'TorqueSlurmPool',
+           'TorqueSlurmScatter', 'MoabMpiPool', 'MoabMpiScatter',
+           'MoabSlurmPool', 'MoabSlurmScatter']
 
+from pyina.mpi import Mapper, defaults
+from abstract import AbstractWorkerPool
+from schedulers import Torque, Moab, Lsf
+
+import logging
+log = logging.getLogger("launchers")
+log.addHandler(logging.StreamHandler())
+
+
+class SerialMapper(Mapper):
+    """
+Mapper base class for pipe-based mapping with python.
+    """
+    def _launcher(self, kdict={}):
+        """prepare launch command for pipe-based execution
+
+equivalent to:  (python) (program) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+        str = """%(python)s %(program)s %(progargs)s""" % mydict
+        if self.scheduler:
+            str = self.scheduler._submit(str)
+        return str
+    def map(self, func, *args, **kwds):
+        return Mapper.map(self, func, *args, **kwds)
+    map.__doc__ = Mapper.map.__doc__ + _launcher.__doc__
+    def __repr__(self):
+        if self.scheduler:
+            scheduler = self.scheduler.__class__.__name__
+        else:
+            scheduler = "None"
+        mapargs = (self.__class__.__name__, scheduler)
+        return "<pool %s(scheduler=%s)>" % mapargs
+    pass
+
+class ParallelMapper(Mapper): #FIXME FIXME: stopped docs here
+    """
+Mapper base class for pipe-based mapping with mpi4py.
+    """
+    __nodes = None
+    def __init__(self, *args, **kwds):
+        """\nNOTE: if number of nodes is not given, will try to grab the
+number of nodes from the associated scheduler, and failing will default to 1.
+If workdir is not given, will default to scheduler's workdir or $WORKDIR.
+If scheduler is not given, will default to only run on the current node.
+If pickle is not given, will attempt to minimially use TemporaryFiles.
+
+For more details, see the docstrings for the "map" method, or the man page
+for the associated launcher (e.g mpirun).
+        """
+        Mapper.__init__(self, *args, **kwds)
+        self.scatter = bool(kwds.get('scatter', False)) #XXX: hang w/ nodes=1 ?
+       #self.nodes = kwds.get('nodes', None)
+        if not len(args) and not kwds.has_key('nodes'):
+            if self.scheduler:
+                self.nodes = self.scheduler.nodes
+            else:
+                self.nodes = '1'
+        return
+    __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
+    def njobs(self, nodes):
+        """convert node_string intended for scheduler to int number of nodes
+
+compute int from node string. For example, parallel.njobs("4") yields 4
+        """
+        return int(str(nodes)) #XXX: this is a dummy function
+    def __repr__(self):
+        if self.scheduler:
+            scheduler = self.scheduler.__class__.__name__
+        else:
+            scheduler = "None"
+        mapargs = (self.__class__.__name__, self.nodes, scheduler)
+        return "<pool %s(ncpus=%s, scheduler=%s)>" % mapargs
+    def __get_nodes(self):
+        """get the number of nodes in the pool"""
+        return self.__nodes
+    def __set_nodes(self, nodes):
+        """set the number of nodes in the pool"""
+        self.__nodes = self.njobs(nodes)
+        return
+    # interface
+    nodes = property(__get_nodes, __set_nodes)
+    pass
+
+class Mpi(ParallelMapper):
+    """
+    """
+    def njobs(self, nodes):
+        """convert node_string intended for scheduler to mpirun node_string
+
+compute mpirun task_string from node string of pattern = N[:TYPE][:ppn=P]
+For example, mpirun.njobs("3:core4:ppn=2") yields 6
+        """
+        nodestr = str(nodes)
+        nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+        nodelst = nodestr.split(":")
+        n = int(nodelst[0])
+        nodelst = nodestr.split("ppn=")
+        if len(nodelst) > 1:
+            ppn = nodelst[1]
+            ppn = int(ppn.split(":")[0])
+        else: ppn = 1
+        tasks =  n*ppn
+        return tasks
+    def _launcher(self, kdict={}):
+        """prepare launch command for parallel execution using mpirun
+
+equivalent to:  mpirun -np (nodes) (python) (program) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+       #if self.scheduler:
+       #    mydict['nodes'] = self.njobs()
+        str =  """mpirun -np %(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
+        if self.scheduler:
+            str = self.scheduler._submit(str)
+        return str
+    def map(self, func, *args, **kwds):
+        return ParallelMapper.map(self, func, *args, **kwds)
+    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    pass
+
+class Slurm(ParallelMapper):
+    """
+    """
+    def njobs(self, nodes):
+        """convert node_string intended for scheduler to srun node_string
+
+compute srun task_string from node string of pattern = N[:ppn=P][,partition=X]
+For example, srun.njobs("3:ppn=2,partition=foo") yields '3 -N2'
+        """
+        nodestr = str(nodes)
+        nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+        nodelst = nodestr.split(":")
+        n = int(nodelst[0])
+        nodelst = nodestr.split("ppn=")
+        if len(nodelst) > 1:
+            ppn = nodelst[1]
+            ppn = int(ppn.split(":")[0])
+            tasks = "%s -N%s" % (n, ppn)
+        else:
+            tasks = "%s" % n
+        return tasks
+    def _launcher(self, kdict={}):
+        """prepare launch for parallel execution using srun
+
+equivalent to:  srun -n(nodes) (python) (program) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4 -N1', ...}
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+       #if self.scheduler:
+       #    mydict['nodes'] = self.njobs()
+        str =  """srun -n%(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
+        if self.scheduler:
+            str = self.scheduler._submit(str)
+        return str
+    def map(self, func, *args, **kwds):
+        return ParallelMapper.map(self, func, *args, **kwds)
+    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    pass
+
+class Alps(ParallelMapper):
+    """
+    """
+    def njobs(self, nodes):
+        """convert node_string intended for scheduler to aprun node_string
+
+compute aprun task_string from node string of pattern = N[:TYPE][:ppn=P]
+For example, aprun.njobs("3:core4:ppn=2") yields '3 -N 2'
+        """
+        nodestr = str(nodes)
+        nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+        nodelst = nodestr.split(":")
+        n = int(nodelst[0])
+        nodelst = nodestr.split("ppn=")
+        if len(nodelst) > 1:
+            ppn = nodelst[1]
+            ppn = int(ppn.split(":")[0])
+            tasks = "%s -N %s" % (n, ppn)
+        else:
+            tasks = "%s" % n
+        return tasks
+    def _launcher(self, kdict={}):
+        """prepare launch for parallel execution using aprun
+
+equivalent to:  aprun -n (nodes) (python) (program) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4 -N 1', ...}
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+       #if self.scheduler:
+       #    mydict['nodes'] = self.njobs()
+        str =  """aprun -n %(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
+        if self.scheduler:
+            str = self.scheduler._submit(str)
+        return str
+    def map(self, func, *args, **kwds):
+        return ParallelMapper.map(self, func, *args, **kwds)
+    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    pass
+
+
+##### 'pre-configured' maps #####
+# launcher + strategy
+class MpiPool(Mpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        Mpi.__init__(self, *args, **kwds)
+    pass
+
+class MpiScatter(Mpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        Mpi.__init__(self, *args, **kwds)
+    pass
+
+class SlurmPool(Slurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        Slurm.__init__(self, *args, **kwds)
+    pass
+
+class SlurmScatter(Slurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        Slurm.__init__(self, *args, **kwds)
+    pass
+
+class AlpsPool(Alps):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        Alps.__init__(self, *args, **kwds)
+    pass
+
+class AlpsScatter(Alps):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        Alps.__init__(self, *args, **kwds)
+    pass
+
+# scheduler + launcher
+class TorqueMpi(Mpi):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Torque(*args, **kwds)
+        kwds.pop('nodes', None)
+        Mpi.__init__(self, **kwds)
+    pass
+
+class TorqueSlurm(Slurm):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Torque(*args, **kwds)
+        kwds.pop('nodes', None)
+        Slurm.__init__(self, **kwds)
+    pass
+
+class MoabMpi(Mpi):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Moab(*args, **kwds)
+        kwds.pop('nodes', None)
+        Mpi.__init__(self, **kwds)
+    pass
+
+class MoabSlurm(Slurm):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Moab(*args, **kwds)
+        kwds.pop('nodes', None)
+        Slurm.__init__(self, **kwds)
+    pass
+
+# scheduler + launcher + strategy
+class TorqueMpiPool(TorqueMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        TorqueMpi.__init__(self, *args, **kwds)
+    pass
+
+class TorqueMpiScatter(TorqueMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        TorqueMpi.__init__(self, *args, **kwds)
+    pass
+
+class TorqueSlurmPool(TorqueSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        TorqueSlurm.__init__(self, *args, **kwds)
+    pass
+
+class TorqueSlurmScatter(TorqueSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        TorqueSlurm.__init__(self, *args, **kwds)
+    pass
+
+class MoabMpiPool(MoabMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        MoabMpi.__init__(self, *args, **kwds)
+    pass
+
+class MoabMpiScatter(MoabMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        MoabMpi.__init__(self, *args, **kwds)
+    pass
+
+class MoabSlurmPool(MoabSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        MoabSlurm.__init__(self, *args, **kwds)
+    pass
+
+class MoabSlurmScatter(MoabSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        MoabSlurm.__init__(self, *args, **kwds)
+    pass
+
+
+
+# backward compatibility
 def launch(command):
     """ launch mechanism for prepared launch command"""
-    error = os.system(command)
+    mapper = Mapper()
+    subproc = mapper._Mapper__launch(command)
+    error = subproc.wait()
     if error: raise IOError, "launch failed: %s" % command
     return error
 
@@ -26,17 +426,8 @@ Helper function.
 compute mpirun task_string from node string of pattern = N[:TYPE][:ppn=P]
 For example, mpirun_tasks("3:core4:ppn=2") yields 6
     """
-    nodestr = str(nodes)
-    nodestr = nodestr.split(",")[0]  # remove appended -l expressions
-    nodelst = nodestr.split(":")
-    n = int(nodelst[0])
-    nodelst = nodestr.split("ppn=")
-    if len(nodelst) > 1:
-        ppn = nodelst[1]
-        ppn = int(ppn.split(":")[0])
-    else: ppn = 1
-    tasks =  n*ppn
-    return tasks
+    mapper = Mpi()
+    return mapper.njobs(nodes)
 
 
 def srun_tasks(nodes):
@@ -45,18 +436,8 @@ Helper function.
 compute srun task_string from node string of pattern = N[:ppn=P][,partition=X]
 For example, srun_tasks("3:ppn=2,partition=foo") yields '3 -N2'
     """
-    nodestr = str(nodes)
-    nodestr = nodestr.split(",")[0]  # remove appended -l expressions
-    nodelst = nodestr.split(":")
-    n = int(nodelst[0])
-    nodelst = nodestr.split("ppn=")
-    if len(nodelst) > 1:
-        ppn = nodelst[1]
-        ppn = int(ppn.split(":")[0])
-        tasks = "%s -N%s" % (n, ppn)
-    else:
-        tasks = "%s" % n
-    return tasks
+    mapper = Slurm()
+    return mapper.njobs(nodes)
 
 
 def aprun_tasks(nodes):
@@ -65,18 +446,8 @@ Helper function.
 compute aprun task_string from node string of pattern = N[:TYPE][:ppn=P]
 For example, aprun_tasks("3:core4:ppn=2") yields '3 -N 2'
     """
-    nodestr = str(nodes)
-    nodestr = nodestr.split(",")[0]  # remove appended -l expressions
-    nodelst = nodestr.split(":")
-    n = int(nodelst[0])
-    nodelst = nodestr.split("ppn=")
-    if len(nodelst) > 1:
-        ppn = nodelst[1]
-        ppn = int(ppn.split(":")[0])
-        tasks = "%s -N %s" % (n, ppn)
-    else:
-        tasks = "%s" % n
-    return tasks
+    mapper = Alps()
+    return mapper.njobs(nodes)
 
 
 def serial_launcher(kdict={}):
@@ -87,10 +458,8 @@ syntax:  (python) (file) (progargs)
 NOTES:
     run non-python commands with: {'python':'', ...} 
     """
-    mydict = defaults.copy()
-    mydict.update(kdict)
-    str = """ %(python)s %(file)s %(progargs)s""" % mydict
-    return str
+    mapper = SerialMapper()
+    return mapper._launcher(kdict)
 
 
 def mpirun_launcher(kdict={}):
@@ -101,10 +470,8 @@ syntax:  mpirun -np (nodes) (python) (file) (progargs)
 NOTES:
     run non-python commands with: {'python':'', ...} 
     """
-    mydict = defaults.copy()
-    mydict.update(kdict)
-    str =  """ mpirun -np %(nodes)s %(python)s %(file)s %(progargs)s""" % mydict
-    return str
+    mapper = Mpi()
+    return mapper._launcher(kdict)
 
 
 def srun_launcher(kdict={}):
@@ -116,10 +483,8 @@ NOTES:
     run non-python commands with: {'python':'', ...} 
     fine-grained resource utilization with: {'nodes':'4 -N1', ...}
     """
-    mydict = defaults.copy()
-    mydict.update(kdict)
-    str =  """ srun -n%(nodes)s %(python)s %(file)s %(progargs)s""" % mydict
-    return str
+    mapper = Slurm()
+    return mapper._launcher(kdict)
 
 
 def aprun_launcher(kdict={}):
@@ -131,13 +496,11 @@ NOTES:
     run non-python commands with: {'python':'', ...} 
     fine-grained resource utilization with: {'nodes':'4 -N 1', ...}
     """
-    mydict = defaults.copy()
-    mydict.update(kdict)
-    str =  """ aprun -n %(nodes)s %(python)s %(file)s %(progargs)s""" % mydict
-    return str
+    mapper = Alps()
+    return mapper._launcher(kdict)
 
 
-def torque_launcher(kdict={}):
+def torque_launcher(kdict={}): #FIXME: update
     """
 prepare launch for torque submission using mpirun, srun, aprun, or serial
 syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
@@ -167,7 +530,7 @@ NOTES:
     return str
 
 
-def moab_launcher(kdict={}):
+def moab_launcher(kdict={}): #FIXME: update
     """
 prepare launch for moab submission using srun, mpirun, aprun, or serial
 syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
@@ -197,7 +560,7 @@ NOTES:
     return str
 
 
-def lsfmx_launcher(kdict={}):
+def lsfmx_launcher(kdict={}): #FIXME: update
     """
 prepare launch for Myrinet / LSF submission of parallel python using mpich_mx
 syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_mx -q (queue) -J (progname) mpich_mx_wrapper (python) (file) (progargs)
@@ -212,7 +575,7 @@ NOTES:
     return str
 
 
-def lsfgm_launcher(kdict={}):
+def lsfgm_launcher(kdict={}): #FIXME: update
     """
 prepare launch for Myrinet / LSF submission of parallel python using mpich_gm
 syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_gm -q (queue) -J (progname) gmmpirun_wrapper (python) (file) (progargs)
@@ -227,20 +590,6 @@ NOTES:
     return str
 
 
-defaults = { 'timelimit' : '00:02',
-             'file' : '',
-             'progname' : '',
-             'outfile' : './results.out',
-             'errfile' : './errors.out',
-             'jobfile' : './jobid',
-             'queue' : 'normal',
-             'python' : '`which python`' ,
-             'nodes' : '1',
-             'progargs' : '',
-             'scheduler' : ''
-           }
-
- 
 def all_launchers():
     import launchers
     L = ["launchers.%s" % f for f in  dir(launchers) if f[-8:] == "launcher"]

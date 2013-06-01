@@ -165,7 +165,6 @@ internals of pyina.
 Important classes and functions are found here::
 
     - pyina.pyina.mpi           [the map-reduce API definition]
-    - pyina.pyina.mappers       [all available strategies] 
     - pyina.pyina.schedulers    [all available schedulers] 
     - pyina.pyina.launchers     [all available launchers] 
 
@@ -301,8 +300,7 @@ if has_setuptools:
 
 # add the scripts, and close 'setup' call
 setup_code += """
-    scripts=['scripts/ezrun.py','scripts/ezrun2.py',
-             'scripts/ezpool.py','scripts/ezscatter.py',
+    scripts=['scripts/ezpool.py','scripts/ezscatter.py',
              'scripts/machines.py','scripts/mpi_world.py'])
 """
 

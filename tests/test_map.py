@@ -33,7 +33,7 @@ if __name__ == '__main__':
     from pyina.mpi import _debug, _save
     #_save(True)
     #_debug(True)
-    from pyina.mpi import SerialMapper as S
+    from pyina.launchers import SerialMapper as S
     no_pool = S()#source=True)
     print no_pool
     start = time.time()
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     assert _basic == _no_pool
     print ""
 
-    from pyina.mpi import MpiPool as MPI
+    from pyina.launchers import MpiPool as MPI
     mpi_pool = MPI(4)#source=True)
     print mpi_pool
     start = time.time()
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     assert _basic == _mpi_pool
     print ""
 
-    from pyina.mpi import MpiScatter as MPI
+    from pyina.launchers import MpiScatter as MPI
     mpi_pool = MPI(4)#source=True)
     print mpi_pool
     start = time.time()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.mpi import TorqueMpiScatter
+from pyina.launchers import TorqueMpiScatter
 
 def host(id):
     import socket

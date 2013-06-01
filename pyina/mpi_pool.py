@@ -1,6 +1,6 @@
 from itertools import izip
 from mpi4py import MPI as mpi
-from pyina.mpi_tools import lookup
+from pyina.tools import lookup
 try:
     from processing.pool import Pool as MPool
 except ImportError:  # fall-back to package distributed with python

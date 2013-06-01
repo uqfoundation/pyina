@@ -17,6 +17,32 @@ Main function exported are::
 
 """
 
+def which_python(version=False, lazy=False, fullpath=True):
+    """get a command to execute the given python version
+
+version: if True, include default version number
+         if int/float, include given version number
+lazy: if True, build the lazy command `which python`
+fullpath: if True, return the fullpath instead of relying on $PATH lookup
+    """
+    target = "python"; tail = ""
+    import sys
+    if lazy and not (sys.platform[:3] == 'win'):
+        target = "`which python"; tail = "`"
+    # include version number
+    if str(version).startswith(('2','3','4','5','6','7','8','9','1','0')):
+        pyversion = str(version)
+    elif bool(version):
+        pyversion = ".".join(str(i) for i in sys.version_info[0:2])
+    else:
+        pyversion = ""
+    target = "".join([target, pyversion, tail])
+    # lookup full path
+    if not lazy and fullpath:
+        import pox
+        target = pox.which(target)
+    return target
+
 def ensure_mpi(size = 1, doc = None):
     """
  ensure that mpi-enabled python is being called with the appropriate size
@@ -37,11 +63,31 @@ def ensure_mpi(size = 1, doc = None):
         sys.exit()
     return
 
-def get_workload(myid, nproc, popsize):
+def mpiprint(string="", end="\n", rank=0, comm=None):
+    """print the given string to to the given rank"""
+    from mpi4py import MPI as mpi
+    if comm is None: comm = mpi.COMM_WORLD
+    if not hasattr(rank, '__len__'): rank = (rank,)
+    if comm.rank in rank:
+        print string+end,
+
+
+#XXX: has light load on *last* proc, heavy/equal on first proc
+from math import ceil
+def get_workload(index, nproc, popsize, skip=None):
+    """returns the workload that this processor is responsible for
+
+index: int rank of node to calculate for
+nproc: int number of nodes
+popsize: int number of jobs
+skip: int rank of node upon which to not calculate (i.e. the master)
+
+returns (begin, end) index
     """
- returns the workload that this processor is responsible for
-    """
-    from math import ceil
+    if skip is not None and skip < nproc:
+        nproc = nproc - 1
+        if index == skip: skip = True
+        elif index > skip: index = index - 1
     n1 = nproc
     n2 = popsize
     iend = 0
@@ -51,14 +97,95 @@ def get_workload(myid, nproc, popsize):
         n2 = n2 - ai
         n1 = n1 - 1
         iend = iend + ai
-        if i==myid:
+        if i==index:
            break
-    return (ibegin, iend)
+    if skip is True:
+        return (ibegin, ibegin) if (index < nproc) else (iend, iend)
+    return (ibegin, iend) #XXX: (begin, end) index for a single element
+
+
+#FIXME: has light load on *last* proc, heavy/equal on master proc
+import numpy as np
+def balance_workload(nproc, popsize, *index, **kwds):
+    """divide popsize elements on 'nproc' chunks
+
+nproc: int number of nodes
+popsize: int number of jobs
+index: int rank of node(s) to calculate for (using slice notation)
+skip: int rank of node upon which to not calculate (i.e. the master)
+
+returns (begin, end) index vectors"""
+    _skip = False
+    skip = kwds.get('skip', None)
+    if skip is not None and skip < nproc:
+        nproc = nproc - 1
+        _skip = True
+    count = np.round(popsize/nproc)
+    counts = count * np.ones(nproc, dtype=np.int)
+    diff = popsize - count*nproc
+    counts[:diff] += 1
+    begin = np.concatenate(([0], np.cumsum(counts)[:-1]))
+   #return counts, index #XXX: (#jobs, begin index) for all elements
+    if _skip:
+        if skip == nproc: # remember: nproc has been reduced
+            begin = np.append(begin, begin[-1]+counts[-1])
+            counts = np.append(counts, 0)
+        else:
+            begin = np.insert(begin, skip, begin[skip])
+            counts = np.insert(counts, skip, 0)
+    if not index:
+        return begin, begin+counts #XXX: (begin, end) index for all elements
+   #if len(index) > 1:
+   #    return lookup((begin, begin+counts), *index) # index a slice
+    return lookup((begin, begin+counts), *index) # index a single element
+
+def lookup(inputs, *index):
+    """get tuple of inputs corresponding to the given index"""
+    if len(index) == 1: index = index[0]
+    else: index = slice(*index)
+    return tuple(i.__getitem__(index) for i in inputs)
+
+def wait_for(resultfile, **kwds):
+    """wait for a file to show up in the current directory
+
+    optional:
+        sleep -- the time between checking results
+        tries -- the number of times to try
+    """
+    sleeptime = kwds.get('sleep', 1) # time between checking for results
+    t = 60 # 60 sec of sleeptime
+    maxtries = int(kwds.get('tries', 2*t)) # maxwait = sleeptime * maxtries
+    import time, os
+    tries = 0
+    while (not os.path.exists(resultfile) and tries < maxtries):
+        # wait for results
+        time.sleep(sleeptime)
+        tries += 1
+    if tries >= maxtries: raise IOError, "%s not found" % resultfile
+    return
 
 
 if __name__=='__main__':
-   #ensure_mpi(size=3)
-    import doctest
-    doctest.testmod(verbose=True)
+    n = 7 #12
+    pop = 12 #7 
+    #XXX: note the two ways to calculate
+    assert get_workload(0, n, pop) == balance_workload(n, pop, 0)
+    assert [get_workload(i, n, pop) for i in range(n)] == \
+                                         zip(*balance_workload(n, pop))
+    assert [get_workload(i, n, pop) for i in range(0,n/2)] == \
+                                         zip(*balance_workload(n, pop, 0, n/2))
+
+    assert zip(*balance_workload(n,pop,0,n)) == zip(*balance_workload(n,pop))
+    assert zip(*balance_workload(n,pop,0,1)) == [balance_workload(n,pop,0)]
+
+    assert get_workload(0,n,pop,skip=0) == balance_workload(n,pop,0,skip=0)
+    assert get_workload(0,n,pop,skip=n) == balance_workload(n,pop,0,skip=n)
+    assert get_workload(0,n,pop,skip=n+1) == balance_workload(n,pop,0,skip=n+1)
+
+    assert [get_workload(i, n, pop, skip=0) for i in range(n)] == \
+                                         zip(*balance_workload(n, pop, skip=0))
+    assert [get_workload(i, n, pop, skip=n) for i in range(n)] == \
+                                         zip(*balance_workload(n, pop, skip=n))
+
 
 # End of file

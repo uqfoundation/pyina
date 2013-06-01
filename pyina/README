@@ -11,8 +11,8 @@ ez_map provides a parallel map that hides mpi within a "map" and "launcher"
  - ez_map2: writes mapped_function to temporary picklefile (.pik)
 
 parallel_map provides a parallel map that exposes mpi to the user
- - parallel_map: sends jobs one-by-one to available nodes
- - parallel_map2: divides jobs evenly; sends once to each node
+ - mpi_pool: sends jobs one-by-one to available nodes
+ - mpi_scatter: divides jobs evenly; sends once to each node
 
 ##############################################################################
 

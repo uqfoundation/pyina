@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from pyina.mpi import Torque, SerialMapper
+from pyina.launchers import SerialMapper
+from pyina.schedulers import Torque
 
 def host(id):
     import socket
