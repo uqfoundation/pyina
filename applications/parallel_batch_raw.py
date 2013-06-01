@@ -23,7 +23,7 @@ def runshell(input):
 if __name__ == "__main__":
 
     try:
-        from pyina.parallel_map2 import parallel_map as parallel_map2
+        from pyina.mpi_scatter import parallel_map as parallel_map2
 
         from pyina import mpi
         world = mpi.world

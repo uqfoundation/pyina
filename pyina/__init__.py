@@ -25,24 +25,22 @@ __license__ = """
 """ + __license__
 
 # shortcuts
-from mpi4py import MPI as mpi
-mpi.world = mpi.COMM_WORLD
-# (also: mpi.world.rank, mpi.world.size)
 
 # launchers
-import launchers
-import schedulers
+#import launchers
+#import schedulers
 
 # mappers
-#import pp_map
-import ez_map
-import mappers
+import mpi
+#import ez_map
+#import mappers
 
 # strategies
-import parallel_map, parallel_map2
+import mpi_scatter, mpi_pool
+#import parallel_map, parallel_map2
 
 # tools
-from tools import *
+from mpi_tools import *
 
 def license():
     """print license"""

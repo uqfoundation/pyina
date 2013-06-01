@@ -32,8 +32,8 @@ integration_points = (arange(1,n+1)-0.5)/n
 def f(x):
     return 4.0/(1.0+x*x)
 
-#from pyina.parallel_map import parallel_map
-from pyina.parallel_map2 import parallel_map
+#from pyina.mpi_pool import parallel_map
+from pyina.mpi_scatter import parallel_map
 
 
 if __name__ == '__main__':

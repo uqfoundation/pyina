@@ -16,8 +16,8 @@ mpython test_parallelmap.py
 
 if __name__ == "__main__":
 
-    from pyina.parallel_map import parallel_map
-    from pyina.parallel_map2 import parallel_map as parallel_map2
+    from pyina.mpi_scatter import parallel_map
+    from pyina.mpi_pool import parallel_map as parallel_map2
 
     from pyina import mpi, ensure_mpi
     world = mpi.world

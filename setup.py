@@ -55,10 +55,10 @@ Pyina currently provides two strategies for executing the parallel-map,
 where a strategy is the algorithm for distributing the work list of
 jobs across the availble nodes.  These strategies can be used "in-the-raw"
 (i.e. directly) to provide map-reduce to a user's own mpi-aware code.
-Further, pyina provides the "ez_map" interface, which is a map-reduce
-implementation that hides the MPI internals from the user. With ez_map,
-the user can launch their code in parallel batch mode -- using standard
-python and without ever having to write a line of parallel python or MPI code.
+Further, in "pyina.mpi" pyina provides pipe and map implementations
+(known as "easy map") that hide the MPI internals from the user. With the
+"easy map", the user can launch their code in parallel batch mode -- using
+standard python and without ever having to write a line of MPI code.
 
 There are several ways that a user would typically launch their code in
 parallel -- directly with "mpirun" or "mpiexec", or through the use of a
@@ -148,6 +148,7 @@ Optional requirements::
 
     - setuptools, version >= 0.6
     - pyre, version == 0.8
+    - pathos, version >= 0.2a.dev
     - mystic, version >= 0.2a2.dev
 
 
@@ -157,21 +158,21 @@ Usage Notes
 Probably the best way to get started is to look at a few of the
 examples provided within pyina. See `pyina.examples` for a
 set of scripts that demonstrate the configuration and launching of
-mpi-based parallel jobs using the `ez_map` interface. Also see
+mpi-based parallel jobs using the `easy map` interface. Also see
 `pyina.examples_other` for a set of scripts that test the more raw
 internals of pyina.
 
 Important classes and functions are found here::
 
-    - pyina.pyina.ez_map        [the map-reduce API definition]
+    - pyina.pyina.mpi           [the map-reduce API definition]
     - pyina.pyina.mappers       [all available strategies] 
     - pyina.pyina.schedulers    [all available schedulers] 
     - pyina.pyina.launchers     [all available launchers] 
 
 Mapping strategies are found here::
 
-    - pyina.pyina.parallel_map  [the card-dealer strategy]
-    - pyina.pyina.parallel_map2 [the equal-portion strategy]
+    - pyina.pyina.mpi_scatter   [the scatter-gather strategy]
+    - pyina.pyina.mpi_pool      [the worker pool strategy]
 
 Pyina also provides two convience scripts that help navigate the
 MPI environment. These scripts are installed to a directory on the
@@ -285,6 +286,7 @@ setup(name="pyina",
 
 # add dependencies
 dill_version = '>=0.2a.dev'
+pathos_version = '>=0.2a.dev'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
@@ -300,6 +302,7 @@ if has_setuptools:
 # add the scripts, and close 'setup' call
 setup_code += """
     scripts=['scripts/ezrun.py','scripts/ezrun2.py',
+             'scripts/ezpool.py','scripts/ezscatter.py',
              'scripts/machines.py','scripts/mpi_world.py'])
 """
 
@@ -309,12 +312,14 @@ exec setup_code
 # if dependencies are missing, print a warning
 try:
     import dill
+    #import pathos
     import mpi4py #XXX: throws an error even though ok?
     #import pypar
 except ImportError:
     print "\n***********************************************************"
     print "WARNING: One of the following dependencies may be unresolved:"
     print "    dill %s" % dill_version
+   #print "    pathos %s" % pathos_version
     print "    mpi4py %s" % mpi4py_version
 #   print "    pypar %s (optional)" % pypar_version
     print "***********************************************************\n"

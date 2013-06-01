@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-from pyina.ez_map import ez_map
-from pyina.mappers import *
+from pyina.mpi import MpiScatter, MpiPool
 
 def play(Q):
     id, l = Q
@@ -16,16 +15,19 @@ args = [ (i, range(3)*i) for i in range(5) ]
 arg1 = [ i for i in range(5) ]
 arg2 = [ range(3)*i for i in range(5) ]
 
-print "Using 12 nodes and the cardealer mapper..."
+print "Using 12 nodes and a worker pool..."
 print 'Evaluate a function that expects a n-tuple argument "map(f,args)"'
-res = ez_map(play, args, nnodes=12, mapper=carddealer_mapper)
-#res = map(play, args)
-print '\n'.join(res)
+pool = MpiPool(12)
+res1 = pool.map(play, args)
+#res1 = map(play, args)
+print pool
+print '\n'.join(res1)
 print ''
 
 print 'Evaluate a function that expects n arguments "map(f,arg1,arg2)"'
-res2 = ez_map(play2, arg1, arg2, nnodes=12, mapper=carddealer_mapper)
+res2 = pool.map(play2, arg1, arg2)
 #res2 = map(play2, arg1, arg2)
+print pool
 print '\n'.join(res2)
 
 # end of file

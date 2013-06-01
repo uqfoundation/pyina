@@ -17,8 +17,10 @@ if len(sys.argv) > 1: nnodes = int(sys.argv[1])
 else: nnodes = 1
 
 try:
-    from pyina.ez_map import ez_map
-    hostnames = ez_map(host, range(nnodes), nnodes=nnodes)
+    from pyina.mpi import MpiPool
+    pool = MpiPool()
+    pool.nodes = nnodes
+    hostnames = pool.map(host, range(nnodes))
     print '\n'.join(hostnames)
 except:
     print __doc__

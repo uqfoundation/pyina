@@ -16,7 +16,7 @@ def host(id):
 if __name__ == '__main__':
 
     try:
-        from pyina.parallel_map2 import parallel_map
+        from pyina.mpi_scatter import parallel_map
         import pyina
         world = pyina.mpi.world
 

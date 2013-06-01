@@ -9,8 +9,8 @@ alias mpython='mpirun -np [#nodes] `which python`'
 mpython test_pmap.py
 """
 # pick either mapping strategy
-#from pyina.parallel_map import parallel_map
-from pyina.parallel_map2 import parallel_map
+from pyina.mpi_scatter import parallel_map
+#from pyina.mpi_pool import parallel_map
 
 
 if __name__ == "__main__":
