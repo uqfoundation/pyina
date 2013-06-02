@@ -77,7 +77,7 @@ __all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
            'MoabSlurmPool', 'MoabSlurmScatter']
 
 from pyina.mpi import Mapper, defaults
-from abstract import AbstractWorkerPool
+from abstract_launcher import AbstractWorkerPool
 from schedulers import Torque, Moab, Lsf
 
 import logging

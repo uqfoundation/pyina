@@ -57,7 +57,7 @@ world = MPI.COMM_WORLD
 #####################
 
 from subprocess import Popen
-from abstract import AbstractWorkerPool
+from abstract_launcher import AbstractWorkerPool
 import os, os.path
 import tempfile
 import dill as pickle
