@@ -63,8 +63,11 @@ ezdefaults ={ 'timelimit' : '00:02',
               'tmpdir' : '.'
             }
 
-from launchers import *
-from schedulers import *
+from launchers import launch, mpirun_tasks, srun_tasks, aprun_tasks
+from launchers import serial_launcher, mpirun_launcher, srun_launcher
+from launchers import aprun_launcher, torque_launcher, moab_launcher
+from launchers import aprun_launcher, torque_launcher, moab_launcher
+from schedulers import torque_scheduler, moab_scheduler
 
 HOLD = []
 sleeptime = 30  #XXX: the time between checking for results
