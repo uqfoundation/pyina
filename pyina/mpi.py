@@ -57,7 +57,8 @@ world = MPI.COMM_WORLD
 #####################
 
 from subprocess import Popen
-from abstract_launcher import AbstractWorkerPool
+from pathos.abstract_launcher import AbstractWorkerPool
+from pathos.helpers import cpu_count
 import os, os.path
 import tempfile
 import dill as pickle
@@ -86,7 +87,7 @@ def _debug(boolean):
     return
 
 defaults = {
-    'nodes' : '1',
+    'nodes' : str(cpu_count()),
     'program' : '`which ezscatter.py`',  # serialize to tempfile
     'python' : '`which python`' , #XXX: pox.which or which_python?
     'progargs' : '',

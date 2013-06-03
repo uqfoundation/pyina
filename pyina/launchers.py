@@ -77,7 +77,8 @@ __all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
            'MoabSlurmPool', 'MoabSlurmScatter']
 
 from pyina.mpi import Mapper, defaults
-from abstract_launcher import AbstractWorkerPool
+from pathos.abstract_launcher import AbstractWorkerPool
+from pathos.helpers import cpu_count
 from schedulers import Torque, Moab, Lsf
 
 import logging
@@ -121,8 +122,8 @@ Mapper base class for pipe-based mapping with mpi4py.
     """
     __nodes = None
     def __init__(self, *args, **kwds):
-        """\nNOTE: if number of nodes is not given, will try to grab the
-number of nodes from the associated scheduler, and failing will default to 1.
+        """\nNOTE: if number of nodes is not given, will try to grab the number
+of nodes from the associated scheduler, and failing will count the local cpus.
 If workdir is not given, will default to scheduler's workdir or $WORKDIR.
 If scheduler is not given, will default to only run on the current node.
 If pickle is not given, will attempt to minimially use TemporaryFiles.
@@ -137,7 +138,7 @@ for the associated launcher (e.g mpirun).
             if self.scheduler:
                 self.nodes = self.scheduler.nodes
             else:
-                self.nodes = '1'
+                self.nodes = cpu_count()
         return
     __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def njobs(self, nodes):

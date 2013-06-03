@@ -118,7 +118,7 @@ download the tarball, unzip, and run the installer::
     $ python setup py install
 
 You will be warned of any missing dependencies and/or settings after
-you run the "build" step above. Pyina depends on dill and mpi4py,
+you run the "build" step above. Pyina depends on dill, pathos, and mpi4py,
 so you should install them first. A version of MPI must also be
 installed. Pyina's launchers that submit to a scheduler will throw errors
 if the underlying scheduler is not available, however a scheduler is not
@@ -143,12 +143,12 @@ Pyina requires::
     - python, version >= 2.5, version < 3.0
     - mpi4py, version >= 1.2.1
     - dill, version >= 0.2a.dev
+    - pathos, version >= 0.2a.dev
 
 Optional requirements::
 
     - setuptools, version >= 0.6
     - pyre, version == 0.8
-    - pathos, version >= 0.2a.dev
     - mystic, version >= 0.2a2.dev
 
 
@@ -294,9 +294,9 @@ mystic_version = '>=0.2a2.dev'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
-        install_requires = ('mpi4py%s','dill%s'),
+        install_requires = ('mpi4py%s','dill%s', 'pathos%s'),
         dependency_links = ["http://dev.danse.us/packages/"],
-""" % (mpi4py_version, dill_version)
+""" % (mpi4py_version, dill_version, pathos_version)
 
 # add the scripts, and close 'setup' call
 setup_code += """
@@ -310,14 +310,14 @@ exec setup_code
 # if dependencies are missing, print a warning
 try:
     import dill
-    #import pathos
+    import pathos
     import mpi4py #XXX: throws an error even though ok?
     #import pypar
 except ImportError:
     print "\n***********************************************************"
     print "WARNING: One of the following dependencies may be unresolved:"
     print "    dill %s" % dill_version
-   #print "    pathos %s" % pathos_version
+    print "    pathos %s" % pathos_version
     print "    mpi4py %s" % mpi4py_version
 #   print "    pypar %s (optional)" % pypar_version
     print "***********************************************************\n"
