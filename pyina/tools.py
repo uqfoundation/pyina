@@ -53,8 +53,7 @@ def ensure_mpi(size = 1, doc = None):
     """
     if doc == None:
         doc = "Error: Requires MPI-enabled python with size >= %s" % size
-    from mpi4py import MPI as mpi
-    world = mpi.COMM_WORLD
+    from pyina.mpi import world
     mpisize = world.Get_size()
     mpirank = world.Get_rank()
     if mpisize < size:
@@ -65,8 +64,8 @@ def ensure_mpi(size = 1, doc = None):
 
 def mpiprint(string="", end="\n", rank=0, comm=None):
     """print the given string to to the given rank"""
-    from mpi4py import MPI as mpi
-    if comm is None: comm = mpi.COMM_WORLD
+    from pyina.mpi import world
+    if comm is None: comm = world
     if not hasattr(rank, '__len__'): rank = (rank,)
     if comm.rank in rank:
         print string+end,

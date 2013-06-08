@@ -1,5 +1,11 @@
 from itertools import izip
 from mpi4py import MPI as mpi
+import dill
+try:
+    mpi._p_pickle.dumps = dill.dumps
+    mpi._p_pickle.loads = dill.loads
+except AttributeError:
+    pass
 from pyina.tools import get_workload, balance_workload, lookup
 master = 0
 comm = mpi.COMM_WORLD

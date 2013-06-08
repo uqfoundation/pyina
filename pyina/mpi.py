@@ -54,6 +54,12 @@ __all__ = ['_save', '_debug', 'Mapper', 'world']
 from mpi4py import MPI
 world = MPI.COMM_WORLD
 # (also: world.rank, world.size)
+import dill
+try:
+    MPI._p_pickle.dumps = dill.dumps
+    MPI._p_pickle.loads = dill.loads
+except AttributeError:
+    pass
 #####################
 
 from subprocess import Popen
@@ -61,7 +67,6 @@ from pathos.abstract_launcher import AbstractWorkerPool
 from pathos.helpers import cpu_count
 import os, os.path
 import tempfile
-import dill as pickle
 from dill.temp import dump, dump_source
 
 _HOLD = []
@@ -235,7 +240,7 @@ Additional keyword arguments are passed to 'func' along with 'args'.
                 subproc = self.__launch(command) # sumbit the jobs
                 error = subproc.wait()           # block until all done
                 # read result back
-                res = pickle.load(open(resfilename,'r'))
+                res = dill.load(open(resfilename,'r'))
             except:
                 error = True
         if self.scheduler: self.scheduler._cleanup()
