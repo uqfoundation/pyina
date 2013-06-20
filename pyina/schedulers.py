@@ -113,7 +113,7 @@ associated scheduler.
         env = defaults.copy()
         [env.update({k:v}) for (k,v) in self.__dict__.items() if k in defaults]
         return env
-    def _prepare(self):
+    def _prepare(self, kdict={}):
         """prepare the scheduler files (jobfile, outfile, and errfile)"""
         jobfilename = tempfile.mktemp(dir=self.workdir)
         outfilename = tempfile.mktemp(dir=self.workdir)
@@ -121,7 +121,9 @@ associated scheduler.
         self.settings['jobfile'] = jobfilename
         self.settings['outfile'] = outfilename
         self.settings['errfile'] = errfilename
-        return self.settings
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+        return mydict
     def _cleanup(self):
         """clean-up (or save) scheduler files (jobfile, outfile, and errfile)"""
         if not _SAVE[0]: #XXX: deleted when config gc'd?

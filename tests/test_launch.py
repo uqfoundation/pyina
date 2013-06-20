@@ -10,12 +10,13 @@ def test_launch():
 
     print "serial python launch:", serial
     defaults['program'] = "tools.py"
+    defaults['progargs'] = "12345"
     print serial._launcher(defaults), "\n"
 
     qsub = Torque()
     serial.scheduler = qsub
     print "scheduled serial launch:", serial
-    settings = {'program':"tools.py"}
+    settings = {'program':"tools.py", 'progargs':'12345'}
     print serial._launcher(settings), "\n"
 
     mpi = Mpi()
