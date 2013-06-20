@@ -228,7 +228,7 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         #XXX: better if self.__launch modifies command to include scheduler ?
         ######################################################################
         # create any necessary job files
-        if self.scheduler: config.update(self.scheduler._prepare(config))
+        if self.scheduler: config.update(self.scheduler._prepare())
         # build the launcher command
         command = self._launcher(config)
         log.info('(skipping): %s' % command)
