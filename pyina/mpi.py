@@ -128,6 +128,7 @@ for the associated launcher (e.g mpirun).
         self.scatter = True #bool(kwds.get('scatter', True))
         self.source = bool(kwds.get('source', False))
         self.workdir = kwds.get('workdir', None)
+        self._wait = kwds.get('wait', 60)
         if self.workdir == None:
             if self.scheduler:
                 self.workdir = self.scheduler.workdir
@@ -239,6 +240,11 @@ Additional keyword arguments are passed to 'func' along with 'args'.
             try:
                 subproc = self.__launch(command) # sumbit the jobs
                 error = subproc.wait()           # block until all done
+                maxcount = self._wait; counter = 0
+                while not os.path.exists(resfilename):
+                    os.system('sync')
+                    sleep(1); counter += 1
+                    if counter >= maxcount: break
                 # read result back
                 res = dill.load(open(resfilename,'r'))
             except:
