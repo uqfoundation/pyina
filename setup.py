@@ -141,6 +141,7 @@ Requirements
 Pyina requires::
 
     - python, version >= 2.5, version < 3.0
+    - numpy, version >= 1.0
     - mpi4py, version >= 1.2.1
     - dill, version >= 0.2a.dev
     - pathos, version >= 0.2a.dev
@@ -284,6 +285,7 @@ setup(name="pyina",
 """ % (target_version, long_description)
 
 # add dependencies
+numpy_version = '>=1.0'
 dill_version = '>=0.2a.dev'
 pathos_version = '>=0.2a.dev'
 mpi4py_version = '>=1.2.1'
@@ -294,9 +296,9 @@ mystic_version = '>=0.2a2.dev'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
-        install_requires = ('mpi4py%s','dill%s', 'pathos%s'),
+        install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pathos%s'),
         dependency_links = ["http://dev.danse.us/packages/"],
-""" % (mpi4py_version, dill_version, pathos_version)
+""" % (numpy_version, mpi4py_version, dill_version, pathos_version)
 
 # add the scripts, and close 'setup' call
 setup_code += """
@@ -309,6 +311,7 @@ exec setup_code
 
 # if dependencies are missing, print a warning
 try:
+    import numpy
     import dill
     import pathos
     import mpi4py #XXX: throws an error even though ok?
@@ -316,6 +319,7 @@ try:
 except ImportError:
     print "\n***********************************************************"
     print "WARNING: One of the following dependencies may be unresolved:"
+    print "    numpy %s" % numpy_version
     print "    dill %s" % dill_version
     print "    pathos %s" % pathos_version
     print "    mpi4py %s" % mpi4py_version
