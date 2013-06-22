@@ -416,7 +416,8 @@ def launch(command):
     """ launch mechanism for prepared launch command"""
     mapper = Mapper()
     subproc = mapper._Mapper__launch(command)
-    error = subproc.wait()
+   #pid = subproc.pid
+    error = subproc.wait()           # block until all done
     if error: raise IOError, "launch failed: %s" % command
     return error
 

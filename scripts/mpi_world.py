@@ -10,20 +10,22 @@ options:
 NOTE: make sure 'mpd &' was run before setting slave nodes!"""
 #   -alias nnodes     set bash aliases for mpiexec (nnodes is X in '-np X')
 
-import os
+from subprocess import Popen, PIPE, STDOUT
+popen4 = {'shell':True, 'stdin':PIPE, 'stdout':PIPE, 'stderr':STDOUT, \
+          'close_fds':True}
 
 MASTERINFO = []
 
 def launch(command,quiet=True):
     "launch a os.system command; if quiet, don't grab the output"
     print "launch: %s" % command
-    stin,stout = os.popen4(command)
-    stin.close()
+    p = Popen(command, **popen4)
+    p.stdin.close()
     if quiet is True:
         outstr = None
     else:
-        outstr = stout.readlines()
-    stout.close()
+        outstr = p.stdout.readlines()
+    p.stdout.close()
    #print "result: %s" % outstr
     return outstr
 

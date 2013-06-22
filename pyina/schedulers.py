@@ -47,7 +47,7 @@ provides:
 __all__ = ['Scheduler', 'Torque', 'Moab', 'Lsf']
 
 from pyina.mpi import defaults
-from subprocess import Popen
+from subprocess import Popen, call
 import os, os.path
 import tempfile
 import dill as pickle
@@ -126,11 +126,11 @@ associated scheduler.
     def _cleanup(self):
         """clean-up (or save) scheduler files (jobfile, outfile, and errfile)"""
         if not _SAVE[0]: #XXX: deleted when config gc'd?
-            os.system('rm -f %s' % self.settings['jobfile'])
-            os.system('rm -f %s' % self.settings['outfile'])
-            os.system('rm -f %s' % self.settings['errfile'])
+            call('rm -f %s' % self.settings['jobfile'], shell=True)
+            call('rm -f %s' % self.settings['outfile'], shell=True)
+            call('rm -f %s' % self.settings['errfile'], shell=True)
         return
-    def fetch(self, outfile, subproc=None): #FIXME: what the hell is this???
+    def fetch(self, outfile, subproc=None): #FIXME: call fetch after submit???
         """fetch result from the results file"""
         try:
             error = subproc.wait()           # block until all done
@@ -154,7 +154,11 @@ equivalent to:  (command)
         command = self._submit(command)
         log.info('(skipping): %s' % command)
         if log.level != logging.DEBUG:
-            return self.__launch(command)
+            subproc = self.__launch(command)
+           #pid = subproc.pid
+            error = subproc.wait()           # block until all done
+            if error: raise IOError, "launch failed: %s" % command
+            return error
        #self._cleanup()
         return
     submit.__doc__ = _submit.__doc__.replace('prepare','submit').replace('command for','command to') #XXX: hacky

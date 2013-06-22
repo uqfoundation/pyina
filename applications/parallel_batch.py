@@ -13,9 +13,10 @@ def runshell(input):
     This function just calls popen on the input string, and the stdout is printed.
     """
     import socket
-    from os import popen
+    from subprocess import Popen, PIPE
     print "%s executing: %s" % (socket.gethostname(), input)
-    popen(input).readlines()
+    pipe = Popen(input, shell=True, stdout=PIPE).stdout
+    pipe.readlines()
     return 0
 
     

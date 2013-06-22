@@ -89,7 +89,7 @@ Further Input:
     queue -- string name of selected queue (e.g. 'normal')
     """
     import dill as pickle
-    import os.path, tempfile, os
+    import os.path, tempfile, subprocess
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
@@ -177,19 +177,19 @@ Further Input:
         import time                              #BLOCKING
         while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
-        os.system('rm -f %s' % jobfilename)
-        os.system('rm -f %s' % outfilename)
-        os.system('rm -f %s' % errfilename)
+        subprocess.call('rm -f %s' % jobfilename, shell=True)
+        subprocess.call('rm -f %s' % outfilename, shell=True)
+        subprocess.call('rm -f %s' % errfilename, shell=True)
 
     # debuggery... output = function(inputs)
-   #os.system('cp -f %s modfile.py' % modfile.name) # getsource; FUNC=func
-   #os.system('cp -f %s argfile.py' % argfile.name) # pickled list of inputs
-   #os.system('cp -f %s resfile.py' % resfilename)  # pickled list of output
+   #subprocess.call('cp -f %s modfile.py' % modfile.name, shell=True) # getsource; FUNC=func
+   #subprocess.call('cp -f %s argfile.py' % argfile.name, shell=True) # pickled list of inputs
+   #subprocess.call('cp -f %s resfile.py' % resfilename, shell=True)  # pickled list of output
 
     # read result back
     res = pickle.load(open(resfilename,'r'))
-    os.system('rm -f %s' % resfilename)
-    os.system('rm -f %sc' % modfile.name)
+    subprocess.call('rm -f %s' % resfilename, shell=True)
+    subprocess.call('rm -f %sc' % modfile.name, shell=True)
     return res
 
 #def ez_map2(func, arglist, nnodes=None, launcher=None, mapper=None):
@@ -295,13 +295,13 @@ Further Input:
         import time                              #BLOCKING
         while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
-        os.system('rm -f %s' % jobfilename)
-        os.system('rm -f %s' % outfilename)
-        os.system('rm -f %s' % errfilename)
+        subprocess.call('rm -f %s' % jobfilename, shell=True)
+        subprocess.call('rm -f %s' % outfilename, shell=True)
+        subprocess.call('rm -f %s' % errfilename, shell=True)
 
     # read result back
     res = pickle.load(open(resfilename,'r'))
-    os.system('rm -f %s' % resfilename)
+    subprocess.call('rm -f %s' % resfilename, shell=True)
     return res
     
 

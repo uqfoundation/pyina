@@ -41,9 +41,10 @@ if __name__ == "__main__":
         This function just calls popen on the input string, and the stdout is printed.
         """
         from pyina import mpi
-        from os import popen
+        from subprocess import Popen, PIPE
         print "%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input)
-        popen(input).readlines()
+        pipe = Popen(input, shell=True, stdout=PIPE).stdout
+        pipe.readlines()
         return 0
 
     # Construct the shell commands to run

@@ -62,7 +62,7 @@ except AttributeError:
     pass
 #####################
 
-from subprocess import Popen
+from subprocess import Popen, call
 from pathos.abstract_launcher import AbstractWorkerPool
 from pathos.helpers import cpu_count
 import os, os.path
@@ -181,9 +181,9 @@ equivalent to:  NotImplemented
         modfilename = args[0]
         if _SAVE[0]:
             argfilename = args[1]
-            os.system('cp -f %s modfile.py' % modfilename) # getsource; FUNC
-            os.system('cp -f %s argfile.py' % argfilename) # pickled inputs
-        os.system('rm -f %sc' % modfilename)
+            call('cp -f %s modfile.py' % modfilename, shell=True) # getsource; FUNC
+            call('cp -f %s argfile.py' % argfilename, shell=True) # pickled inputs
+        call('rm -f %sc' % modfilename, shell=True)
         return
     def map(self, func, *args, **kwds):
         """
@@ -239,10 +239,12 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         else:
             try:
                 subproc = self.__launch(command) # sumbit the jobs
+               #pid = subproc.pid                # get process id
                 error = subproc.wait()           # block until all done
+                ## just to be sure... here's a loop to wait for results file ##
                 maxcount = self._wait; counter = 0
                 while not os.path.exists(resfilename):
-                    os.system('sync')
+                    call('sync', shell=True)
                     sleep(1); counter += 1
                     if counter >= maxcount: break
                 # read result back
@@ -254,8 +256,8 @@ Additional keyword arguments are passed to 'func' along with 'args'.
 
         # cleanup files
         if _SAVE[0]:
-            os.system('cp -f %s resfile.py' % resfilename)  # pickled output
-        os.system('rm -f %s' % resfilename)
+            call('cp -f %s resfile.py' % resfilename, shell=True)  # pickled output
+        call('rm -f %s' % resfilename, shell=True)
         self._cleanup(modfile.name, argfile.name)
         if error:
             raise IOError, "launch failed: %s" % command
