@@ -134,6 +134,7 @@ for the associated launcher (e.g mpirun).
                 self.workdir = self.scheduler.workdir
             else:
                 self.workdir = os.environ.get('WORKDIR', os.path.curdir)
+            self.workdir = os.path.abspath(self.workdir)
         return
     __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def __settings(self):
@@ -227,6 +228,9 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         #XXX: better with or w/o scheduler baked into command ?
         #XXX: better... if self.scheduler: self.scheduler.submit(command) ?
         #XXX: better if self.__launch modifies command to include scheduler ?
+        #print "after progargs"
+        #if not os.path.exists(modname): print "%s missing" % modname
+        #if not os.path.exists(argfile.name): print "%s missing" % argfile.name
         ######################################################################
         # create any necessary job files
         if self.scheduler: config.update(self.scheduler._prepare())
@@ -239,20 +243,35 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         else:
             try:
                 subproc = self.__launch(command) # sumbit the jobs
+                #print "after __launch"
                #pid = subproc.pid                # get process id
                 error = subproc.wait()           # block until all done
                 ## just to be sure... here's a loop to wait for results file ##
                 maxcount = self._wait; counter = 0
+                #print "before wait"
                 while not os.path.exists(resfilename):
                     call('sync', shell=True)
+                    from time import sleep
                     sleep(1); counter += 1
-                    if counter >= maxcount: break
+                    if counter >= maxcount:
+                        print "reached maximum waittime"
+                        break
+                #print "after wait"
+                #call('cp -f %s modfile.py' % modname, shell=True)
+                #call('cp -f %s argfile.py' % argfile.name, shell=True)
+                #call('cp -f %s resfile.py' % resfilename, shell=True)
                 # read result back
                 res = dill.load(open(resfilename,'r'))
+                #print "got result"
             except:
                 error = True
-        if self.scheduler: self.scheduler._cleanup()
+                #print "got error"
+        if self.scheduler: self.scheduler._cleanup() #XXX: too slow to cleanup
         ######################################################################
+        #print "after scheduler cleanup"
+        #if not os.path.exists(modname): print "%s missing" % modname
+        #if not os.path.exists(argfile.name): print "%s missing" % argfile.name
+        #if not os.path.exists(resfilename): print "%s missing" % resfilename
 
         # cleanup files
         if _SAVE[0]:

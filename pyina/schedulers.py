@@ -87,6 +87,7 @@ associated scheduler.
         self.queue = kwds.get('queue', defaults['queue'])
         self.workdir = kwds.get('workdir', os.environ.get('WORKDIR', os.path.curdir))
        #self.workdir = kwds.get('workdir', os.environ.get('WORKDIR', os.path.expanduser("~"))
+        self.workdir = os.path.abspath(self.workdir)
         self.jobfile = kwds.get('jobfile', defaults['jobfile'])
         self.outfile = kwds.get('outfile', defaults['outfile'])
         self.errfile = kwds.get('errfile', defaults['errfile'])

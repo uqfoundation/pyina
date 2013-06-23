@@ -21,6 +21,7 @@ if __name__ == '__main__':
     from pyina.mpi_pool import parallel_map
     import dill as pickle
     import sys
+    import os
     from pyina import mpi
     world = mpi.world
 
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     else:  # used tempfile for func
         workdir = sys.argv[4]
         sys.path = [workdir] + sys.path
-        module = __import__(funcname)
+        module = __import__(os.path.basename(funcname))
         sys.path.pop(0)
         func = module.FUNC
     args,kwds = pickle.load(open(argfilename,'r'))
