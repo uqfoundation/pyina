@@ -118,8 +118,8 @@ download the tarball, unzip, and run the installer::
     $ python setup py install
 
 You will be warned of any missing dependencies and/or settings after
-you run the "build" step above. Pyina depends on dill, pathos, and mpi4py,
-so you should install them first. A version of MPI must also be
+you run the "build" step above. Pyina depends on dill, pox, pathos, and
+mpi4py, so you should install them first. A version of MPI must also be
 installed. Pyina's launchers that submit to a scheduler will throw errors
 if the underlying scheduler is not available, however a scheduler is not
 required for pyina to execute.
@@ -144,6 +144,7 @@ Pyina requires::
     - numpy, version >= 1.0
     - mpi4py, version >= 1.2.1
     - dill, version >= 0.2a.dev
+    - pox, version >= 0.2a.dev
     - pathos, version >= 0.2a.dev
 
 Optional requirements::
@@ -287,6 +288,7 @@ setup(name="pyina",
 # add dependencies
 numpy_version = '>=1.0'
 dill_version = '>=0.2a.dev'
+pox_version = '>=0.2a.dev'
 pathos_version = '>=0.2a.dev'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
@@ -296,9 +298,9 @@ mystic_version = '>=0.2a2.dev'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
-        install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pathos%s'),
+        install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pox%s', 'pathos%s'),
         dependency_links = ["http://dev.danse.us/packages/"],
-""" % (numpy_version, mpi4py_version, dill_version, pathos_version)
+""" % (numpy_version, mpi4py_version, dill_version, pox_version, pathos_version)
 
 # add the scripts, and close 'setup' call
 setup_code += """
@@ -313,6 +315,7 @@ exec setup_code
 try:
     import numpy
     import dill
+    import pox
     import pathos
     import mpi4py #XXX: throws an error even though ok?
     #import pypar
@@ -321,6 +324,7 @@ except ImportError:
     print "WARNING: One of the following dependencies may be unresolved:"
     print "    numpy %s" % numpy_version
     print "    dill %s" % dill_version
+    print "    pox %s" % pox_version
     print "    pathos %s" % pathos_version
     print "    mpi4py %s" % mpi4py_version
 #   print "    pypar %s (optional)" % pypar_version

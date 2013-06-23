@@ -165,6 +165,10 @@ equivalent to:  (command)
     submit.__doc__ = _submit.__doc__.replace('prepare','submit').replace('command for','command to') #XXX: hacky
     def __launch(self, command):
         """launch mechanism for prepared launch command"""
+        executable = command.split("|")[-1].split()[0]
+        from pox.shutils import which
+        if not which(executable):
+            raise IOError, "launch failed: %s not found" % executable
         return Popen([command], shell=True) #FIXME: shell=True is insecure
     def __repr__(self):
         subargs = (self.__class__.__name__, self.nodes, self.timelimit, self.queue)

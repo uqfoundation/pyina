@@ -144,6 +144,10 @@ for the associated launcher (e.g mpirun).
         return env
     def __launch(self, command):
         """launch mechanism for prepared launch command"""
+        executable = command.split("|")[-1].split()[0]
+        from pox.shutils import which
+        if not which(executable):
+            raise IOError, "launch failed: %s not found" % executable
         return Popen([command], shell=True) #FIXME: shell=True is insecure
     def _launcher(self, kdict={}):
         """prepare launch command based on current settings
