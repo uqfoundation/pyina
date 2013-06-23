@@ -91,15 +91,16 @@ def _debug(boolean):
         _save(False)
     return
 
+_pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
     'program' : '`which ezscatter.py`',  # serialize to tempfile
     'python' : '`which python`' , #XXX: pox.which or which_python?
     'progargs' : '',
 
-    'outfile' : 'results.out',
-    'errfile' : 'errors.out',
-    'jobfile' : 'jobid',
+    'outfile' : 'results%sout' % _pid,
+    'errfile' : 'errors%sout' % _pid,
+    'jobfile' : 'job%sid' % _pid,
 
     'scheduler' : '',
     'timelimit' : '00:02',
@@ -128,7 +129,7 @@ for the associated launcher (e.g mpirun).
         self.scatter = True #bool(kwds.get('scatter', True))
         self.source = bool(kwds.get('source', False))
         self.workdir = kwds.get('workdir', None)
-        self._wait = kwds.get('wait', 60)
+        self.timeout = kwds.get('timeout', 60)
         if self.workdir == None:
             if self.scheduler:
                 self.workdir = self.scheduler.workdir
@@ -275,14 +276,14 @@ Additional keyword arguments are passed to 'func' along with 'args'.
                #pid = subproc.pid                # get process id
                 error = subproc.wait()           # block until all done
                 ## just to be sure... here's a loop to wait for results file ##
-                maxcount = self._wait; counter = 0
+                maxcount = self.timeout; counter = 0
                 #print "before wait"
                 while not os.path.exists(resfilename):
                     call('sync', shell=True)
                     from time import sleep
                     sleep(1); counter += 1
                     if counter >= maxcount:
-                        print "reached maximum waittime"
+                        print "Warning: exceeded timeout (%s s)" % maxcount
                         break
                 #print "after wait"
                 # read result back

@@ -116,19 +116,20 @@ associated scheduler.
         return env
     def _prepare(self):
         """prepare the scheduler files (jobfile, outfile, and errfile)"""
-        jobfilename = tempfile.mktemp(dir=self.workdir)
-        outfilename = tempfile.mktemp(dir=self.workdir)
-        errfilename = tempfile.mktemp(dir=self.workdir)
-        self.settings['jobfile'] = jobfilename
-        self.settings['outfile'] = outfilename
-        self.settings['errfile'] = errfilename
+        pid = '.' + str(os.getpid()) + '.'
+        jobfilename = tempfile.mktemp(prefix='tmpjob'+pid, dir=self.workdir)
+        outfilename = tempfile.mktemp(prefix='tmpout'+pid, dir=self.workdir)
+        errfilename = tempfile.mktemp(prefix='tmperr'+pid, dir=self.workdir)
+        self.jobfile = jobfilename
+        self.outfile = outfilename
+        self.errfile = errfilename
         d = {'jobfile':jobfilename,'outfile':outfilename,'errfile':errfilename}
         return d
     def _cleanup(self):
         """clean-up scheduler files (jobfile, outfile, and errfile)"""
-        call('rm -f %s' % self.settings['jobfile'], shell=True)
-        call('rm -f %s' % self.settings['outfile'], shell=True)
-        call('rm -f %s' % self.settings['errfile'], shell=True)
+        call('rm -f %s' % self.jobfile, shell=True)
+        call('rm -f %s' % self.outfile, shell=True)
+        call('rm -f %s' % self.errfile, shell=True)
         #print "called scheduler cleanup"
         return
     def fetch(self, outfile, subproc=None): #FIXME: call fetch after submit???
