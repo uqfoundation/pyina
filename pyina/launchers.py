@@ -90,6 +90,11 @@ class SerialMapper(Mapper):
     """
 Mapper base class for pipe-based mapping with python.
     """
+    def __init__(self, *args, **kwds):
+        Mapper.__init__(self, *args, **kwds)
+        self.nodes = 1 # always has one node... it's serial!
+        return
+    __init__.__doc__ = Mapper.__init__.__doc__
     def _launcher(self, kdict={}):
         """prepare launch command for pipe-based execution
 
@@ -147,6 +152,23 @@ for the associated launcher (e.g mpirun).
 compute int from node string. For example, parallel.njobs("4") yields 4
         """
         return int(str(nodes)) #XXX: this is a dummy function
+    def _launcher(self, kdict={}):
+        """prepare launch command for pipe-based execution
+
+equivalent to:  (python) (program) (progargs)
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict)
+        str = """%(python)s %(program)s %(progargs)s""" % mydict
+        if self.scheduler:
+            str = self.scheduler._submit(str)
+        return str
+    def map(self, func, *args, **kwds):
+        return Mapper.map(self, func, *args, **kwds)
+    map.__doc__ = Mapper.map.__doc__ + _launcher.__doc__
     def __repr__(self):
         if self.scheduler:
             scheduler = self.scheduler.__class__.__name__

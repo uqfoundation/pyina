@@ -134,12 +134,13 @@ for the associated launcher (e.g mpirun).
                 self.workdir = self.scheduler.workdir
             else:
                 self.workdir = os.environ.get('WORKDIR', os.path.curdir)
-            self.workdir = os.path.abspath(self.workdir)
+        self.workdir = os.path.abspath(self.workdir)
         return
     __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def __settings(self):
         env = defaults.copy()
         [env.update({k:v}) for (k,v) in self.__dict__.items() if k in defaults]
+        [env.update({'nodes':v}) for (k,v) in self.__dict__.items() if k.endswith('nodes')] # deal with self.__nodes
         return env
     def __launch(self, command):
         """launch mechanism for prepared launch command"""
@@ -170,20 +171,44 @@ equivalent to:  NotImplemented
         if not self.source:
             return modfilename
         return os.path.splitext(os.path.basename(modfilename))[0]
-    def _cleanup(self, *args):
-        """clean-up (or save) any additional tempfiles
+    def _save_in(self, *args):
+        """save input tempfiles
     - path to pickled function source (e.g. 'my_func.py or 'my_func.pik')
     - path to pickled function inputs (e.g. 'my_args.arg')
         """
+        # should check 'if modfilename' and 'if argfilename'
+        modfilename = args[0]
+        argfilename = args[1]
+        modext = os.path.splitext(os.path.basename(modfilename))[-1]
+        argext = os.path.splitext(os.path.basename(argfilename))[-1]
+        # getsource; FUNC
+        call('cp -f %s modfile%s' % (modfilename, modext), shell=True)
+        # pickled inputs
+        call('cp -f %s argfile%s' % (argfilename, argext), shell=True)
+        return
+    def _save_out(self, *args):
+        """save output tempfiles
+    - path to pickled function output (e.g. 'my_results')
+        """
+        # should check 'if resfilename'
+        resfilename = args[0]
+        resext = os.path.splitext(os.path.basename(resfilename))[-1]
+        # pickled output
+        call('cp -f %s resfile%s' % (resfilename, resext), shell=True)
+        return
+    def _cleanup(self, *args):
+        """clean-up any additional tempfiles
+    - path to pickled function output (e.g. 'my_results')
+    - path to pickled function source (e.g. 'my_func.py or 'my_func.pik')
+    - path to pickled function inputs (e.g. 'my_args.arg')
+        """
+        resfilename = args[0]
+        call('rm -f %s' % resfilename, shell=True)
         if not self.source:
             # do nothing
             return
-        # should check 'if modfilename' and 'if argfilename'
-        modfilename = args[0]
-        if _SAVE[0]:
-            argfilename = args[1]
-            call('cp -f %s modfile.py' % modfilename, shell=True) # getsource; FUNC
-            call('cp -f %s argfile.py' % argfilename, shell=True) # pickled inputs
+        modfilename = args[1]
+        argfilename = args[2]
         call('rm -f %sc' % modfilename, shell=True)
         return
     def map(self, func, *args, **kwds):
@@ -228,12 +253,11 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         #XXX: better with or w/o scheduler baked into command ?
         #XXX: better... if self.scheduler: self.scheduler.submit(command) ?
         #XXX: better if self.__launch modifies command to include scheduler ?
-        #print "after progargs"
-        #if not os.path.exists(modname): print "%s missing" % modname
-        #if not os.path.exists(argfile.name): print "%s missing" % argfile.name
-        ######################################################################
+        if _SAVE[0]:
+            self._save_in(modfile.name, argfile.name) # func, pickled input
         # create any necessary job files
         if self.scheduler: config.update(self.scheduler._prepare())
+        ######################################################################
         # build the launcher command
         command = self._launcher(config)
         log.info('(skipping): %s' % command)
@@ -257,27 +281,19 @@ Additional keyword arguments are passed to 'func' along with 'args'.
                         print "reached maximum waittime"
                         break
                 #print "after wait"
-                #call('cp -f %s modfile.py' % modname, shell=True)
-                #call('cp -f %s argfile.py' % argfile.name, shell=True)
-                #call('cp -f %s resfile.py' % resfilename, shell=True)
                 # read result back
                 res = dill.load(open(resfilename,'r'))
                 #print "got result"
             except:
                 error = True
                 #print "got error"
-        if self.scheduler: self.scheduler._cleanup() #XXX: too slow to cleanup
         ######################################################################
-        #print "after scheduler cleanup"
-        #if not os.path.exists(modname): print "%s missing" % modname
-        #if not os.path.exists(argfile.name): print "%s missing" % argfile.name
-        #if not os.path.exists(resfilename): print "%s missing" % resfilename
 
         # cleanup files
-        if _SAVE[0]:
-            call('cp -f %s resfile.py' % resfilename, shell=True)  # pickled output
-        call('rm -f %s' % resfilename, shell=True)
-        self._cleanup(modfile.name, argfile.name)
+        if _SAVE[0] and log.level == logging.WARN:
+            self._save_out(resfilename) # pickled output
+        self._cleanup(resfilename, modfile.name, argfile.name)
+        if self.scheduler and not _SAVE[0]: self.scheduler._cleanup()
         if error:
             raise IOError, "launch failed: %s" % command
         return res

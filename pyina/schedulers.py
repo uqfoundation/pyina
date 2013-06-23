@@ -52,7 +52,6 @@ import os, os.path
 import tempfile
 import dill as pickle
 
-from pyina.mpi import _SAVE
 import logging
 log = logging.getLogger("schedulers")
 log.addHandler(logging.StreamHandler())
@@ -62,7 +61,7 @@ class Scheduler(object):
     """
 Scheduler base class for cpu cluster scheduling.
     """
-    __nodes = defaults['nodes']
+    __nodes = 1
     def __init__(self, *args, **kwds):
         """
 Important class members:
@@ -113,6 +112,7 @@ associated scheduler.
         """fetch the settings for the map (from defaults and self.__dict__)"""
         env = defaults.copy()
         [env.update({k:v}) for (k,v) in self.__dict__.items() if k in defaults]
+        [env.update({'nodes':v}) for (k,v) in self.__dict__.items() if k.endswith('nodes')] # deal with self.__nodes
         return env
     def _prepare(self):
         """prepare the scheduler files (jobfile, outfile, and errfile)"""
@@ -125,11 +125,11 @@ associated scheduler.
         d = {'jobfile':jobfilename,'outfile':outfilename,'errfile':errfilename}
         return d
     def _cleanup(self):
-        """clean-up (or save) scheduler files (jobfile, outfile, and errfile)"""
-        if not _SAVE[0]: #XXX: deleted when config gc'd?
-            call('rm -f %s' % self.settings['jobfile'], shell=True)
-            call('rm -f %s' % self.settings['outfile'], shell=True)
-            call('rm -f %s' % self.settings['errfile'], shell=True)
+        """clean-up scheduler files (jobfile, outfile, and errfile)"""
+        call('rm -f %s' % self.settings['jobfile'], shell=True)
+        call('rm -f %s' % self.settings['outfile'], shell=True)
+        call('rm -f %s' % self.settings['errfile'], shell=True)
+        #print "called scheduler cleanup"
         return
     def fetch(self, outfile, subproc=None): #FIXME: call fetch after submit???
         """fetch result from the results file"""

@@ -35,7 +35,8 @@ if __name__ == '__main__':
     else:  # used tempfile for func
         workdir = sys.argv[4]
         sys.path = [workdir] + sys.path
-        module = __import__(os.path.basename(funcname))
+        modname = os.path.splitext(os.path.basename(funcname))[0]
+        module = __import__(modname)
         sys.path.pop(0)
         func = module.FUNC
     args,kwds = pickle.load(open(argfilename,'r'))
