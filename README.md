@@ -36,11 +36,12 @@ Major Features
 --------------
 Pyina provides a highly configurable parallel map-reduce interface
 to running MPI jobs, with::
-    * a map-reduce interface that extends the python 'map' standard
-    * the ability to submit batch jobs to a selection of schedulers
-    * the ability to customize node and process launch configurations
-    * the ability to launch parallel MPI jobs with standard python
-    * ease in selecting different strategies for processing a work list
+
+* a map-reduce interface that extends the python 'map' standard
+* the ability to submit batch jobs to a selection of schedulers
+* the ability to customize node and process launch configurations
+* the ability to launch parallel MPI jobs with standard python
+* ease in selecting different strategies for processing a work list
 
 
 Current Release
