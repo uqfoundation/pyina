@@ -477,7 +477,7 @@ For example, aprun_tasks("3:core4:ppn=2") yields '3 -N 2'
 def serial_launcher(kdict={}):
     """
 prepare launch for standard execution
-syntax:  (python) (file) (progargs)
+syntax:  (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -489,7 +489,7 @@ NOTES:
 def mpirun_launcher(kdict={}):
     """
 prepare launch for parallel execution using mpirun
-syntax:  mpirun -np (nodes) (python) (file) (progargs)
+syntax:  mpirun -np (nodes) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -501,7 +501,7 @@ NOTES:
 def srun_launcher(kdict={}):
     """
 prepare launch for parallel execution using srun
-syntax:  srun -n(nodes) (python) (file) (progargs)
+syntax:  srun -n(nodes) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -514,7 +514,7 @@ NOTES:
 def aprun_launcher(kdict={}):
     """
 prepare launch for parallel execution using aprun
-syntax:  aprun -n(nodes) (python) (file) (progargs)
+syntax:  aprun -n(nodes) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -527,10 +527,10 @@ NOTES:
 def torque_launcher(kdict={}): #FIXME: update
     """
 prepare launch for torque submission using mpirun, srun, aprun, or serial
-syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"aprun -n (nodes) (python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"(python) (file) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"mpirun -np (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"(python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -542,25 +542,25 @@ NOTES:
     torque = torque_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == torque.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"mpirun -np %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = """ echo \"aprun -n %(tasks)s %(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else:  # non-mpi launch
-        str = """ echo \"%(python)s %(file)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"%(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
 def moab_launcher(kdict={}): #FIXME: update
     """
 prepare launch for moab submission using srun, mpirun, aprun, or serial
-syntax:  echo \"srun -n(nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"mpirun -np (nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"aprun -n (nodes) (python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"(python) (file) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"mpirun -np (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"(python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -572,45 +572,45 @@ NOTES:
     moab = moab_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == moab.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"mpirun -np %(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"mpirun -np %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == moab.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = """ echo \"srun -n%(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == moab.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = """ echo \"aprun -n %(tasks)s %(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else: # non-mpi launch
-        str = """ echo \"%(python)s %(file)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"%(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
 def lsfmx_launcher(kdict={}): #FIXME: update
     """
 prepare launch for Myrinet / LSF submission of parallel python using mpich_mx
-syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_mx -q (queue) -J (progname) mpich_mx_wrapper (python) (file) (progargs)
+syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_mx -q (queue) -J (progname) mpich_mx_wrapper (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(file)s %(progargs)s""" % mydict
-    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(file)s %(progargs)s""" % mydict
+    #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(program)s %(progargs)s""" % mydict
+    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(program)s %(progargs)s""" % mydict
     return str
 
 
 def lsfgm_launcher(kdict={}): #FIXME: update
     """
 prepare launch for Myrinet / LSF submission of parallel python using mpich_gm
-syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_gm -q (queue) -J (progname) gmmpirun_wrapper (python) (file) (progargs)
+syntax:  bsub -K -W(timelimit) -n (nodes) -o (outfile) -a mpich_gm -q (queue) -J (progname) gmmpirun_wrapper (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(file)s %(progargs)s""" % mydict
-    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(file)s %(progargs)s""" % mydict
+    #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(program)s %(progargs)s""" % mydict
+    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(program)s %(progargs)s""" % mydict
     return str
 
 
@@ -620,12 +620,12 @@ def all_launchers():
     return L
 
 
-def getstr(kdict = {}):
+def all_launches(kdict = {}):
     import launchers, traceback, os.path
     stack = traceback.extract_stack()
     caller = stack[ -min(len(stack),2) ][0]
     #
-    defaults['file'] = caller
+    defaults['program'] = caller
     defaults['progname'] = os.path.basename(caller)
     #
     for key in defaults.keys():
@@ -640,20 +640,21 @@ def getstr(kdict = {}):
     return '\n'.join(str)
 
 
-doc = """
+def __launch():
+    doc = """
 # Returns a sample command for launching parallel jobs. 
 # Helpful in making docstrings, by allowing the following in your docstring
-# "%%(launcher)s", and then doing string interpolation "{'launcher' : getstr()}"
+# "%%(launcher)s", and then doing string interpolation "{'launcher' : all_launches()}"
 # and you will get:
 
 %(launcher)s
 
-# getstr does a stack traceback to find the name of the file containing its caller.
+# all_launches does a stack traceback to find the name of the program containing its caller.
 # This allows interpolation of the __file__ variable into the mpi launch commands.
 
-# Most flexibly, getstr should be called with a dictionary. Here are the defaults. 
+# Most flexibly, all_launches should be called with a dictionary. Here are the defaults. 
 #  defaults = { 'timelimit' : '00:02',
-#               'file' :  *name of the caller*,
+#               'program' :  *name of the caller*,
 #               'progname' :  *os.path.basename of the caller*,
 #               'outfile' :  *path of the output file*,
 #               'errfile' :  *path of the error file*,
@@ -664,19 +665,20 @@ doc = """
 #               'progargs' :  '',
 #               'scheduler' :  '',
 #             }
-""" % {'launcher' : getstr({'file':__file__, 'timelimit': '00:02', 'outfile':'./results.out'}) }
+""" % {'launcher' : all_launches({'program':__file__, 'timelimit': '00:02', 'outfile':'./results.out'}) }
+    return doc
 
 
 if __name__=='__main__':
-    from mystic import helputil
-    helputil.paginate(doc)
+#   from mystic import helputil
+#   helputil.paginate(__launch())
 
     print "python launch"
-    defaults['file'] = "tools.py"
+    defaults['program'] = "tools.py"
     launch(serial_launcher(defaults))
 
     print "serial launch"
-    settings = {'python':'', 'file':"hostname"} #XXX: don't like file=hostname
+    settings = {'python':'', 'program':"hostname"}
     launch(serial_launcher(settings))
 
 # EOF

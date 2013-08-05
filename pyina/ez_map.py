@@ -21,7 +21,7 @@ A call to ez_map will roughly follow this example::
     ...     return "Rank: %d -- %s" % (id, socket.gethostname())
 
     >>> # launch the parallel map of the target function
-    >>> results = ez_map(host, range(100), nnodes = 10)
+    >>> results = ez_map(host, range(100), nodes = 10)
     >>> print "\n".join(results)
 
 
@@ -30,7 +30,7 @@ Implementation
 
 A parallel application is launched by using a helper script (e.g. `ezrun.py`)
 as an intermediary between the MPI implementation of the parallel map
-(e.g. `pyina.parallel_map.parallel_map') and the user's serial python.
+(e.g. `pyina.mpi_pool.parallel_map') and the user's serial python.
 
 The system call that submits the mpi job is blocking.  Reasons are::
     1) If the main program exits before the parallel job starts,
@@ -49,30 +49,21 @@ a case where the other may fail.
 
 """
 
-ezdefaults ={ 'timelimit' : '00:02',
-              'file' : '`which ezscatter.py`',
-              'progname' : 'ezscatter.py',
-              'outfile' : 'results.out',
-              'errfile' : 'errors.out',
-              'jobfile' : 'jobid',
-              'queue' : 'normal',
-              'python' : '`which python`' ,
-              'nodes' : '1',
-              'progargs' : '',
-              'scheduler' : '',
-              'tmpdir' : '.'
-            }
+defaults = {
+    'progname' : 'ezscatter.py',
+    }
+from pyina.mpi import defaults as ezdefaults
+ezdefaults.update(defaults)
 
 from launchers import launch, mpirun_tasks, srun_tasks, aprun_tasks
 from launchers import serial_launcher, mpirun_launcher, srun_launcher
-from launchers import aprun_launcher, torque_launcher, moab_launcher
 from launchers import aprun_launcher, torque_launcher, moab_launcher
 from schedulers import torque_scheduler, moab_scheduler
 
 HOLD = []
 sleeptime = 30  #XXX: the time between checking for results
 
-#def ez_map(func, arglist, nnodes=None, launcher=None, mapper=None):
+#def ez_map(func, arglist, nodes=None, launcher=None, mapper=None):
 def ez_map(func, *arglist, **kwds):
     """higher-level map interface for selected mapper and launcher
 
@@ -81,7 +72,7 @@ are stored and sent as pickled strings, while function 'func' is inspected
 and written as a source file to be imported.
 
 Further Input:
-    nnodes -- the number of parallel nodes
+    nodes -- the number of parallel nodes
     launcher -- the launcher object
     scheduler -- the scheduler object
     mapper -- the mapper object
@@ -93,12 +84,13 @@ Further Input:
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "parallel_map": ezmap = "ezpool.py"
-        elif mapper() == "parallel_map2": ezmap = "ezscatter.py"
+        if mapper() == "mpi_pool": ezmap = "ezpool.py"
+        elif mapper() == "mpi_scatter": ezmap = "ezscatter.py"
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
-        ezdefaults['file'] = '`which %s`' % ezmap
+        ezdefaults['program'] = '`which %s`' % ezmap
     # override the defaults
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
+    if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']
     if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
     if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
@@ -107,33 +99,33 @@ Further Input:
     if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
-    if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
+    if kwds.has_key('workdir'): ezdefaults['workdir'] = kwds['workdir']
     else:
         if launcher in [torque_launcher, moab_launcher] \
         or scheduler in [torque_scheduler, moab_scheduler]:
-            ezdefaults['tmpdir'] = os.path.expanduser("~")
+            ezdefaults['workdir'] = os.path.expanduser("~")
 
     from dill.temp import dump, dump_source
     # write func source to a NamedTemporaryFile (instead of pickle.dump)
     # ezrun requires 'FUNC = <function>' to be included as module.FUNC
-    modfile = dump_source(func, alias='FUNC', dir=ezdefaults['tmpdir'])
+    modfile = dump_source(func, alias='FUNC', dir=ezdefaults['workdir'])
     # standard pickle.dump of inputs to a NamedTemporaryFile
     kwd = {'onall':kwds.get('onall',True)}
-    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['tmpdir'])
+    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['workdir'])
     # Keep the above return values for as long as you want the tempfile to exist
 
-    resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
+    resfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
     modname = os.path.splitext(os.path.basename(modfile.name))[0] 
     ezdefaults['progargs'] = ' '.join([modname, argfile.name, resfilename, \
-                                       ezdefaults['tmpdir']])
+                                       ezdefaults['workdir']])
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
-        jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
-        outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
-        errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
+        jobfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
+        outfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
+        errfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         ezdefaults['jobfile'] = jobfilename
         ezdefaults['outfile'] = outfilename
         ezdefaults['errfile'] = errfilename
@@ -192,7 +184,7 @@ Further Input:
     subprocess.call('rm -f %sc' % modfile.name, shell=True)
     return res
 
-#def ez_map2(func, arglist, nnodes=None, launcher=None, mapper=None):
+#def ez_map2(func, arglist, nodes=None, launcher=None, mapper=None):
 def ez_map2(func, *arglist, **kwds):
     """higher-level map interface for selected mapper and launcher
 
@@ -202,7 +194,7 @@ and sent as pickled strings.  This is different than 'ez_map', in that
 it does not use temporary files to store the mapped function.
 
 Further Input:
-    nnodes -- the number of parallel nodes
+    nodes -- the number of parallel nodes
     launcher -- the launcher object
     scheduler -- the scheduler object
     mapper -- the mapper object
@@ -214,12 +206,13 @@ Further Input:
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "parallel_map": ezmap = "ezpool.py"
-        elif mapper() == "parallel_map2": ezmap = "ezscatter.py"
+        if mapper() == "mpi_pool": ezmap = "ezpool.py"
+        elif mapper() == "mpi_scatter": ezmap = "ezscatter.py"
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
-        ezdefaults['file'] = '`which %s`' % ezmap
+        ezdefaults['program'] = '`which %s`' % ezmap
     # override the defaults
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
+    if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']
     if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
     if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
@@ -228,30 +221,30 @@ Further Input:
     if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
-    if kwds.has_key('tmpdir'): ezdefaults['tmpdir'] = kwds['tmpdir']
+    if kwds.has_key('workdir'): ezdefaults['workdir'] = kwds['workdir']
     else:
         if launcher in [torque_launcher, moab_launcher] \
         or scheduler in [torque_scheduler, moab_scheduler]:
-            ezdefaults['tmpdir'] = os.path.expanduser("~")
+            ezdefaults['workdir'] = os.path.expanduser("~")
 
     from dill.temp import dump
     # standard pickle.dump of inputs to a NamedTemporaryFile
-    modfile = dump(func, suffix='.pik', dir=ezdefaults['tmpdir'])
+    modfile = dump(func, suffix='.pik', dir=ezdefaults['workdir'])
     kwd = {'onall':kwds.get('onall',True)}
-    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['tmpdir'])
+    argfile = dump((arglist,kwd), suffix='.arg', dir=ezdefaults['workdir'])
     # Keep the above return values for as long as you want the tempfile to exist
 
-    resfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
+    resfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
     ezdefaults['progargs'] = ' '.join([modfile.name,argfile.name,resfilename, \
-                                       ezdefaults['tmpdir']])
+                                       ezdefaults['workdir']])
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
     if launcher in [torque_launcher, moab_launcher] \
     or scheduler in [torque_scheduler, moab_scheduler]:
-        jobfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
-        outfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
-        errfilename = tempfile.mktemp(dir=ezdefaults['tmpdir'])
+        jobfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
+        outfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
+        errfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         ezdefaults['jobfile'] = jobfilename
         ezdefaults['outfile'] = outfilename
         ezdefaults['errfile'] = errfilename

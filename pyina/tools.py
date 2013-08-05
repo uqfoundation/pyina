@@ -163,6 +163,15 @@ def wait_for(resultfile, **kwds):
     if tries >= maxtries: raise IOError, "%s not found" % resultfile
     return
 
+def isoseconds(time):
+    """calculate number of seconds from a given isoformat timestring"""
+    import datetime
+    try:
+        t = datetime.datetime.strptime(time, "%H:%M").time()
+    except ValueError:
+        t = datetime.datetime.strptime(time, "%H:%M:%S").time()
+    return t.second + 60*t.minute + 3600*t.hour
+
 
 if __name__=='__main__':
     n = 7 #12

@@ -32,7 +32,7 @@ if __name__ == "__main__":
         batchfile = sys.argv[1]
         inputlist = []
         inputlist = open(batchfile).readlines()
-        out = ez_map(runshell, inputlist, nnodes=nnodes)
+        out = ez_map(runshell, inputlist, nodes=nnodes)
     except:
         print __doc__
 

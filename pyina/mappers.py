@@ -12,20 +12,24 @@ provides:
 """
 
 
-def carddealer_mapper():
-    """deal work out to all available resources,
-then deal out the next new work item when a node completes its work """
-    #from parallel_map import parallel_map as map
+def worker_pool():
+    """use the 'worker pool' strategy; hence one job is allocated to each
+worker, and the next new work item is provided when a node completes its work"""
+    #from mpi_pool import parallel_map as map
     #return map
-    return "parallel_map"
+    return "mpi_pool"
 
-
-def equalportion_mapper():
-    """split workload up equally across all available resources """
-    #from parallel_map2 import parallel_map as map
+def scatter_gather():
+    """use the 'scatter-gather' strategy; hence split the workload as equally
+as possible across all available workers in a single pass"""
+    #from mpi_scatter import parallel_map as map
     #return map
-    return "parallel_map2"
+    return "mpi_scatter"
 
+
+# backward compatibility
+carddealer_mapper = worker_pool
+equalportion_mapper = scatter_gather
 
 def all_mappers():
     import mappers

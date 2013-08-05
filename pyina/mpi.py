@@ -27,7 +27,7 @@ A typical call to a pyina mpi map will roughly follow this example:
     >>> pool = Mpi(scheduler=torque)
     >>>
     >>> # do a blocking map on the chosen function
-    >>> results = pool.map(pow, [1,2,3,4], [5,6,7,8])
+    >>> print pool.map(pow, [1,2,3,4], [5,6,7,8])
 
 Several common configurations are available as pre-configured maps.
 The following is identical to the above example:
@@ -38,7 +38,7 @@ The following is identical to the above example:
     >>> pool = TorqueMpiPool(**config)
     >>>
     >>> # do a blocking map on the chosen function
-    >>> results = pool.map(pow, [1,2,3,4], [5,6,7,8])
+    >>> print pool.map(pow, [1,2,3,4], [5,6,7,8])
 
 
 Notes
@@ -91,6 +91,7 @@ def _debug(boolean):
         _save(False)
     return
 
+
 _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
@@ -117,9 +118,10 @@ Mapper base class for pipe-based mapping.
     """
     def __init__(self, *args, **kwds):
         """\nNOTE: if number of nodes is not given, will default to 1.
+If source is not given, will attempt to minimially use TemporaryFiles.
 If workdir is not given, will default to scheduler's workdir or $WORKDIR.
 If scheduler is not given, will default to only run on the current node.
-If source is not given, will attempt to minimially use TemporaryFiles.
+If timeout is not given, will default to scheduler's timelimit or INF.
 
 For more details, see the docstrings for the "map" method, or the man page
 for the associated launcher (e.g mpirun).
@@ -129,7 +131,14 @@ for the associated launcher (e.g mpirun).
         self.scatter = True #bool(kwds.get('scatter', True))
         self.source = bool(kwds.get('source', False))
         self.workdir = kwds.get('workdir', None)
-        self.timeout = kwds.get('timeout', 60)
+        self.timeout = kwds.get('timeout', None)
+        if self.timeout == None:
+            if self.scheduler:
+                from pyina.tools import isoseconds
+                self.timeout = isoseconds(self.scheduler.timelimit)
+            else:
+                from numpy import inf
+                self.timeout = inf  #XXX: better than defaults.timelimit ?
         if self.workdir == None:
             if self.scheduler:
                 self.workdir = self.scheduler.workdir
@@ -139,6 +148,7 @@ for the associated launcher (e.g mpirun).
         return
     __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def __settings(self):
+        """apply default settings, then update with given settings"""
         env = defaults.copy()
         [env.update({k:v}) for (k,v) in self.__dict__.items() if k in defaults]
         [env.update({'nodes':v}) for (k,v) in self.__dict__.items() if k.endswith('nodes')] # deal with self.__nodes
