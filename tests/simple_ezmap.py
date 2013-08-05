@@ -2,7 +2,8 @@
 
 if __name__ == '__main__':
     # get the parallel mapper
-    from pyina.ez_map import ez_map
+   #from pyina.ez_map import ez_map
+    from pyina.ez_map import ez_map2 as ez_map
 
     # construct a target function
     def host(id):

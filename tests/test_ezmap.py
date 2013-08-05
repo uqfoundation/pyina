@@ -75,6 +75,7 @@ if __name__ == '__main__':
 
    ### can handle multiple variables
     from pyina.ez_map import ez_map as _map
+   #from pyina.ez_map import ez_map2 as _map
 
     nodes=4
     test1( _map, nodes )

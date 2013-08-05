@@ -202,7 +202,7 @@ Further Input:
     queue -- string name of selected queue (e.g. 'normal')
 """
     import dill as pickle
-    import os.path, tempfile, os
+    import os.path, tempfile, subprocess
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
