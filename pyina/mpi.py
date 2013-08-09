@@ -68,6 +68,7 @@ from pathos.helpers import cpu_count
 import os, os.path
 import tempfile
 from dill.temp import dump, dump_source
+from pyina.tools import which_python
 
 _HOLD = []
 _SAVE = [False]
@@ -96,7 +97,7 @@ _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
     'program' : '`which ezscatter.py`',  # serialize to tempfile
-    'python' : '`which python`' , #XXX: pox.which or which_python?
+    'python' : which_python(lazy=True, version=True),  #XXX: or version=False?
     'progargs' : '',
 
     'outfile' : 'results%sout' % _pid,
