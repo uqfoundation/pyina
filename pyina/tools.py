@@ -117,25 +117,6 @@ def lookup(inputs, *index):
     else: index = slice(*index)
     return tuple(i.__getitem__(index) for i in inputs)
 
-def wait_for(resultfile, **kwds):
-    """wait for a file to show up in the current directory
-
-    optional:
-        sleep -- the time between checking results
-        tries -- the number of times to try
-    """
-    sleeptime = kwds.get('sleep', 1) # time between checking for results
-    t = 60 # 60 sec of sleeptime
-    maxtries = int(kwds.get('tries', 2*t)) # maxwait = sleeptime * maxtries
-    import time, os
-    tries = 0
-    while (not os.path.exists(resultfile) and tries < maxtries):
-        # wait for results
-        time.sleep(sleeptime)
-        tries += 1
-    if tries >= maxtries: raise IOError, "%s not found" % resultfile
-    return
-
 def isoseconds(time):
     """calculate number of seconds from a given isoformat timestring"""
     import datetime
@@ -146,7 +127,7 @@ def isoseconds(time):
     return t.second + 60*t.minute + 3600*t.hour
 
 # backward compatability
-from pox import which_python
+from pox import which_python, wait_for
 
 
 if __name__=='__main__':
