@@ -16,33 +16,6 @@ Main function exported are::
     - get_workload: get the workload the processor is responsible for
 
 """
-
-def which_python(version=False, lazy=False, fullpath=True):
-    """get a command to execute the given python version
-
-version: if True, include default version number
-         if int/float, include given version number
-lazy: if True, build the lazy command `which python`
-fullpath: if True, return the fullpath instead of relying on $PATH lookup
-    """
-    target = "python"; tail = ""
-    import sys
-    if lazy and not (sys.platform[:3] == 'win'):
-        target = "`which python"; tail = "`"
-    # include version number
-    if str(version).startswith(('2','3','4','5','6','7','8','9','1','0')):
-        pyversion = str(version)
-    elif bool(version):
-        pyversion = ".".join(str(i) for i in sys.version_info[0:2])
-    else:
-        pyversion = ""
-    target = "".join([target, pyversion, tail])
-    # lookup full path
-    if not lazy and fullpath:
-        import pox
-        target = pox.which(target)
-    return target
-
 def ensure_mpi(size = 1, doc = None):
     """
  ensure that mpi-enabled python is being called with the appropriate size
@@ -171,6 +144,9 @@ def isoseconds(time):
     except ValueError:
         t = datetime.datetime.strptime(time, "%H:%M:%S").time()
     return t.second + 60*t.minute + 3600*t.hour
+
+# backward compatability
+from pox import which_python
 
 
 if __name__=='__main__':

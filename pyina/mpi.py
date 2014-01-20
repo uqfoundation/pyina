@@ -68,7 +68,7 @@ from pathos.helpers import cpu_count
 import os, os.path
 import tempfile
 from dill.temp import dump, dump_source
-from pyina.tools import which_python
+from pox import which_python
 
 _HOLD = []
 _SAVE = [False]
@@ -157,7 +157,7 @@ for the associated launcher (e.g mpirun).
     def __launch(self, command):
         """launch mechanism for prepared launch command"""
         executable = command.split("|")[-1].split()[0]
-        from pox.shutils import which
+        from pox import which
         if not which(executable):
             raise IOError, "launch failed: %s not found" % executable
         return Popen([command], shell=True) #FIXME: shell=True is insecure
