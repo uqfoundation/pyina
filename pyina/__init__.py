@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-#                              Mike McKerns, Caltech
-#                        (C) 1997-2012  All Rights Reserved
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
+ 
+# Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
+# Copyright (c) 1997-2014 Caltech
+# License: 3-clause BSD
 
 # get version numbers, license, and long description
 try:

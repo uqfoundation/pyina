@@ -8,7 +8,7 @@ import os
 
 # set version numbers
 stable_version = '0.1a1'
-target_version = '0.2a'
+target_version = '0.2a1'
 is_release = False
 
 # check if easy_install is available
@@ -287,9 +287,9 @@ setup(name="pyina",
 
 # add dependencies
 numpy_version = '>=1.0'
-dill_version = '>=0.2a.dev'
-pox_version = '>=0.2a.dev'
-pathos_version = '>=0.2a.dev'
+dill_version = '>=0.2b2.dev'
+pox_version = '>=0.2a1.dev'
+pathos_version = '>=0.2a1.dev'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
