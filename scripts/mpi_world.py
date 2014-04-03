@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 #
+# Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
+# Copyright (c) 1997-2014 California Institute of Technology.
+# License: 3-clause BSD.  The full license text is available at:
+#  - http://trac.mystic.cacr.caltech.edu/project/pathos/browser/pyina/LICENSE
+#
 # helper script to setup your mpi environment
+
 __doc__ = """setup mpi python environment
 options:
     -help             print this message

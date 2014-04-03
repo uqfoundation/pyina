@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-
+#
+# Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
+# Copyright (c) 1997-2014 California Institute of Technology.
+# License: 3-clause BSD.  The full license text is available at:
+#  - http://trac.mystic.cacr.caltech.edu/project/pathos/browser/pyina/LICENSE
 """
 The ez_map function is a helper to parallel_map to further
 simplify parallel programming.  Primarily ez_map provides
