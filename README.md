@@ -49,7 +49,7 @@ Current Release
 The latest released version of pyina is available from::
     http://trac.mystic.cacr.caltech.edu/project/pathos
 
-Pyina is distributed under a modified BSD license.
+Pyina is distributed under a 3-clause BSD license.
 
 Development Release
 -------------------

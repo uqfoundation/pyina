@@ -195,7 +195,7 @@ mpi-python jobs. Set something like the following (for bash)::
 License
 =======
 
-Pyina is distributed under a modified BSD license.
+Pyina is distributed under a 3-clause BSD license.
 
     >>> import pyina
     >>> print pyina.license()
