@@ -32,7 +32,7 @@ def ensure_mpi(size = 1, doc = None):
     return
 
 def mpiprint(string="", end="\n", rank=0, comm=None):
-    """print the given string to to the given rank"""
+    """print the given string to the given rank"""
     from pyina.mpi import world
     if comm is None: comm = world
     if not hasattr(rank, '__len__'): rank = (rank,)
