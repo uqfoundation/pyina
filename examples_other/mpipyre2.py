@@ -8,7 +8,7 @@
 # Testing pyina.mpi.world.bcast
 # To run:
 
-python test2.py
+python mpipyre2.py
 """ 
 
 

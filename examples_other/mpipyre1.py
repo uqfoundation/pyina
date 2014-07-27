@@ -8,7 +8,7 @@
 # Testing pyina.mpi.world.recv
 # To run:
 
-python test1.py
+python mpipyre1.py
 """ 
 
 from mpi.Application import Application
