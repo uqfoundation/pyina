@@ -20,8 +20,8 @@ if __name__ == '__main__':
     print "\n".join(results)
 
     # print launch command for all launchers
-    from pyina.launchers import all_launches
-    print "\n", all_launches()
+#   from pyina.launchers import all_launches
+#   print "\n", all_launches()
 
 
 # EOF
