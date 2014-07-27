@@ -7,6 +7,13 @@
 
 # old-style maps (deprecated)
 
+import time
+
+x = range(18)
+delay = 0.01
+items = 20
+
+
 def busy_add(x,y, delay=0.01):
     for n in range(x):
        x += n
@@ -18,7 +25,7 @@ def busy_add(x,y, delay=0.01):
 
 def busy_squared(x):
     import time, random
-    time.sleep(2*random.random())
+    time.sleep(0.01*random.random())
     return x*x
 
 def squared(x):
@@ -31,62 +38,68 @@ def quad_factory(a=1, b=1, c=0):
 
 square_plus_one = quad_factory(2,0,1)
 
+x2 = map(squared, x)
 
-def test1(_map, nodes):
-    print _map
-    print "x: %s\n" % str(x)
+
+def test_sanity(_map, nodes, verbose=False):
+    if verbose:
+        print _map
+        print "x: %s\n" % str(x)
+
+        print type, _map.__name__
     _config = {'type':"blocking", 'threads':False, 'nproc':nodes, 'ncpus':nodes}
     mapconfig = {'nodes':nodes}
-
-    print type, _map.__name__
     start = time.time()
     res = _map(squared, x, **mapconfig)
-    print "time to results:", time.time() - start
-    print "y: %s\n" % str(res)
+    end = time.time() - start
+    if verbose:
+        print "time to results:", end
+        print "y: %s\n" % str(res)
+    assert res == x2
+
     mapconfig.update(_config)
-    _res = _map(squared, x, **mapconfig)
-    assert _res == res
+    res = _map(squared, x, **mapconfig)
+    assert res == x2
+
     mapconfig.update({'program':'hostname','workdir':'.','file':''})
-    _res = _map(squared, x, **mapconfig)
-    assert _res == res
+    res = _map(squared, x, **mapconfig)
+    assert res == x2
+
     from pyina.mappers import worker_pool
     mapconfig.update({'mapper':worker_pool,'timelimit':'00:00:02'})
-    _res = _map(squared, x, **mapconfig)
-    assert _res == res
+    res = _map(squared, x, **mapconfig)
+    assert res == x2
 
 
-def test2(_map, nodes, items=4, delay=0 ):
+def test_maps(_map, nodes, items=4, delay=0 ):
     _x = range(-items/2,items/2,2)
     _y = range(len(_x))
     _d = [delay]*len(_x)
+    _z = [0]*len(_x)
 
-    print map
+   #print map
     res1 = map(busy_squared, _x)
     mapconfig = {'nodes':nodes}
 
-    print _map
+   #print _map
     _res1 = _map(busy_squared, _x, **mapconfig)
     assert _res1 == res1
 
     res2 = map(busy_add, _x, _y, _d)
     _res2 = _map(busy_add, _x, _y, _d, **mapconfig)
     assert _res2 == res2
-    print ""
+   #print ""
 
 
 if __name__ == '__main__':
-    import time
-    x = range(18)
-    items = 20
-    maxtries = 20
-
-   ### can handle multiple variables
     from pyina.ez_map import ez_map as _map
-   #from pyina.ez_map import ez_map2 as _map
-
     nodes=4
-    test1( _map, nodes )
-    test2( _map, nodes, items=items )
+    test_sanity( _map, nodes )
+    test_maps( _map, nodes, items=items )
+
+    from pyina.ez_map import ez_map2 as _map
+    test_sanity( _map, nodes )
+    test_maps( _map, nodes, items=items )
 
 
 # EOF
