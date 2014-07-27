@@ -7,9 +7,17 @@
 
 from pyina.mpi import defaults
 from pyina.launchers import SerialMapper, Mpi, TorqueMpi
+from pyina.launchers import all_launches
 from pyina.schedulers import Torque
 
-def test_launch():
+def test_launches():
+    # default launch commands for all launchers
+    print "***** defaults for all launchers *****"
+    print all_launches()
+    print "**************************************", "\n"
+
+def test_launcher():
+    # configured launch commands for selected launchers
     serial = SerialMapper()
     print "non-python serial launch:", serial
     settings = {'python':'', 'program':"hostname"}
@@ -32,22 +40,29 @@ def test_launch():
 
     qsub.nodes = '4:ppn=2'
     mpi.nodes = mpi.njobs(qsub.nodes)
-    print "scheduled parallel launch:", "<inline>"
+    print "scheduled parallel launch:", mpi, "| Torque"
     print qsub._submit(mpi._launcher(settings)), "\n"
 
     mpi.scheduler = qsub
     print "scheduled parallel launch:", mpi
     print mpi._launcher(settings), "\n"
 
-    print "scheduled parallel launch:", "<inline>"
-    print Mpi(scheduler=Torque(nodes='4:ppn=2'))._launcher(settings), "\n"
+    _mpi = Mpi(scheduler=Torque(nodes='4:ppn=2'))
+    print "scheduled parallel launch:", _mpi
+    print _mpi._launcher(settings), "\n"
 
-    print "scheduled parallel launch:", "<inline>"
-    print TorqueMpi(nodes='4:ppn=2')._launcher(settings), "\n"
+    _mpi = TorqueMpi(nodes='4:ppn=2')
+    print "scheduled parallel launch:", _mpi
+    print _mpi._launcher(settings), "\n"
 
-    print "scheduled serial launch:", "<inline>"
     qsub.nodes = 1
-    print qsub._submit(SerialMapper()._launcher(settings)), "\n"
+    serial = SerialMapper()
+    print "scheduled serial launch:", serial, "| Torque"
+    print qsub._submit(serial._launcher(settings)), "\n"
+
 
 if __name__ == '__main__':
-    test_launch()
+    test_launches()
+    test_launcher()
+
+# EOF

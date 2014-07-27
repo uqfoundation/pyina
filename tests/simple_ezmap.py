@@ -19,9 +19,5 @@ if __name__ == '__main__':
     results = ez_map(host, range(10), nodes=4)
     print "\n".join(results)
 
-    # print launch command for all launchers
-#   from pyina.launchers import all_launches
-#   print "\n", all_launches()
-
 
 # EOF
