@@ -145,6 +145,9 @@ for the associated launcher (e.g mpirun).
             else:
                 from numpy import inf
                 self.timeout = inf  #XXX: better than defaults.timelimit ?
+        elif isinstance(self.timeout, str):
+            from pyina.tools import isoseconds
+            self.timeout = isoseconds(self.timeout)
         if self.workdir == None:
             if self.scheduler:
                 self.workdir = self.scheduler.workdir

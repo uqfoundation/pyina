@@ -115,12 +115,32 @@ def lookup(inputs, *index):
 
 def isoseconds(time):
     """calculate number of seconds from a given isoformat timestring"""
+    if isinstance(time, int): return time #XXX: allow this?
     import datetime
-    try:
-        t = datetime.datetime.strptime(time, "%H:%M").time()
+    d = 0
+    try: # allows seconds up to 59 #XXX: allow 60+ ?
+        t = datetime.datetime.strptime(time, "%S").time()
     except ValueError:
-        t = datetime.datetime.strptime(time, "%H:%M:%S").time()
-    return t.second + 60*t.minute + 3600*t.hour
+        fmt = str(time).count(":") or 2 # get ValueError if no ":"
+        if fmt == 1:
+            t = datetime.datetime.strptime(time, "%H:%M").time()
+        elif fmt == 3: # allows days (up to 31)
+            t = datetime.datetime.strptime(time, "%d:%H:%M:%S")
+            d,t = t.day, t.time()
+        else: # maxtime is '23:59:59' #XXX: allow 24+ hours instead of days?
+            t = datetime.datetime.strptime(time, "%H:%M:%S").time()
+    return t.second + 60*t.minute + 3600*t.hour + d*86400
+
+def isoformat(seconds):
+    """generate an isoformat timestring for the given time in seconds"""
+    import datetime
+    d = seconds/86400
+    if d > 31: datetime.date(1900, 1, d) # throw ValueError
+    h = (seconds - d*86400)/3600
+    m = (seconds - d*86400 - h*3600)/60
+    s = seconds - d*86400 - h*3600 - m*60
+    t = datetime.time(h,m,s).strftime("%H:%M:%S")
+    return ("%s:" % d) + t if d else t #XXX: better convert days to hours?
 
 # backward compatability
 from pox import which_python, wait_for

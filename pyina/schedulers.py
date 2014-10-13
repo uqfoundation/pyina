@@ -88,6 +88,9 @@ associated scheduler.
         """
         self.__init(*args, **kwds)
         self.timelimit = kwds.get('timelimit', defaults['timelimit'])
+        if isinstance(self.timelimit, int):
+            from pyina.tools import isoformat
+            self.timelimit = isoformat(self.timelimit)
         self.queue = kwds.get('queue', defaults['queue'])
         self.workdir = kwds.get('workdir', os.environ.get('WORKDIR', os.path.curdir))
        #self.workdir = kwds.get('workdir', os.environ.get('WORKDIR', os.path.expanduser("~"))
