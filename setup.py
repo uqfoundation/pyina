@@ -31,7 +31,7 @@ elif stable_version == target_version:
     this_version = target_version
 else:
     # we are building a distribution
-    this_version = target_version + '.dev'
+    this_version = target_version + '.dev0'
     if is_release:
       from datetime import date
       today = "".join(date.isoformat(date.today()).split('-'))
@@ -147,13 +147,13 @@ Pyina requires::
     - mpi4py, version >= 1.2.1
     - dill, version >= 0.2.2
     - pox, version >= 0.2.1
-    - pathos, version >= 0.2a.dev
+    - pathos, version >= 0.2a.dev0
 
 Optional requirements::
 
     - setuptools, version >= 0.6
     - pyre, version == 0.8
-    - mystic, version >= 0.2a2.dev
+    - mystic, version >= 0.2a2.dev0
 
 
 Usage Notes
@@ -291,12 +291,12 @@ setup(name="pyina",
 numpy_version = '>=1.0'
 dill_version = '>=0.2.2'
 pox_version = '>=0.2.1'
-pathos_version = '>=0.2a1.dev'
+pathos_version = '>=0.2a1.dev0'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
 pypar_version = '>=2.1.4'
-mystic_version = '>=0.2a2.dev'
+mystic_version = '>=0.2a2.dev0'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
