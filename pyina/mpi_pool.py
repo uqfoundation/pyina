@@ -14,10 +14,7 @@ try:
 except AttributeError:
     pass
 from pyina.tools import lookup
-try:
-    from processing.pool import Pool as MPool
-except ImportError:  # fall-back to package distributed with python
-    from multiprocessing.pool import Pool as MPool
+from pathos.helpers import ProcessPool as MPool
 master = 0
 comm = mpi.COMM_WORLD
 size = comm.Get_size()

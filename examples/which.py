@@ -18,7 +18,7 @@ print(sys.executable)
 
 try:
     import mpi4py
-    print("mpi4py is installed")
+    print("mpi4py %s is installed" % getattr(mpi4py, '__version__', ''))
 except ImportError:
     print("mpi4py not installed")
     exit()
@@ -28,7 +28,7 @@ except:
 
 try:
     import pathos
-    print("pathos is installed")
+    print("pathos %s is installed" % getattr(pathos, '__version__', ''))
 except ImportError:
     print("pathos not installed")
     exit()
@@ -50,7 +50,7 @@ except:
 
 try:
     import pyina
-    print("pyina is installed")
+    print("pyina %s is installed" % getattr(pyina, '__version__', ''))
 except ImportError:
     print("pyina not installed")
 except:
