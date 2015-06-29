@@ -9,7 +9,7 @@ __doc__ = """
 # print rank - hostname info
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython machines_raw.py
 """
 

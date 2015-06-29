@@ -126,6 +126,7 @@ NOTES:
         return "<pool %s(scheduler=%s)>" % mapargs
     pass
 
+#FIXME: enable user to override 'mpirun'
 class ParallelMapper(Mapper): #FIXME FIXME: stopped docs here
     """
 Mapper base class for pipe-based mapping with mpi4py.
@@ -139,7 +140,7 @@ If scheduler is not given, will default to only run on the current node.
 If pickle is not given, will attempt to minimially use TemporaryFiles.
 
 For more details, see the docstrings for the "map" method, or the man page
-for the associated launcher (e.g mpirun).
+for the associated launcher (e.g mpirun, mpiexec).
         """
         Mapper.__init__(self, *args, **kwds)
         self.scatter = bool(kwds.get('scatter', False)) #XXX: hang w/ nodes=1 ?
@@ -215,7 +216,7 @@ For example, mpirun.njobs("3:core4:ppn=2") yields 6
     def _launcher(self, kdict={}):
         """prepare launch command for parallel execution using mpirun
 
-equivalent to:  mpirun -np (nodes) (python) (program) (progargs)
+equivalent to:  mpiexec -np (nodes) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -224,7 +225,7 @@ NOTES:
         mydict.update(kdict)
        #if self.scheduler:
        #    mydict['nodes'] = self.njobs()
-        str =  """mpirun -np %(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
+        str =  """%(mpirun)s -np %(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
         if self.scheduler:
             str = self.scheduler._submit(str)
         return str
@@ -494,7 +495,7 @@ NOTES:
 def mpirun_launcher(kdict={}):
     """
 prepare launch for parallel execution using mpirun
-syntax:  mpirun -np (nodes) (python) (program) (progargs)
+syntax:  mpiexec -np (nodes) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -531,8 +532,8 @@ NOTES:
 
 def torque_launcher(kdict={}): #FIXME: update
     """
-prepare launch for torque submission using mpirun, srun, aprun, or serial
-syntax:  echo \"mpirun -np (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+prepare launch for torque submission using mpiexec, srun, aprun, or serial
+syntax:  echo \"mpiexec -np (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
@@ -550,7 +551,7 @@ NOTES:
         str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"mpirun -np %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
         str = """ echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
@@ -563,7 +564,7 @@ def moab_launcher(kdict={}): #FIXME: update
     """
 prepare launch for moab submission using srun, mpirun, aprun, or serial
 syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"mpirun -np (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"%(mpirun)s -np (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
@@ -577,7 +578,7 @@ NOTES:
     moab = moab_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == moab.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"mpirun -np %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """ echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == moab.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
         str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
@@ -671,6 +672,7 @@ def __launch():
 #               'scheduler' :  '',
 #             }
 """ % {'launcher' : all_launches({'program':__file__, 'timelimit': '00:02', 'outfile':'./results.out'}) }
+#""" % defaults.update({'launcher' : all_launches(**defaults)})
     return doc
 
 

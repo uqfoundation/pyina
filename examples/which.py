@@ -9,7 +9,7 @@ __doc__ = """
 # check which python mpirun is executing
 # To run (in parallel):
 
-mpirun -np 1 python which.py
+mpiexec -np 1 python which.py
 """
 
 import sys

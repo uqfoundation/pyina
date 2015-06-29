@@ -13,7 +13,7 @@ doc = """
 
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython test_parallelmap.py
 """
 

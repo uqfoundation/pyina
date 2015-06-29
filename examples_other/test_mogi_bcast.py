@@ -9,7 +9,7 @@ Just a basic test. No physics.
 
 To launch... either do, for example
 
-mpirun -np 4 `which python` test_mogi_bcast.py
+mpiexec -np 4 `which python` test_mogi_bcast.py
 
 or
 

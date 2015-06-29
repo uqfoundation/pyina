@@ -13,7 +13,7 @@ __doc__ = """
 # numerically, and in parallel.
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython pypi_pmap.py
 
 # A few warnings:

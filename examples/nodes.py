@@ -9,7 +9,7 @@ __doc__ = """
 # get all nodes to report
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython nodes.py
 """
 

@@ -8,7 +8,7 @@
 # simple test of mpi communication to ports
 # To run:
 
-mpirun -np 4 `which python` test_ports.py
+mpiexec -np 4 `which python` test_ports.py
 """
 
 import mystic

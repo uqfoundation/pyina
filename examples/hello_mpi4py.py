@@ -8,7 +8,7 @@
 # Parallel Hello World, with mpi4py
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython hello_mpi4py.py
 """
 

@@ -70,10 +70,10 @@ except AttributeError:
 from subprocess import Popen, call
 from pathos.abstract_launcher import AbstractWorkerPool
 from pathos.helpers import cpu_count
-import os, os.path
+import os, os.path, sys
 import tempfile
 from dill.temp import dump, dump_source
-from pox import which_python
+from pyina.tools import which_python, which_mpirun, which_strategy
 
 _HOLD = []
 _SAVE = [False]
@@ -101,8 +101,9 @@ def _debug(boolean):
 _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
-    'program' : '`which ezscatter.py`',  # serialize to tempfile
-    'python' : which_python(lazy=True, version=True),  #XXX: or version=False?
+    'program' : which_strategy(lazy=True) or 'ezscatter.py', # serialize to tempfile
+    'mpirun' : which_mpirun() or 'mpiexec',
+    'python' : which_python(lazy=True) or 'python',
     'progargs' : '',
 
     'outfile' : 'results%sout' % _pid,
@@ -130,7 +131,7 @@ If scheduler is not given, will default to only run on the current node.
 If timeout is not given, will default to scheduler's timelimit or INF.
 
 For more details, see the docstrings for the "map" method, or the man page
-for the associated launcher (e.g mpirun).
+for the associated launcher (e.g mpirun, mpiexec).
         """
         AbstractWorkerPool.__init__(self, *args, **kwds)
         self.scheduler = kwds.get('scheduler', None)
@@ -251,13 +252,11 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         """
         # set strategy
         if self.scatter:
-            strategy = "ezscatter.py"
             kwds['onall'] = kwds.get('onall', True)
         else:
-            strategy = "ezpool.py"
             kwds['onall'] = kwds.get('onall', True) #XXX: has pickling issues
         config = {}
-        config['program'] = '`which %s`' % strategy
+        config['program'] = which_strategy(self.scatter, lazy=True)
 
         # serialize function and arguments to files
         modfile = self._modularize(func)

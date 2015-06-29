@@ -85,13 +85,14 @@ Further Input:
     """
     import dill as pickle
     import os.path, tempfile, subprocess
+    from pyina.tools import which_strategy
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "mpi_pool": ezmap = "ezpool.py"
-        elif mapper() == "mpi_scatter": ezmap = "ezscatter.py"
+        if mapper() == "mpi_pool": scatter = False
+        elif mapper() == "mpi_scatter": scatter = True
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
-        ezdefaults['program'] = '`which %s`' % ezmap
+        ezdefaults['program'] = which_strategy(scatter, lazy=True)
     # override the defaults
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
     if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']
@@ -207,13 +208,14 @@ Further Input:
 """
     import dill as pickle
     import os.path, tempfile, subprocess
+    from pyina.tools import which_strategy
     # mapper = None (allow for use of default mapper)
     if kwds.has_key('mapper'):
         mapper = kwds['mapper']
-        if mapper() == "mpi_pool": ezmap = "ezpool.py"
-        elif mapper() == "mpi_scatter": ezmap = "ezscatter.py"
+        if mapper() == "mpi_pool": scatter = False
+        elif mapper() == "mpi_scatter": scatter = True
         else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
-        ezdefaults['program'] = '`which %s`' % ezmap
+        ezdefaults['program'] = which_strategy(scatter, lazy=True)
     # override the defaults
     if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
     if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']

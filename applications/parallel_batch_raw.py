@@ -10,7 +10,7 @@ __doc__ = """
 # BE VERY CAREFUL with this script, as it executes system calls. 
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython parallel_batch_raw.py [batchfile.txt]
 """
 

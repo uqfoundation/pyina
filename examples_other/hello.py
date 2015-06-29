@@ -9,7 +9,7 @@ __doc__ = """
 # get pyina to say 'hello'
 # To run:
 
-alias mpython='mpirun -np [#nodes] `which python`'
+alias mpython='mpiexec -np [#nodes] `which python`'
 mpython hello.py
 """
 

@@ -142,8 +142,54 @@ def isoformat(seconds):
     t = datetime.time(h,m,s).strftime("%H:%M:%S")
     return ("%s:" % d) + t if d else t #XXX: better convert days to hours?
 
+def which_mpirun(mpich=None, fullpath=False):
+    """try to autodetect an available mpi launcher
+
+if mpich=True only look for mpich, if False only look for openmpi"""
+    import os
+    from pox import which
+    progs = ['mpiexec', 'mpirun', 'mpiexec-mpich-mp', 'mpiexec-openmpi-mp', 'mpirun-mpich-mp', 'mpirun-openmpi-mp']
+    if mpich == True: pop = 'openmpi'
+    elif mpich == False: pop = 'mpich'
+    else: pop = 'THIS IS NOT THE MPI YOU ARE LOOKING FOR'
+    progs = (i for i in progs if pop not in i)
+    mpi = None
+    for prog in progs:
+        mpi = which(prog, ignore_errors=True)
+        if mpi: break
+    if mpi and not fullpath:
+        mpi = os.path.split(mpi)[-1]
+    return mpi
+
+def which_strategy(scatter=True, lazy=False, fullpath=True):
+    """try to autodetect an available strategy (scatter or pool)"""
+    target = 'ezscatter.py' if scatter else 'ezpool.py'
+    import sys
+    if (sys.platform[:3] == 'win'): lazy=False
+    if lazy: target = "`which %s`" % target
+    # lookup full path
+    elif not lazy and fullpath:
+        from pox import which
+        target = which(target, ignore_errors=True)
+    if not target: target = None #XXX: better None or "" ?
+    return target
+
+
+def which_python(lazy=False, fullpath=True):
+    "get an invocation for this python on the execution path"
+    from pox import which_python
+    # check if the versioned python is on the path
+    py = which_python(lazy=False, version=True, fullpath=True)
+    if not lazy and fullpath and py: return py
+    import sys
+    if (sys.platform[:3] == 'win'): lazy=False
+    # if on the path, apply user's options
+    return which_python(lazy=lazy, version=bool(py), fullpath=fullpath)
+
+
+
 # backward compatability
-from pox import which_python, wait_for
+from pox import wait_for
 
 
 if __name__=='__main__':
