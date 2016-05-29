@@ -61,8 +61,8 @@ world = MPI.COMM_WORLD
 # (also: world.rank, world.size)
 import dill
 try:
-    MPI._p_pickle.dumps = dill.dumps
-    MPI._p_pickle.loads = dill.loads
+    getattr(MPI,'pickle',getattr(MPI,'_p_pickle',None)).dumps = dill.dumps
+    getattr(MPI,'pickle',getattr(MPI,'_p_pickle',None)).loads = dill.loads
 except AttributeError:
     pass
 #####################
