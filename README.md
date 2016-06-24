@@ -1,6 +1,6 @@
 pyina
 =====
-a MPI-based parallel mapper and launcher
+MPI parallel map and cluster scheduling
 
 About Pyina
 -----------

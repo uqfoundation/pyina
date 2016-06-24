@@ -43,9 +43,9 @@ with open('LICENSE') as file:
 
 # generate the readme text
 long_description = \
-"""-----------------------------------------------
-pyina: a MPI-based parallel mapper and launcher
------------------------------------------------
+"""----------------------------------------------
+pyina: MPI parallel map and cluster scheduling
+----------------------------------------------
 
 The pyina package provides several basic tools to make MPI-based
 high-performance computing more accessable to the end user. The goal
