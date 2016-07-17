@@ -25,8 +25,8 @@ scheduler such as torque or slurm. `pyina` encapsulates several of these
 "launchers", and provides a common interface to the different methods of
 launching a MPI job.
 
-'pyina` is part of `pathos`, a python framework for heterogeneous computing.
-'pyina` is in active development, so any user feedback, bug reports, comments,
+`pyina` is part of `pathos`, a python framework for heterogeneous computing.
+`pyina` is in active development, so any user feedback, bug reports, comments,
 or suggestions are highly appreciated.  A list of known issues is maintained
 at http://trac.mystic.cacr.caltech.edu/project/pathos/query, with a public
 ticket list at https://github.com/uqfoundation/pyina/issues.
@@ -87,7 +87,7 @@ so further questions may be resolved by inspecting the code itself. Please
 also feel free to submit a ticket on github, or ask a question on
 stackoverflow (@Mike McKerns).
 
-'pyina` is an active research tool. There are a growing number of publications
+`pyina` is an active research tool. There are a growing number of publications
 and presentations that discuss real-world examples and new features of `pyina`
 in greater detail than presented in the user's guide.  If you would like to
 share how you use `pyina` in your work, please post a link or send an email
