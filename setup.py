@@ -148,7 +148,7 @@ Requirements
     - mpi4py, version >= 1.2.1
     - dill, version >= 0.2.5
     - pox, version >= 0.2.2
-    - pathos, version >= 0.2a.dev0
+    - pathos, version >= 0.2.0
 
 Optional requirements::
 
