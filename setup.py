@@ -154,7 +154,7 @@ Optional requirements::
 
     - setuptools, version >= 0.6
     - pyre, version == 0.8
-    - mystic, version >= 0.2a2.dev0
+    - mystic, version >= 0.3.0
 
 
 Usage Notes
@@ -292,12 +292,12 @@ setup(name="pyina",
 numpy_version = '>=1.0'
 dill_version = '>=0.2.5'
 pox_version = '>=0.2.2'
-pathos_version = '>=0.2a1.dev0'
+pathos_version = '>=0.2.0'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
 pypar_version = '>=2.1.4'
-mystic_version = '>=0.2a2.dev0'
+mystic_version = '>=0.3.0'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
