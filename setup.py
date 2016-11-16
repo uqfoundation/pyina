@@ -11,7 +11,7 @@ import os
 # set version numbers
 stable_version = '0.1a1'
 target_version = '0.2.0'
-is_release = False
+is_release = stable_version == target_version
 
 # check if easy_install is available
 try:
@@ -272,17 +272,23 @@ else: #platform = linux or mac
 setup_code = """
 setup(name="pyina",
     version='%s',
-    maintainer="Mike McKerns",
-    maintainer_email="mmckerns@uqfoundation.org",
-    license="BSD",
-    platforms=["Linux, Unix, Mac OSX"],
-    description="a MPI-based parallel mapper and launcher",
+    description="MPI parallel map and cluster scheduling",
     long_description = '''%s''',
-    classifiers=(
-        "Intended Audience :: Developers",
-        "Programming Language :: Python",
-        "Development Status :: 2 - Pre-Alpha",
-        "Topic :: Physics Programming"),
+    author = 'Mike McKerns',
+    author_email = 'mmckerns at uqfoundation dot org',
+    maintainer = 'Mike McKerns',
+    maintainer_email = 'mmckerns at uqfoundation dot org',
+    license = '3-clause BSD',
+    platforms = ['Linux', 'Mac'],
+    url = 'http://www.cacr.caltech.edu/~mmckerns/pyina.htm',
+    download_url = 'http://dev.danse.us/packages',
+    classifiers = ('Development Status :: 5 - Production/Stable',
+                   'Intended Audience :: Developers',
+                   'Intended Audience :: Science/Research',
+                   'License :: OSI Approved :: BSD License',
+                   'Programming Language :: Python :: 2',
+                   'Topic :: Scientific/Engineering',
+                   'Topic :: Software Development'),
 
     packages=['pyina'],
     package_dir={'pyina':'pyina'},
