@@ -1,6 +1,6 @@
 language: python
 
-sudo: false
+sudo: required
 
 matrix:
     include:
@@ -16,6 +16,8 @@ cache:
 
 before_install:
     - set -e  # fail on any error
+    - sudo apt-get update -q
+    - set -x; sudo apt-get install -y -q mpich libmpich-dev
 
 install:
     - python setup.py build && python setup.py install
