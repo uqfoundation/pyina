@@ -26,7 +26,11 @@ except ImportError:
 # generate version number
 if os.path.exists('pyina/info.py'):
     # is a source distribution, so use existing version
-    from pyina.info import this_version
+    os.chdir('pyina')
+    with open('info.py','r') as f:
+        f.readline() # header
+        this_version = f.readline().split()[-1].strip("'")
+    os.chdir('..')
 elif stable_version == target_version:
     # we are building a stable release
     this_version = target_version
@@ -47,6 +51,9 @@ long_description = \
 """----------------------------------------------
 pyina: MPI parallel map and cluster scheduling
 ----------------------------------------------
+
+About Pyina
+===========
 
 The `pyina` package provides several basic tools to make MPI-based
 high-performance computing more accessable to the end user. The goal
@@ -158,12 +165,12 @@ Optional requirements::
     - mystic, version >= 0.3.0
 
 
-Usage Notes
-===========
+More Information
+================
 
-Probably the best way to get started is to look at a few of the
-examples provided within `pyina`. See `pyina.examples` for a
-set of scripts that demonstrate the configuration and launching of
+Probably the best way to get started is to look at the tests and
+examples provided within `pyina`. See `pyina.examples` and `pyina.tests`
+for a set of scripts that demonstrate the configuration and launching of
 mpi-based parallel jobs using the "easy map" interface. Also see
 `pyina.examples_other` for a set of scripts that test the more raw
 internals of `pyina`. The source code is also generally well documented,
@@ -206,9 +213,8 @@ mpi-python jobs. Set something like the following (for bash)::
 Citation
 ========
 
-If you use `pyina` to do research that leads to publication,
-we ask that you acknowledge use of `pyina` by citing the
-following in your publication::
+If you use `pyina` to do research that leads to publication, we ask that you
+acknowledge use of `pyina` by citing the following in your publication::
 
     M.M. McKerns, L. Strand, T. Sullivan, A. Fang, M.A.G. Aivazis,
     "Building a framework for predictive science", Proceedings of
@@ -219,11 +225,8 @@ following in your publication::
     "pathos: a framework for heterogeneous computing", 2010- ;
     http://dev.danse.us/trac/pathos
 
-
-More Information
-================
-
-Please see http://dev.danse.us/trac/pathos or http://arxiv.org/pdf/1202.1056 for further information.
+Please see http://trac.mystic.cacr.caltech.edu/project/pathos or
+http://arxiv.org/pdf/1202.1056 for further information.
 
 """ % {'relver' : stable_version, 'thisver' : this_version}
 
@@ -319,7 +322,7 @@ setup_code += """
 """
 
 # exec the 'setup' code
-exec setup_code
+exec(setup_code)
 
 # if dependencies are missing, print a warning
 try:
@@ -330,28 +333,28 @@ try:
     import mpi4py #XXX: throws an error even though ok?
     #import pypar
 except ImportError:
-    print "\n***********************************************************"
-    print "WARNING: One of the following dependencies may be unresolved:"
-    print "    numpy %s" % numpy_version
-    print "    dill %s" % dill_version
-    print "    pox %s" % pox_version
-    print "    pathos %s" % pathos_version
-    print "    mpi4py %s" % mpi4py_version
-#   print "    pypar %s (optional)" % pypar_version
-    print "***********************************************************\n"
+    print("\n***********************************************************")
+    print("WARNING: One of the following dependencies may be unresolved:")
+    print("    numpy %s" % numpy_version)
+    print("    dill %s" % dill_version)
+    print("    pox %s" % pox_version)
+    print("    pathos %s" % pathos_version)
+    print("    mpi4py %s" % mpi4py_version)
+#   print("    pypar %s (optional)" % pypar_version)
+    print("***********************************************************\n")
 
 if sdkroot_set:
-    print "\n***********************************************************"
-    print "WARNING: One of following variables was set to a default:"
-    print "    SDKROOT %s" % sdkroot
-    print "***********************************************************\n"
+    print("\n***********************************************************")
+    print("WARNING: One of following variables was set to a default:")
+    print("    SDKROOT %s" % sdkroot)
+    print("***********************************************************\n")
 else:
     pass
 
 try:
     import mpi4py
 except ImportError:
-    print """
+    print("""
 There is a bug in the `mpi4py` installer for MacOSX,
 and a patch has been submitted to the `mpi4py` developers.
 Until this patch is accepted in a release,
@@ -362,7 +365,7 @@ or from the `external` directory included in the `pyina` source distribution.
 Further, you may need to set the environment variable "SDKROOT",
 as shown in the instructions for installing `mpi4py`:
   http://mpi4py.scipy.org/docs/usrman/install.html
-"""
+""")
 
 
 if __name__=='__main__':
