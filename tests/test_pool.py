@@ -7,7 +7,7 @@
 #  - http://trac.mystic.cacr.caltech.edu/project/pathos/browser/pyina/LICENSE
 
 from dill import source, temp
-def test_source(obj):
+def run_source(obj):
     _obj = source._wrap(obj)
     assert _obj(1.57) == obj(1.57)
     src = source.importable(obj, alias='_f')
@@ -16,12 +16,12 @@ def test_source(obj):
     name = source.getname(obj)
     assert name == obj.__name__ or src.split("=",1)[0].strip()
 
-def test_files(obj):
+def run_files(obj):
     f = temp.dump_source(obj, alias='_obj')
     _obj = temp.load_source(f)
     assert _obj(1.57) == obj(1.57)
 
-def test_pool(obj):
+def run_pool(obj):
     from pyina.launchers import Mpi
     p = Mpi(2)
     x = [1,2,3]
@@ -36,17 +36,17 @@ def test_pool(obj):
     assert p.map(obj, x) == y
 
 
-if __name__ == '__main__':
-
+def test_pyina():
     from math import sin
     f = lambda x:x+1
     def g(x):
         return x+2
 
     for func in [g, f, abs, sin]:
-        test_source(func)
-        test_files(func)
-        test_pool(func)
+        run_source(func)
+        run_files(func)
+        run_pool(func)
 
 
-# EOF
+if __name__ == '__main__':
+    test_pyina()

@@ -46,23 +46,34 @@ class BuiltinPool(object):
 std = timed_pool(BuiltinPool(), items, delay=0, verbose=False)
 
 
-def test_serial(source=False):
+def check_serial(source=False):
     from pyina.launchers import SerialMapper as S
     pool = S(source=source)
     res = timed_pool(pool, items, delay, verbose)
     assert res == std
 
-def test_pool(source=False):
+def check_pool(source=False):
     from pyina.launchers import MpiPool as MPI
     pool = MPI(4, source=source)
     res = timed_pool(pool, items, delay, verbose)
     assert res == std
 
-def test_scatter(source=False):
+def check_scatter(source=False):
     from pyina.launchers import MpiScatter as MPI
     pool = MPI(4, source=source)
     res = timed_pool(pool, items, delay, verbose)
     assert res == std
+
+
+def test_nosource():
+    check_serial()
+    check_pool()
+    check_scatter()
+
+def test_source():
+    check_serial(source=True)
+    check_pool(source=True)
+    check_scatter(source=True)
 
 
 if __name__ == '__main__':
@@ -75,13 +86,5 @@ if __name__ == '__main__':
         print "CONFIG: items = %s" % items
         print ""
 
-    test_serial()
-    test_pool()
-    test_scatter()
-
-    test_serial(source=True)
-    test_pool(source=True)
-    test_scatter(source=True)
-
-
-# EOF
+    test_nosource()
+    test_source()

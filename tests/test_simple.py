@@ -24,6 +24,3 @@ def test_equal():
 
 if __name__ == '__main__':
     test_equal()
-
-
-# EOF

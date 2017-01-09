@@ -38,7 +38,7 @@ def sleep_add2(x):
     if x < 4: sleep(x/10.0)
     return x+2
 
-def test_with_multipool(Pool): #XXX: amap and imap -- NotImplementedError
+def run_with_multipool(Pool): #XXX: amap and imap -- NotImplementedError
    #inputs = range(10)
    #with Pool() as pool1:
    #    res1 = pool1.amap(sleep_add1, inputs)
@@ -55,9 +55,10 @@ def test_with_multipool(Pool): #XXX: amap and imap -- NotImplementedError
    #assert res2.get() == [i+2 for i in inputs]
 
 
-if __name__ == '__main__':
+def test_with_mpipool():
     from pyina.launchers import MpiPool
-    test_with_multipool(MpiPool)
+    run_with_multipool(MpiPool)
 
 
-# EOF
+if __name__ == '__main__':
+    test_with_mpipool()

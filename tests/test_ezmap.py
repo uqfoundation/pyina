@@ -42,7 +42,7 @@ square_plus_one = quad_factory(2,0,1)
 x2 = map(squared, x)
 
 
-def test_sanity(_map, nodes, verbose=False):
+def check_sanity(_map, nodes, verbose=False):
     if verbose:
         print _map
         print "x: %s\n" % str(x)
@@ -72,7 +72,7 @@ def test_sanity(_map, nodes, verbose=False):
     assert res == x2
 
 
-def test_maps(_map, nodes, items=4, delay=0 ):
+def check_maps(_map, nodes, items=4, delay=0 ):
     _x = range(-items/2,items/2,2)
     _y = range(len(_x))
     _d = [delay]*len(_x)
@@ -92,15 +92,19 @@ def test_maps(_map, nodes, items=4, delay=0 ):
    #print ""
 
 
-if __name__ == '__main__':
+def test_ezmap():
     from pyina.ez_map import ez_map as _map
     nodes=4
-    test_sanity( _map, nodes )
-    test_maps( _map, nodes, items=items )
+    check_sanity( _map, nodes )
+    check_maps( _map, nodes, items=items )
 
+def test_ezmap2():
     from pyina.ez_map import ez_map2 as _map
-    test_sanity( _map, nodes )
-    test_maps( _map, nodes, items=items )
+    nodes=4
+    check_sanity( _map, nodes )
+    check_maps( _map, nodes, items=items )
 
 
-# EOF
+if __name__ == '__main__':
+    test_ezmap()
+    test_ezmap2()
