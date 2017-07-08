@@ -162,7 +162,7 @@ Optional requirements::
 
     - setuptools, version >= 0.6
     - pyre, version == 0.8
-    - mystic, version >= 0.3.0
+    - mystic, version >= 0.3.1
 
 
 More Information
@@ -305,7 +305,7 @@ mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
 pypar_version = '>=2.1.4'
-mystic_version = '>=0.3.0'
+mystic_version = '>=0.3.1'
 if has_setuptools:
     setup_code += """
         zip_safe = False,
