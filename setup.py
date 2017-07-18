@@ -154,7 +154,7 @@ Requirements
     - python, version >= 2.5, version < 3.0
     - numpy, version >= 1.0
     - mpi4py, version >= 1.2.1
-    - dill, version >= 0.2.7
+    - dill, version >= 0.2.7.1
     - pox, version >= 0.2.3
     - pathos, version >= 0.2.1
 
@@ -298,7 +298,7 @@ setup(name="pyina",
 
 # add dependencies
 numpy_version = '>=1.0'
-dill_version = '>=0.2.7'
+dill_version = '>=0.2.7.1'
 pox_version = '>=0.2.3'
 pathos_version = '>=0.2.1'
 mpi4py_version = '>=1.2.1'
