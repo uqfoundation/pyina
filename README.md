@@ -28,7 +28,7 @@ launching a MPI job.
 `pyina` is part of `pathos`, a python framework for heterogeneous computing.
 `pyina` is in active development, so any user feedback, bug reports, comments,
 or suggestions are highly appreciated.  A list of known issues is maintained
-at http://trac.mystic.cacr.caltech.edu/project/pathos/query, with a public
+at http://trac.mystic.cacr.caltech.edu/project/pathos/query.html, with a public
 ticket list at https://github.com/uqfoundation/pyina/issues.
 
 
@@ -47,7 +47,7 @@ to running MPI jobs, with::
 Current Release
 ---------------
 The latest released version of `pyina` is available at:
-    http://trac.mystic.cacr.caltech.edu/project/pathos
+    https://pypi.org/project/pyina
 
 `pyina` is distributed under a 3-clause BSD license.
 

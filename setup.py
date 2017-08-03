@@ -4,7 +4,7 @@
 # Copyright (c) 1997-2016 California Institute of Technology.
 # Copyright (c) 2016-2017 The Uncertainty Quantification Foundation.
 # License: 3-clause BSD.  The full license text is available at:
-#  - http://trac.mystic.cacr.caltech.edu/project/pathos/browser/pyina/LICENSE
+#  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
 from __future__ import with_statement
 import os
@@ -79,7 +79,7 @@ launching a MPI job.
 'pyina` is part of `pathos`, a python framework for heterogeneous computing.
 'pyina` is in active development, so any user feedback, bug reports, comments,
 or suggestions are highly appreciated.  A list of known issues is maintained
-at http://trac.mystic.cacr.caltech.edu/project/pathos/query, with a public
+at http://trac.mystic.cacr.caltech.edu/project/pathos/query.html, with a public
 ticket list at https://github.com/uqfoundation/pyina/issues.
 
 
@@ -103,7 +103,7 @@ This is `pyina-%(relver)s`.
 
 The latest released version of `pyina` is available at:
 
-    http://trac.mystic.cacr.caltech.edu/project/pathos
+    https://pypi.org/project/pyina
 
 `pyina` is distributed under a 3-clause BSD license.
 
@@ -282,8 +282,8 @@ setup(name="pyina",
     maintainer = 'Mike McKerns',
     license = '3-clause BSD',
     platforms = ['Linux', 'Mac'],
-    url = 'http://www.cacr.caltech.edu/~mmckerns/pyina.htm',
-    download_url = 'http://dev.danse.us/packages',
+    url = 'https://pypi.org/project/pyina',
+    download_url = 'https://github.com/uqfoundation/pyina/archive/master.zip',
     classifiers = ('Development Status :: 5 - Production/Stable',
                    'Intended Audience :: Developers',
                    'Intended Audience :: Science/Research',
@@ -310,7 +310,6 @@ if has_setuptools:
     setup_code += """
         zip_safe = False,
         install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pox%s', 'pathos%s'),
-        dependency_links = ["http://dev.danse.us/packages/"],
 """ % (numpy_version, mpi4py_version, dill_version, pox_version, pathos_version)
 
 # add the scripts, and close 'setup' call
