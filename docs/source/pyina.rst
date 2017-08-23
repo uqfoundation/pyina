@@ -7,7 +7,11 @@ ez_map module
 .. automodule:: pyina.ez_map
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 launchers module
 ----------------
@@ -15,7 +19,11 @@ launchers module
 .. automodule:: pyina.launchers
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 mappers module
 --------------
@@ -23,7 +31,11 @@ mappers module
 .. automodule:: pyina.mappers
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 mpi module
 ----------
@@ -31,7 +43,11 @@ mpi module
 .. automodule:: pyina.mpi
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 mpi_pool module
 ---------------
@@ -39,7 +55,11 @@ mpi_pool module
 .. automodule:: pyina.mpi_pool
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 mpi_scatter module
 ------------------
@@ -47,7 +67,11 @@ mpi_scatter module
 .. automodule:: pyina.mpi_scatter
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 schedulers module
 -----------------
@@ -55,7 +79,11 @@ schedulers module
 .. automodule:: pyina.schedulers
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
 tools module
 ------------
@@ -63,5 +91,9 @@ tools module
 .. automodule:: pyina.tools
     :members:
     :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+    :imported-members:
+..  :exclude-members:
 
