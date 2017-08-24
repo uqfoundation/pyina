@@ -55,29 +55,29 @@ pyina: MPI parallel map and cluster scheduling
 About Pyina
 ===========
 
-The `pyina` package provides several basic tools to make MPI-based
+The ``pyina`` package provides several basic tools to make MPI-based
 high-performance computing more accessable to the end user. The goal
-of `pyina` is to allow the user to extend their own code to MPI-based
+of ``pyina`` is to allow the user to extend their own code to MPI-based
 high-performance computing with minimal refactoring.
 
-The central element of `pyina` is the parallel map algorithm.
-`pyina` currently provides two strategies for executing the parallel-map,
+The central element of ``pyina`` is the parallel map algorithm.
+``pyina`` currently provides two strategies for executing the parallel-map,
 where a strategy is the algorithm for distributing the work list of
-jobs across the availble nodes.  These strategies can be used "in-the-raw"
+jobs across the availble nodes.  These strategies can be used *"in-the-raw"*
 (i.e. directly) to provide the map algorithm to a user's own mpi-aware code.
-Further, in `pyina.mpi` `pyina` provides pipe and map implementations
-(known as "easy map") that hide the MPI internals from the user. With the
-"easy map", the user can launch their code in parallel batch mode -- using
+Further, in ``pyina.mpi`` ``pyina`` provides pipe and map implementations
+(known as *"easy map"*) that hide the MPI internals from the user. With the
+*"easy map"*, the user can launch their code in parallel batch mode -- using
 standard python and without ever having to write a line of MPI code.
 
 There are several ways that a user would typically launch their code in
-parallel -- directly with `mpirun` or `mpiexec`, or through the use of a
-scheduler such as torque or slurm. `pyina` encapsulates several of these
-"launchers", and provides a common interface to the different methods of
+parallel -- directly with ``mpirun`` or ``mpiexec``, or through the use of a
+scheduler such as torque or slurm. ``pyina`` encapsulates several of these
+*"launchers"*, and provides a common interface to the different methods of
 launching a MPI job.
 
-'pyina` is part of `pathos`, a python framework for heterogeneous computing.
-'pyina` is in active development, so any user feedback, bug reports, comments,
+``pyina`` is part of ``pathos``, a python framework for heterogeneous computing.
+``pyina`` is in active development, so any user feedback, bug reports, comments,
 or suggestions are highly appreciated.  A list of known issues is maintained
 at http://trac.mystic.cacr.caltech.edu/project/pathos/query.html, with a public
 ticket list at https://github.com/uqfoundation/pyina/issues.
@@ -86,10 +86,10 @@ ticket list at https://github.com/uqfoundation/pyina/issues.
 Major Features
 ==============
 
-`pyina` provides a highly configurable parallel map interface
-to running MPI jobs, with::
+``pyina`` provides a highly configurable parallel map interface
+to running MPI jobs, with:
 
-    - a map interface that extends the python `map` standard
+    - a map interface that extends the python ``map`` standard
     - the ability to submit batch jobs to a selection of schedulers
     - the ability to customize node and process launch configurations
     - the ability to launch parallel MPI jobs with standard python
@@ -99,13 +99,13 @@ to running MPI jobs, with::
 Current Release
 ===============
 
-This is `pyina-%(relver)s`.
+This is ``pyina-%(relver)s``.
 
-The latest released version of `pyina` is available at:
+The latest released version of ``pyina`` is available at:
 
     https://pypi.org/project/pyina
 
-`pyina` is distributed under a 3-clause BSD license.
+``pyina`` is distributed under a 3-clause BSD license.
 
     >>> import pyina
     >>> print (pyina.license())
@@ -114,7 +114,7 @@ The latest released version of `pyina` is available at:
 Development Version
 ===================
 
-You can get the latest development version with all the shiny new features at::
+You can get the latest development version with all the shiny new features at:
 
     https://github.com/uqfoundation
 
@@ -124,23 +124,23 @@ If you have a new contribution, please submit a pull request.
 Installation
 ============
 
-`pyina` is packaged to install from source, so you must
+``pyina`` is packaged to install from source, so you must
 download the tarball, unzip, and run the installer::
 
     [download]
-    $ tar -xvzf pyina-%(thisver)s.tgz
+    $ tar -xvzf pyina-%(thisver)s.tar.gz
     $ cd pyina-%(thisver)s
     $ python setup py build
     $ python setup py install
 
 You will be warned of any missing dependencies and/or settings after
-you run the "build" step above. `pyina` depends on `dill`, `pox`, `pathos`, and
-`mpi4py`, so you should install them first. A version of MPI must also be
-installed. Launchers in `pyina` that submit to a scheduler will throw errors
+you run the "build" step above. ``pyina`` depends on ``dill``, ``pox``, ``pathos``, and
+``mpi4py``, so you should install them first. A version of MPI must also be
+installed. Launchers in ``pyina`` that submit to a scheduler will throw errors
 if the underlying scheduler is not available, however a scheduler is not
-required for `pyina` to execute.
+required for ``pyina`` to execute.
 
-Alternately, `pyina` can be installed with `easy_install`::
+Alternately, ``pyina`` can be installed with ``easy_install``::
 
     [download]
     $ easy_install -f . pyina
@@ -149,58 +149,54 @@ Alternately, `pyina` can be installed with `easy_install`::
 Requirements
 ============
 
-`pyina` requires::
+``pyina`` requires:
 
-    - python, version >= 2.5, version < 3.0
-    - numpy, version >= 1.0
-    - mpi4py, version >= 1.2.1
-    - dill, version >= 0.2.7.1
-    - pox, version >= 0.2.3
-    - pathos, version >= 0.2.1
+    - ``python``, **version >= 2.5** and **version < 3.0**
+    - ``numpy``, **version >= 1.0**
+    - ``mpi4py``, **version >= 1.2.1**
+    - ``dill``, **version >= 0.2.7.1**
+    - ``pox``, **version >= 0.2.3**
+    - ``pathos``, **version >= 0.2.1**
 
-Optional requirements::
+Optional requirements:
 
-    - setuptools, version >= 0.6
-    - pyre, version == 0.8
-    - mystic, version >= 0.3.1
+    - ``setuptools``, **version >= 0.6**
+    - ``pyre``, **version == 0.8**
+    - ``mystic``, **version >= 0.3.1**
 
 
 More Information
 ================
 
 Probably the best way to get started is to look at the tests and
-examples provided within `pyina`. See `pyina.examples` and `pyina.tests`
+examples provided within ``pyina``. See ``pyina.examples`` and ``pyina.tests``
 for a set of scripts that demonstrate the configuration and launching of
-mpi-based parallel jobs using the "easy map" interface. Also see
-`pyina.examples_other` for a set of scripts that test the more raw
-internals of `pyina`. The source code is also generally well documented,
+mpi-based parallel jobs using the *"easy map"* interface. Also see
+``pyina.examples_other`` for a set of scripts that test the more raw
+internals of ``pyina``. The source code is also generally well documented,
 so further questions may be resolved by inspecting the code itself. Please
 also feel free to submit a ticket on github, or ask a question on
-stackoverflow (@Mike McKerns).
+stackoverflow (**@Mike McKerns**).
+If you would like to share how you use ``pyina`` in your work, please send
+an email (to **mmckerns at uqfoundation dot org**).
 
-'pyina` is an active research tool. There are a growing number of publications
-and presentations that discuss real-world examples and new features of `pyina`
-in greater detail than presented in the user's guide.  If you would like to
-share how you use `pyina` in your work, please post a link or send an email
-(to mmckerns at uqfoundation dot org).
+Important classes and functions are found here:
 
-Important classes and functions are found here::
+    - ``pyina.mpi``           [the map API definition]
+    - ``pyina.schedulers``    [all available schedulers] 
+    - ``pyina.launchers``     [all available launchers] 
 
-    - pyina.mpi           [the map API definition]
-    - pyina.schedulers    [all available schedulers] 
-    - pyina.launchers     [all available launchers] 
+Mapping strategies are found here:
 
-Mapping strategies are found here::
+    - ``pyina.mpi_scatter``   [the scatter-gather strategy]
+    - ``pyina.mpi_pool``      [the worker pool strategy]
 
-    - pyina.mpi_scatter   [the scatter-gather strategy]
-    - pyina.mpi_pool      [the worker pool strategy]
-
-`pyina` also provides two convience scripts that help navigate the
+``pyina`` also provides two convience scripts that help navigate the
 MPI environment. These scripts are installed to a directory on the
-user's $PATH, and thus can be run from anywhere::
+user's ``$PATH``, and thus can be run from anywhere:
 
-    - machines.py               [list the available MPI nodes]
-    - mpi_world.py              [setup/teardown of the MPI environment]
+    - ``machines.py``               [list the available MPI nodes]
+    - ``mpi_world.py``              [setup/teardown of the MPI environment]
 
 If may also be convienent to set a shell alias for the launch of 'raw'
 mpi-python jobs. Set something like the following (for bash)::
@@ -213,8 +209,8 @@ mpi-python jobs. Set something like the following (for bash)::
 Citation
 ========
 
-If you use `pyina` to do research that leads to publication, we ask that you
-acknowledge use of `pyina` by citing the following in your publication::
+If you use ``pyina`` to do research that leads to publication, we ask that you
+acknowledge use of ``pyina`` by citing the following in your publication::
 
     M.M. McKerns, L. Strand, T. Sullivan, A. Fang, M.A.G. Aivazis,
     "Building a framework for predictive science", Proceedings of
@@ -352,15 +348,15 @@ try:
     import mpi4py
 except ImportError:
     print("""
-There is a bug in the `mpi4py` installer for MacOSX,
-and a patch has been submitted to the `mpi4py` developers.
+There is a bug in the ``mpi4py`` installer for MacOSX,
+and a patch has been submitted to the ``mpi4py`` developers.
 Until this patch is accepted in a release,
-a modified version of `mpi4py` will be available here:
+a modified version of ``mpi4py`` will be available here:
   http://dev.danse.us/packages/
-or from the `external` directory included in the `pyina` source distribution.
+or from the ``external`` directory included in the ``pyina`` source distribution.
 
 Further, you may need to set the environment variable "SDKROOT",
-as shown in the instructions for installing `mpi4py`:
+as shown in the instructions for installing ``mpi4py``:
   http://mpi4py.scipy.org/docs/usrman/install.html
 """)
 
