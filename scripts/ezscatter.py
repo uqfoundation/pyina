@@ -6,10 +6,13 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 """
-ezscatter: helper script for pyina.mpi maps using the 'scatter gather' strategy
-(same exact code as ezpool, but uses pyina.mpi_scatter)
+helper script for ``pyina.mpi`` maps using the *'scatter gather'* strategy
 
-This is a helper script for pyina's mpi.Mapper class. Don't use it directly.
+Note:
+    this uses the same code as ``ezpool.py``, but with ``pyina.mpi_scatter``.
+
+Warning:
+    this is a helper script for ``pyina.mpi.Mapper`` -- don't use it directly.
 """
 
 import logging

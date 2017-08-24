@@ -24,4 +24,5 @@ mpi_world script
 
 .. automodule:: mpi_world
     :members:
+    :exclude-members: launch, alias, set_master, set_slaves, kill_all
 

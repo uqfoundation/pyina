@@ -21,7 +21,7 @@ standard python and without ever having to write a line of MPI code.
 
 There are several ways that a user would typically launch their code in
 parallel -- directly with ``mpirun`` or ``mpiexec``, or through the use of a
-scheduler such as torque or slurm. ``pyina`` encapsulates several of these
+scheduler such as *torque* or *slurm*. ``pyina`` encapsulates several of these
 *"launchers"*, and provides a common interface to the different methods of
 launching a MPI job.
 

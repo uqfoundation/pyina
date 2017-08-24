@@ -8,13 +8,23 @@
 #
 # helper script to setup your mpi environment
 
-__doc__ = """setup mpi python environment
-options:
-    -help             print this message
-    -slaves nodes     set mpi world (nodes is the list of slave nodes)
-    -kill             tear down mpi world
+__doc__ = """
+setup the MPI environment
 
-NOTE: make sure 'mpd &' was run before setting slave nodes!"""
+Note:
+    Options:
+        * ``-help``         [prints this message]
+        * ``-slaves nodes`` [set mpi world (nodes is a list of slave nodes)]
+        * ``-kill``         [tear down mpi world]
+
+Note:
+    ``'mpd &'`` must be run before setting the slave nodes.
+
+Examples::
+
+    $ mpi_world.py -slaves [n00, n01, n02, n03]
+    seting up mpi...
+"""
 #   -alias nnodes     set bash aliases for mpiexec (nnodes is X in '-np X')
 
 from subprocess import Popen, PIPE, STDOUT
