@@ -15,19 +15,18 @@ running parallel jobs with serial python.
 Usage
 =====
 
-A call to ez_map will roughly follow this example::
-
+A call to ez_map will roughly follow this example:
     >>> # get the parallel mapper
     >>> from pyina.ez_map import ez_map
-
     >>> # construct a target function
     >>> def host(id):
     ...     import socket
     ...     return "Rank: %d -- %s" % (id, socket.gethostname())
-
+    ...
     >>> # launch the parallel map of the target function
     >>> results = ez_map(host, range(100), nodes = 10)
-    >>> print "\n".join(results)
+    >>> for result in results:
+    ...     print(result)
 
 
 Implementation
@@ -35,7 +34,7 @@ Implementation
 
 A parallel application is launched by using a helper script (e.g. `ezrun.py`)
 as an intermediary between the MPI implementation of the parallel map
-(e.g. `pyina.mpi_pool.parallel_map') and the user's serial python.
+(e.g. `pyina.mpi_pool.parallel_map`) and the user's serial python.
 
 The system call that submits the mpi job is blocking.  Reasons are::
     1) If the main program exits before the parallel job starts,
