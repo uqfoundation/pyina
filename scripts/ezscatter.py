@@ -8,7 +8,7 @@
 """
 helper script for ``pyina.mpi`` maps using the *'scatter gather'* strategy
 
-Note:
+Notes:
     this uses the same code as ``ezpool.py``, but with ``pyina.mpi_scatter``.
 
 Warning:

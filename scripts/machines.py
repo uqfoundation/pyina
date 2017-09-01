@@ -9,7 +9,7 @@
 __doc__ = """
 print a listing of compute nodes as (rank, hostname)
 
-Note:
+Notes:
     to run, type ``$ machines.py [#nodes]`` at a shell terminal prompt.
 
 Examples::

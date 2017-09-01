@@ -8,7 +8,7 @@
 """
 helper script for ``pyina.mpi`` maps using the *'worker pool'* strategy
 
-Note:
+Notes:
     this uses the same code as ``ezscatter.py``, but with ``pyina.mpi_pool``.
 
 Warning:

@@ -11,13 +11,12 @@
 __doc__ = """
 setup the MPI environment
 
-Note:
-    Options:
+Notes:
+    Commandline options are:
         * ``-help``         [prints this message]
         * ``-slaves nodes`` [set mpi world (nodes is a list of slave nodes)]
         * ``-kill``         [tear down mpi world]
 
-Note:
     ``'mpd &'`` must be run before setting the slave nodes.
 
 Examples::
