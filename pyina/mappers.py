@@ -14,6 +14,8 @@ provides:
 (for a the raw map function, use parallel_map directly) 
 """
 
+__all__ = ['worker_pool','scatter_gather']
+
 
 def worker_pool():
     """use the 'worker pool' strategy; hence one job is allocated to each

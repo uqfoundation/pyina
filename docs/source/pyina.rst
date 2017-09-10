@@ -95,5 +95,5 @@ tools module
     :special-members:
     :show-inheritance:
     :imported-members:
-..  :exclude-members:
+    :exclude-members: ceil, np, wait_for
 
