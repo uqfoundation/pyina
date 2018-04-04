@@ -35,7 +35,7 @@ class SimpleApp(Application):
             for peer in range(1, world.size):
                 status = mpi.Status()
                 message = world.recv(source=MPI_ANY_SOURCE,tag=17)
-                print "[%d/%d]: received {%s}" % (world.rank, world.size, message)
+                print("[%d/%d]: received {%s}" % (world.rank, world.size, message))
         else:
             s = "My message is this: I am node %d " % world.rank
             logging.debug("%s" % s)

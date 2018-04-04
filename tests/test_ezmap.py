@@ -39,23 +39,23 @@ def quad_factory(a=1, b=1, c=0):
 
 square_plus_one = quad_factory(2,0,1)
 
-x2 = map(squared, x)
+x2 = list(map(squared, x))
 
 
 def check_sanity(_map, nodes, verbose=False):
     if verbose:
-        print _map
-        print "x: %s\n" % str(x)
+        print(_map)
+        print(("x: %s\n" % str(x)))
 
-        print type, _map.__name__
+        print((type, _map.__name__))
     _config = {'type':"blocking", 'threads':False, 'nproc':nodes, 'ncpus':nodes}
     mapconfig = {'nodes':nodes}
     start = time.time()
     res = _map(squared, x, **mapconfig)
     end = time.time() - start
     if verbose:
-        print "time to results:", end
-        print "y: %s\n" % str(res)
+        print(( "time to results:", end))
+        print(( "y: %s\n" % str(res)))
     assert res == x2
 
     mapconfig.update(_config)
@@ -73,20 +73,20 @@ def check_sanity(_map, nodes, verbose=False):
 
 
 def check_maps(_map, nodes, items=4, delay=0 ):
-    _x = range(-items/2,items/2,2)
+    _x = range(int(-items/2), int(items/2),2)
     _y = range(len(_x))
     _d = [delay]*len(_x)
     _z = [0]*len(_x)
 
    #print map
-    res1 = map(busy_squared, _x)
+    res1 = list(map(busy_squared, _x))
     mapconfig = {'nodes':nodes}
 
    #print _map
     _res1 = _map(busy_squared, _x, **mapconfig)
     assert _res1 == res1
 
-    res2 = map(busy_add, _x, _y, _d)
+    res2 = list(map(busy_add, _x, _y, _d))
     _res2 = _map(busy_add, _x, _y, _d, **mapconfig)
     assert _res2 == res2
    #print ""

@@ -34,9 +34,9 @@ if __name__ == "__main__":
         """
         from subprocess import call
         if type(input) == list:
-            print "Executing: %s" % ' '.join(input)
+            print("Executing: %s" % ' '.join(input))
         else:
-            print "Executing: %s" % input
+            print("Executing: %s" % input)
         retcode = call(input)
         return retcode
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         """
         from pyina import mpi
         from subprocess import Popen, PIPE
-        print "%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input)
+        print("%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input))
         pipe = Popen(input, shell=True, stdout=PIPE).stdout
         pipe.readlines()
         return 0

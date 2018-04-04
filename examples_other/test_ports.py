@@ -28,7 +28,7 @@ class SimpleApp(Application):
                 #FIXME: How to set up a port in mpi4py?
                 port = world.port(mpi.ANY_SOURCE, tag=17)
                 message = port.receive()
-                print "[%d/%d]: received {%s}" % (world.rank, world.size, message)
+                print("[%d/%d]: received {%s}" % (world.rank, world.size, message))
         else:
             s = "My message is this: I am node %d " % world.rank
             logging.debug("%s" % s)

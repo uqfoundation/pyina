@@ -21,7 +21,7 @@ def runshell(input):
     """
     from pyina import mpi
     from subprocess import Popen, PIPE
-    print "%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input)
+    print("%d of %d: executing: %s" % (mpi.world.rank, mpi.world.size, input))
     pipe = Popen(input, shell=True, stdout=PIPE).stdout
     pipe.readlines()
     return 0
@@ -42,7 +42,7 @@ if __name__ == "__main__":
             inputlist = open(batchfile).readlines()
         out = parallel_map2(runshell, inputlist)
     except:
-        print __doc__
+        print(__doc__)
 
 
 # End of file

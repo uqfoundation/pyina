@@ -48,8 +48,8 @@ if __name__ == '__main__':
     
     from pyina import mpi
     if mpi.world.rank == 0:
-        print "approxmiate pi : ", sum(out)/n
-        print "calculated on %d nodes: " % mpi.world.size
+        print("approxmiate pi : ", sum(out)/n)
+        print("calculated on %d nodes: " % mpi.world.size)
 
 
 # end of file

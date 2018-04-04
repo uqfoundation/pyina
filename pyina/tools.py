@@ -27,7 +27,7 @@ def ensure_mpi(size = 1, doc = None):
     mpisize = world.Get_size()
     mpirank = world.Get_rank()
     if mpisize < size:
-        if mpirank == 0: print doc
+        if mpirank == 0: print(doc)
         import sys
         sys.exit()
     return
@@ -38,7 +38,7 @@ def mpiprint(string="", end="\n", rank=0, comm=None):
     if comm is None: comm = world
     if not hasattr(rank, '__len__'): rank = (rank,)
     if comm.rank in rank:
-        print string+end,
+        print((string+end,))
 
 
 #XXX: has light load on *last* proc, heavy/equal on first proc

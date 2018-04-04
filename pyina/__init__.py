@@ -8,8 +8,8 @@
 
 # get version numbers, license, and long description
 try:
-    from info import this_version as __version__
-    from info import readme as __doc__, license as __license__
+    from pyina.info import this_version as __version__
+    from pyina.info import readme as __doc__, license as __license__
 except ImportError:
     msg = """First run 'python setup.py build' to build pyina."""
     raise ImportError(msg)
@@ -25,17 +25,18 @@ __license__ = """
 # shortcuts
 
 # launchers
-import launchers
-import schedulers
+import pyina.launchers as launchers
+import pyina.schedulers as schedulers
 
 # mappers
-import mpi
+import pyina.mpi as mpi
 
 # strategies
-import mpi_scatter, mpi_pool
+import pyina.mpi_scatter as mpi_scatter
+import pyina.mpi_pool as mpi_pool
 
 # tools
-from tools import *
+from .tools import *
 
 # backward compatibility
 parallel_map = mpi_pool
@@ -48,12 +49,12 @@ parallel_map2.parallel_map = mpi_scatter.parallel_map
 
 def license():
     """print license"""
-    print __license__
+    print(__license__)
     return
 
 def citation():
     """print citation"""
-    print __doc__[-499:-140]
+    print((__doc__[-499:-140]))
     return
 
 # end of file

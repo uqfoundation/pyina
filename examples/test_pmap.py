@@ -38,11 +38,11 @@ if __name__ == "__main__":
 
     for i in range(20):
         if world.rank == 0:
-            print "iteration %d" % i
+            print("iteration %d" % i)
         out = parallel_map(func, inputlist, comm = world)
 
     if world.rank == 0:
-        print ''.join(out)
+        print(''.join(out))
 
 
 # End of file

@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     if funcname.endswith('.pik'):  # used pickled func
         workdir = None
-        func = pickle.load(open(funcname,'r'))
+        func = pickle.load(open(funcname,'rb'))
     else:  # used tempfile for func
         workdir = sys.argv[4]
         sys.path = [workdir] + sys.path
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         module = __import__(modname)
         sys.path.pop(0)
         func = module.FUNC
-    args,kwds = pickle.load(open(argfilename,'r'))
+    args,kwds = pickle.load(open(argfilename,'rb'))
 
     if world.rank == 0:
         log.info('funcname: %s' % funcname)        # sys.argv[1]
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     if world.rank == 0:
         log.info('res: %s' % str(res))
-        pickle.dump(res, open(outfilename,'w'))
+        pickle.dump(res, open(outfilename,'wb'))
 
 
 # end of file

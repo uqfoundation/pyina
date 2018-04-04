@@ -11,8 +11,12 @@ def run_source(obj):
     _obj = source._wrap(obj)
     assert _obj(1.57) == obj(1.57)
     src = source.importable(obj, alias='_f')
-    exec src in globals(), locals()
-    assert _f(1.57) == obj(1.57)
+    # LEEK: for 3.x, locals may not be modified
+    # (see https://docs.python.org/3.6/library/functions.html#locals)
+    #
+    my_locals = locals()
+    exec(src, globals(), my_locals)
+    assert my_locals["_f"](1.57) == obj(1.57)
     name = source.getname(obj)
     assert name == obj.__name__ or src.split("=",1)[0].strip()
 
@@ -25,7 +29,7 @@ def run_pool(obj):
     from pyina.launchers import Mpi
     p = Mpi(2)
     x = [1,2,3]
-    y = map(obj, x)
+    y = list(map(obj, x))
     p.scatter = False
     assert p.map(obj, x) == y
     p.source = True
