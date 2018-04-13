@@ -2,3 +2,4 @@ numpy
 pox
 dill
 pathos
+mpi4py
