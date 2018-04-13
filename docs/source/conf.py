@@ -21,9 +21,6 @@ from datetime import datetime
 import sys
 sys.path.insert(0, os.path.abspath('../../scripts'))
 
-# Import the project
-import pyina
-
 # Mock mpi4py
 from unittest.mock import MagicMock
 
@@ -34,6 +31,9 @@ class Mock(MagicMock):
 
 MOCK_MODULES = ['mpi4py']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+# Import the project
+import pyina
 
 
 # -- General configuration ------------------------------------------------
