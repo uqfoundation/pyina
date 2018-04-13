@@ -22,7 +22,10 @@ import sys
 sys.path.insert(0, os.path.abspath('../../scripts'))
 
 # Mock mpi4py
-from unittest.mock import MagicMock
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import Mock as MagicMock
 
 class Mock(MagicMock):
     @classmethod
