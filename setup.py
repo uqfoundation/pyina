@@ -302,8 +302,16 @@ if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.1'
+# rtd fails for mpi4py, mock it instead
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if has_setuptools:
-    setup_code += """
+    if on_rtd:
+        setup_code += """
+        zip_safe = False,
+        install_requires = ('numpy%s', 'dill%s', 'pox%s', 'pathos%s'),
+""" % (numpy_version, dill_version, pox_version, pathos_version)
+    else:
+        setup_code += """
         zip_safe = False,
         install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pox%s', 'pathos%s'),
 """ % (numpy_version, mpi4py_version, dill_version, pox_version, pathos_version)
