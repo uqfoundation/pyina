@@ -43,6 +43,6 @@ def all_mappers():
 
 
 if __name__=='__main__':
-    print all_mappers()
+    print(all_mappers())
 
 # EOF

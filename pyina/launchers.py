@@ -85,7 +85,7 @@ __all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
 from pyina.mpi import Mapper, defaults
 from pathos.abstract_launcher import AbstractWorkerPool
 from pathos.helpers import cpu_count
-from schedulers import Torque, Moab, Lsf
+from pyina.schedulers import Torque, Moab, Lsf
 
 import logging
 log = logging.getLogger("launchers")
@@ -146,7 +146,7 @@ for the associated launcher (e.g mpirun, mpiexec).
         Mapper.__init__(self, *args, **kwds)
         self.scatter = bool(kwds.get('scatter', False)) #XXX: hang w/ nodes=1 ?
        #self.nodes = kwds.get('nodes', None)
-        if not len(args) and not kwds.has_key('nodes'):
+        if not len(args) and 'nodes' not in kwds:
             if self.scheduler:
                 self.nodes = self.scheduler.nodes
             else:
@@ -447,7 +447,7 @@ def launch(command):
     subproc = mapper._Mapper__launch(command)
    #pid = subproc.pid
     error = subproc.wait()           # block until all done
-    if error: raise IOError, "launch failed: %s" % command
+    if error: raise IOError("launch failed: %s" % command)
     return error
 
     
@@ -545,7 +545,7 @@ NOTES:
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    from schedulers import torque_scheduler
+    from .schedulers import torque_scheduler
     torque = torque_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == torque.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
@@ -575,7 +575,7 @@ NOTES:
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    from schedulers import moab_scheduler
+    from .schedulers import moab_scheduler
     moab = moab_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == moab.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
@@ -622,13 +622,13 @@ NOTES:
 
 
 def all_launchers():
-    import launchers
+    import pyina.launchers as launchers
     L = ["launchers.%s" % f for f in  dir(launchers) if f[-8:] == "launcher"]
     return L
 
 
 def all_launches(kdict = {}):
-    import launchers, traceback, os.path
+    import pyina.launchers as launchers, traceback, os.path
     stack = traceback.extract_stack()
     caller = stack[ -min(len(stack),2) ][0]
     #
@@ -636,7 +636,7 @@ def all_launches(kdict = {}):
     defaults['progname'] = os.path.basename(caller)
     #
     for key in defaults.keys():
-        if not kdict.has_key(key):
+        if key not in kdict:
             kdict[key] = defaults[key]
     L = all_launchers()
     #
@@ -681,11 +681,11 @@ if __name__=='__main__':
 #   from mystic import helputil
 #   helputil.paginate(__launch())
 
-    print "python launch"
+    print("python launch")
     defaults['program'] = "tools.py"
     launch(serial_launcher(defaults))
 
-    print "serial launch"
+    print("serial launch")
     settings = {'python':'', 'program':"hostname"}
     launch(serial_launcher(settings))
 

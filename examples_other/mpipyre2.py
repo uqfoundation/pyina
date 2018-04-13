@@ -27,10 +27,10 @@ class SimpleApp(Application):
         if world.rank == root:
             str = "hello world"
             nn = world.bcast(str, root)
-            print "Master has: %s " % nn
+            print("Master has: %s " % nn)
         else:
             nn = world.bcast("", root)
-            print "Slave (%d) has: %s " % (world.rank, nn)
+            print("Slave (%d) has: %s " % (world.rank, nn))
         return
 
     def _defaults(self):

@@ -32,7 +32,7 @@ Get pyina to say hello
 
     def main(self, *args, **kwargs):
         from pyina import mpi
-        print "hello from mpi.world.rank --> %s " % mpi.world.rank
+        print("hello from mpi.world.rank --> %s " % mpi.world.rank)
         return
 
 

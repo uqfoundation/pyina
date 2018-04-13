@@ -38,23 +38,23 @@ def quad_factory(a=1, b=1, c=0):
 
 square_plus_one = quad_factory(2,0,1)
 
-x2 = map(squared, x)
+x2 = list(map(squared, x))
 
 
 def check_sanity(pool, verbose=False):
     if verbose:
-        print pool
-        print "x: %s\n" % str(x)
+        print(pool)
+        print("x: %s\n" % str(x))
 
-        print pool.map.__name__
+        print(pool.map.__name__)
     # blocking map
     start = time.time()
     res = pool.map(squared, x)
     end = time.time() - start
     assert res == x2
     if verbose:
-        print "time to results:", end
-        print "y: %s\n" % str(res)
+        print("time to results:", end)
+        print("y: %s\n" % str(res))
 
    #    print pool.imap.__name__
     # iterative map
@@ -88,14 +88,14 @@ def check_sanity(pool, verbose=False):
 
 
 def check_maps(pool, items=4, delay=0):
-    _x = range(-items/2,items/2,2)
+    _x = range(int(-items/2),int(items/2),2)
     _y = range(len(_x))
     _d = [delay]*len(_x)
     _z = [0]*len(_x)
 
    #print map
-    res1 = map(squared, _x)
-    res2 = map(busy_add, _x, _y, _z)
+    res1 = list(map(squared, _x))
+    res2 = list(map(busy_add, _x, _y, _z))
 
    #print pool.map
     _res1 = pool.map(squared, _x)
@@ -125,10 +125,10 @@ def check_maps(pool, items=4, delay=0):
 
 def check_dill(pool, verbose=False): # test function that should fail in pickle
     if verbose:
-        print pool
-        print "x: %s\n" % str(x)
+        print(pool)
+        print("x: %s\n" % str(x))
 
-        print pool.map.__name__
+        print(pool.map.__name__)
    #start = time.time()
     try:
         res = pool.map(square_plus_one, x)
@@ -136,12 +136,12 @@ def check_dill(pool, verbose=False): # test function that should fail in pickle
         assert False # should use a smarter test here...
    #end = time.time() - start
    #    print "time to results:", end
-        print "y: %s\n" % str(res)
+        print("y: %s\n" % str(res))
     assert True
 
 
 def check_ready(pool, maxtries, delay, verbose=True):
-    if verbose: print pool
+    if verbose: print(pool)
     m = pool.amap(busy_squared, x)# x)
 
   # print m.ready()
@@ -150,14 +150,14 @@ def check_ready(pool, maxtries, delay, verbose=True):
     while not m.ready():
         time.sleep(delay)
         tries += 1
-        if verbose: print "TRY: %s" % tries
+        if verbose: print("TRY: %s" % tries)
         if tries >= maxtries:
-            if verbose: print "TIMEOUT"
+            if verbose: print("TIMEOUT")
             break
    #print m.ready()
 #   print m.get(0)
     res = m.get()
-    if verbose: print res
+    if verbose: print(res)
     z = [0]*len(x)
     assert res == map(squared, x)# x, z)
     assert tries > 0

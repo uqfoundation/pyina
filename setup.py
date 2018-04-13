@@ -328,18 +328,18 @@ try:
 except ImportError:
     print("\n***********************************************************")
     print("WARNING: One of the following dependencies may be unresolved:")
-    print("    numpy %s" % numpy_version)
-    print("    dill %s" % dill_version)
-    print("    pox %s" % pox_version)
-    print("    pathos %s" % pathos_version)
-    print("    mpi4py %s" % mpi4py_version)
+    print(("    numpy %s" % numpy_version))
+    print(("    dill %s" % dill_version))
+    print(("    pox %s" % pox_version))
+    print(("    pathos %s" % pathos_version))
+    print(("    mpi4py %s" % mpi4py_version))
 #   print("    pypar %s (optional)" % pypar_version)
     print("***********************************************************\n")
 
 if sdkroot_set:
     print("\n***********************************************************")
     print("WARNING: One of following variables was set to a default:")
-    print("    SDKROOT %s" % sdkroot)
+    print(("    SDKROOT %s" % sdkroot))
     print("***********************************************************\n")
 else:
     pass

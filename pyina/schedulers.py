@@ -110,7 +110,7 @@ associated scheduler.
             try:
                 nodes = kwds['nodes']
                 msg = "got multiple values for keyword argument 'nodes'"
-                raise TypeError, msg
+                raise TypeError(msg)
             except KeyError:
                 nodes = args[0]
         else: nodes = kwds.get('nodes', self.__nodes)
@@ -145,11 +145,11 @@ associated scheduler.
         """fetch result from the results file"""
         try:
             error = subproc.wait()           # block until all done
-            res = pickle.load(open(outfile,'r'))
+            res = pickle.load(open(outfile,'rb'))
         except:
             error = True
         if error:
-            raise IOError, "fetch failed: %s" % outfile
+            raise IOError("fetch failed: %s" % outfile)
         return res
     def _submit(self, command, kdict={}):
         """prepare the given command for the scheduler
@@ -168,7 +168,7 @@ equivalent to:  (command)
             subproc = self.__launch(command)
            #pid = subproc.pid
             error = subproc.wait()           # block until all done
-            if error: raise IOError, "launch failed: %s" % command
+            if error: raise IOError("launch failed: %s" % command)
             return error
        #self._cleanup()
         return
@@ -178,7 +178,7 @@ equivalent to:  (command)
         executable = command.split("|")[-1].split()[0]
         from pox.shutils import which
         if not which(executable):
-            raise IOError, "launch failed: %s not found" % executable
+            raise IOError("launch failed: %s not found" % executable)
         return Popen([command], shell=True) #FIXME: shell=True is insecure
     def __repr__(self):
         subargs = (self.__class__.__name__, self.nodes, self.timelimit, self.queue)
@@ -323,12 +323,12 @@ class moab_scheduler(object):
     pass
 
 def all_schedulers():
-    import schedulers
+    import pyina.schedulers as schedulers
     L = ["schedulers.%s" % f for f in  dir(schedulers) if f[-9:] == "scheduler"]
     return L
 
 
 if __name__=='__main__':
-    print all_schedulers()
+    print(all_schedulers())
 
 # EOF

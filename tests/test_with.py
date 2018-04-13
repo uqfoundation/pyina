@@ -8,7 +8,9 @@
 
 from __future__ import with_statement
 from time import sleep
-from itertools import izip
+import sys
+if sys.version < "3":
+    from itertools import izip as zip
 
 
 PRIMES = [
@@ -47,7 +49,7 @@ def run_with_multipool(Pool): #XXX: amap and imap -- NotImplementedError
 
     with Pool() as pool3:
        #for number, prime in izip(PRIMES, pool3.imap(is_prime, PRIMES)):
-        for number, prime in izip(PRIMES, pool3.map(is_prime, PRIMES)):
+        for number, prime in zip(PRIMES, pool3.map(is_prime, PRIMES)):
             assert prime if number != PRIMES[-1] else not prime
            #print ('%d is prime: %s' % (number, prime))
 

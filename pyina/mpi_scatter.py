@@ -6,7 +6,6 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from itertools import izip
 from mpi4py import MPI as mpi
 import dill
 try:
@@ -30,7 +29,7 @@ def __queue(*inputs):
    #NJOBS = len(inputs[0])
    #return (lookup(inputs, *get_workload(i, size, NJOBS, skip=__SKIP[0])) for i in range(size))
     load = __index(*inputs)
-    return (lookup(inputs, load.next()) for i in range(size))
+    return (lookup(inputs, next(load)) for i in range(size))
 
 def __index(*inputs):
     """build an index iterator for the given inputs"""
@@ -45,7 +44,7 @@ def parallel_map(func, *seq, **kwds):
     if skip is False: skip = None
     else:
         if size is 1:
-            raise ValueError, "There must be at least one worker node"
+            raise ValueError("There must be at least one worker node")
         skip = master
     __SKIP[0] = skip
 
@@ -56,11 +55,11 @@ def parallel_map(func, *seq, **kwds):
 
     if rank == master:
         # each processor needs to do its set of jobs. 
-        message = queue.next()
+        message = next(queue)
         # send jobs to workers
         for worker in range(1, size):
             # master sending seq[ib:ie] to worker 'worker'
-            comm.send(queue.next(), worker, 0)
+            comm.send(next(queue), worker, 0)
     else:
         # worker 'rank' receiving job
         status = mpi.Status()
@@ -69,7 +68,7 @@ def parallel_map(func, *seq, **kwds):
 
     # now message is the part of seq that each worker has to do
 #   result = map(func, *message) #XXX: receiving the *data*
-    result = map(func, *lookup(seq, *message)) #XXX: receives an *index*
+    result = list(map(func, *lookup(seq, *message))) #XXX: receives an *index*
 
     if rank == master:
         _b, _e = get_workload(rank, size, NJOBS, skip=skip)
@@ -103,9 +102,9 @@ if __name__ == '__main__':
     x = range(10)
     y = parallel_map(squared, x)#, onall=False)
     if rank == master:
-        print "f: %s" % squared.__name__
-        print "x: %s" % x
-        print "y: %s" % y
+        print("f: %s" % squared.__name__)
+        print("x: %s" % x)
+        print("y: %s" % y)
 
 
 # EOF

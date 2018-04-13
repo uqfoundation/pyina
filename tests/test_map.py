@@ -22,20 +22,20 @@ def busy_add(x,y, delay=0.01):
 
 
 def timed_pool(pool, items=100, delay=0.1, verbose=False):
-    _x = range(-items/2,items/2,2)
+    _x = range(int(-items/2), int(items/2), 2)
     _y = range(len(_x))
     _d = [delay]*len(_x)
 
-    if verbose: print pool
+    if verbose: print( pool)
     import time
     start = time.time()
     res = pool.map(busy_add, _x, _y, _d)
     _t = time.time() - start
-    if verbose: print "time to queue:", _t
+    if verbose: print(("time to queue:", _t))
     start = time.time()
     _sol_ = list(res)
     t_ = time.time() - start
-    if verbose: print "time to results:", t_, "\n"
+    if verbose: print(("time to results:", t_, "\n"))
     return _sol_
 
 
@@ -82,9 +82,9 @@ if __name__ == '__main__':
     #_debug(True)
 
     if verbose:
-        print "CONFIG: delay = %s" % delay
-        print "CONFIG: items = %s" % items
-        print ""
+        print(("CONFIG: delay = %s" % delay))
+        print(("CONFIG: items = %s" % items))
+        print("")
 
     test_nosource()
     test_source()

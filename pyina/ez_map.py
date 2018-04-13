@@ -59,10 +59,10 @@ defaults = {
 from pyina.mpi import defaults as ezdefaults
 ezdefaults.update(defaults)
 
-from launchers import launch, mpirun_tasks, srun_tasks, aprun_tasks
-from launchers import serial_launcher, mpirun_launcher, srun_launcher
-from launchers import aprun_launcher, torque_launcher, moab_launcher
-from schedulers import torque_scheduler, moab_scheduler
+from .launchers import launch, mpirun_tasks, srun_tasks, aprun_tasks
+from .launchers import serial_launcher, mpirun_launcher, srun_launcher
+from .launchers import aprun_launcher, torque_launcher, moab_launcher
+from .schedulers import torque_scheduler, moab_scheduler
 
 HOLD = []
 sleeptime = 30  #XXX: the time between checking for results
@@ -87,24 +87,24 @@ Further Input:
     import os.path, tempfile, subprocess
     from pyina.tools import which_strategy
     # mapper = None (allow for use of default mapper)
-    if kwds.has_key('mapper'):
+    if 'mapper' in kwds:
         mapper = kwds['mapper']
         if mapper() == "mpi_pool": scatter = False
         elif mapper() == "mpi_scatter": scatter = True
-        else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
+        else: raise NotImplementedError("Mapper '%s' not found." % mapper())
         ezdefaults['program'] = which_strategy(scatter, lazy=True)
     # override the defaults
-    if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
-    if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']
-    if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
-    if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
+    if 'nnodes' in kwds: ezdefaults['nodes'] = kwds['nnodes']
+    if 'nodes' in kwds: ezdefaults['nodes'] = kwds['nodes']
+    if 'timelimit' in kwds: ezdefaults['timelimit'] = kwds['timelimit']
+    if 'queue' in kwds: ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
-    if kwds.has_key('launcher'): launcher = kwds['launcher']
+    if 'launcher' in kwds: launcher = kwds['launcher']
     else: launcher = mpirun_launcher  #XXX: default = non_mpi?
-    if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
+    if 'scheduler' in kwds: scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
-    if kwds.has_key('workdir'): ezdefaults['workdir'] = kwds['workdir']
+    if 'workdir' in kwds: ezdefaults['workdir'] = kwds['workdir']
     else:
         if launcher in [torque_launcher, moab_launcher] \
         or scheduler in [torque_scheduler, moab_scheduler]:
@@ -184,7 +184,7 @@ Further Input:
    #subprocess.call('cp -f %s resfile.py' % resfilename, shell=True)  # pickled list of output
 
     # read result back
-    res = pickle.load(open(resfilename,'r'))
+    res = pickle.load(open(resfilename,'rb'))
     subprocess.call('rm -f %s' % resfilename, shell=True)
     subprocess.call('rm -f %sc' % modfile.name, shell=True)
     return res
@@ -210,24 +210,24 @@ Further Input:
     import os.path, tempfile, subprocess
     from pyina.tools import which_strategy
     # mapper = None (allow for use of default mapper)
-    if kwds.has_key('mapper'):
+    if 'mapper' in kwds:
         mapper = kwds['mapper']
         if mapper() == "mpi_pool": scatter = False
         elif mapper() == "mpi_scatter": scatter = True
-        else: raise NotImplementedError, "Mapper '%s' not found." % mapper()
+        else: raise NotImplementedError("Mapper '%s' not found." % mapper())
         ezdefaults['program'] = which_strategy(scatter, lazy=True)
     # override the defaults
-    if kwds.has_key('nnodes'): ezdefaults['nodes'] = kwds['nnodes']
-    if kwds.has_key('nodes'): ezdefaults['nodes'] = kwds['nodes']
-    if kwds.has_key('timelimit'): ezdefaults['timelimit'] = kwds['timelimit']
-    if kwds.has_key('queue'): ezdefaults['queue'] = kwds['queue']
+    if 'nnodes' in kwds: ezdefaults['nodes'] = kwds['nnodes']
+    if 'nodes' in kwds: ezdefaults['nodes'] = kwds['nodes']
+    if 'timelimit' in kwds: ezdefaults['timelimit'] = kwds['timelimit']
+    if 'queue' in kwds: ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
-    if kwds.has_key('launcher'): launcher = kwds['launcher']
+    if 'launcher' in kwds: launcher = kwds['launcher']
     else: launcher = mpirun_launcher  #XXX: default = non_mpi?
-    if kwds.has_key('scheduler'): scheduler = kwds['scheduler']
+    if 'scheduler' in kwds: scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
-    if kwds.has_key('workdir'): ezdefaults['workdir'] = kwds['workdir']
+    if 'workdir' in kwds: ezdefaults['workdir'] = kwds['workdir']
     else:
         if launcher in [torque_launcher, moab_launcher] \
         or scheduler in [torque_scheduler, moab_scheduler]:
@@ -299,12 +299,12 @@ Further Input:
         subprocess.call('rm -f %s' % errfilename, shell=True)
 
     # read result back
-    res = pickle.load(open(resfilename,'r'))
+    res = pickle.load(open(resfilename,'rb'))
     subprocess.call('rm -f %s' % resfilename, shell=True)
     return res
     
 
 if __name__ == '__main__':
-    print "simple tests are in examples/test_ezmap*.py"
+    print("simple tests are in examples/test_ezmap*.py")
 
 # end of file

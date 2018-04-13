@@ -17,6 +17,6 @@ mpython nodes.py
 
 from pyina import mpi
 world = mpi.world
-print "Node (%d) of %d " % (world.rank, world.size)
+print("Node (%d) of %d " % (world.rank, world.size))
 
 # End of file
