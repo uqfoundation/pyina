@@ -20,7 +20,7 @@ def runshell(input):
     """
     import socket
     from subprocess import Popen, PIPE
-    print "%s executing: %s" % (socket.gethostname(), input)
+    print("%s executing: %s" % (socket.gethostname(), input))
     pipe = Popen(input, shell=True, stdout=PIPE).stdout
     pipe.readlines()
     return 0
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         inputlist = open(batchfile).readlines()
         out = ez_map(runshell, inputlist, nodes=nnodes)
     except:
-        print __doc__
+        print(__doc__)
 
 
 # End of file

@@ -6,7 +6,9 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from itertools import izip
+import sys
+if sys.version < "3":
+    from itertools import izip as zip
 from mpi4py import MPI as mpi
 import dill
 try:
@@ -35,7 +37,7 @@ def _debug(boolean):
 
 def __queue(*inputs):
     "iterator that groups inputs by index (i.e. [(x[0], a[0]),(x[1], a[1])])"
-    return izip(*inputs)
+    return zip(*inputs)
 
 def __index(*inputs):
     """build an index iterator for the given inputs"""
@@ -56,20 +58,20 @@ def parallel_map(func, *seq, **kwds):
     if rank == master:
         log.info("size: %s, NJOBS: %s, nodes: %s, skip: %s" % (size, NJOBS, nodes, skip))
         if nodes == 1: # the pool is just the master
-            if skip: raise ValueError, "There must be at least one worker node"
+            if skip: raise ValueError("There must be at least one worker node")
             return map(func, *seq)
         # spawn a separate process for jobs running on the master
         if not skip:
             pool = MPool(1) #XXX: poor pickling... use iSend/iRecv instead?
            #input = queue.next() #XXX: receiving the *data*
-            input = lookup(seq, queue.next()) #XXX: receives an *index*
+            input = lookup(seq, next(queue)) #XXX: receives an *index*
             log.info("MASTER SEND'ING(0)")
             mresult, mjobid = pool.apply_async(func, args=input), 0
         # farm out to workers: 1-N for indexing, 0 reserved for termination
         for worker in range(1, nodes): #XXX: don't run on master...
             # master send next job to worker 'worker' with tag='worker'
             log.info("WORKER SEND'ING(%s)" % (worker-skip,))
-            comm.send(queue.next(), worker, worker)
+            comm.send(next(queue), worker, worker)
 
         # start receiving
         recvjob = 0; donejob = 0
@@ -89,7 +91,7 @@ def parallel_map(func, *seq, **kwds):
                 if (sendjob-skip < NJOBS): # then workers are not done
                     # master send next job to worker 'sender' with tag='jobid'
                     log.info("WORKER SEND'ING(%s)" % (sendjob-skip))
-                    input = queue.next()
+                    input = next(queue)
                     comm.send(input, sender, sendjob)
                     sendjob += 1
                 else: # workers are done
@@ -108,7 +110,7 @@ def parallel_map(func, *seq, **kwds):
                 if (sendjob < NJOBS):
                     log.info("MASTER SEND'ING(%s)" % sendjob)
                    #input = queue.next() #XXX: receiving the *data*
-                    input = lookup(seq, queue.next()) #XXX: receives an *index*
+                    input = lookup(seq, next(queue)) #XXX: receives an *index*
                     mresult, mjobid = pool.apply_async(func, args=input),sendjob
                     sendjob += 1
                 else: mresult.ready = lambda : False
@@ -143,9 +145,9 @@ if __name__ == '__main__':
     x = range(10)
     y = parallel_map(squared, x)#, onall=False)
     if rank == master:
-        print "f: %s" % squared.__name__
-        print "x: %s" % x
-        print "y: %s" % y
+        print(("f: %s" % squared.__name__))
+        print(("x: %s" % x))
+        print(("y: %s" % y))
 
 
 # EOF

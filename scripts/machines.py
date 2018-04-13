@@ -36,9 +36,9 @@ if __name__ == '__main__':
         pool = MpiPool()
         pool.nodes = nnodes
         hostnames = pool.map(host, range(nnodes))
-        print '\n'.join(hostnames)
+        print('\n'.join(hostnames))
     except:
-        print __doc__
+        print(__doc__)
 
 
 # end of file

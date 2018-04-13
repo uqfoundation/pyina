@@ -29,9 +29,9 @@ if __name__ == '__main__':
         hostnames = parallel_map(host, range(world.size))
 
         if world.rank == 0:
-            print '\n'.join(hostnames)
+            print('\n'.join(hostnames))
     except:
-        print __doc__
+        print(__doc__)
         
 
 # end of file

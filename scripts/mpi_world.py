@@ -34,7 +34,7 @@ MASTERINFO = []
 
 def launch(command,quiet=True):
     "launch a os.system command; if quiet, don't grab the output"
-    print "launch: %s" % command
+    print("launch: %s" % command)
     p = Popen(command, **popen4)
     p.stdin.close()
     if quiet is True:
@@ -50,7 +50,7 @@ def alias(nnodes):
     node = str(nnodes)
     alias = "mpython%s='mpiexec -np %s `which python`'" % (node,node)
     command = "alias %s" % alias
-    print command
+    print(command)
     raise NotImplementedError #FIXME: alias doesn't stick to user's console
     try:
         launch(command)
@@ -68,7 +68,7 @@ def set_master():
         MASTERINFO = [master,int(port)]
     except:
         err = "did you run 'mpd &' first?"
-        raise Exception, err
+        raise (Exception, err)
     return MASTERINFO
 
 def set_slaves(nodelist,masterinfo=MASTERINFO):
@@ -92,11 +92,11 @@ def kill_all():
 if __name__=="__main__":
     import sys
     if sys.argv[-1] == "-kill":
-        print "killing all..."
+        print("killing all...")
         kill_all()
     elif len(sys.argv) > 2:
         if sys.argv[-2] == "-slaves":
-            print "seting up mpi..."
+            print("seting up mpi...")
             MASTERINFO = set_master()
             nodes = sys.argv[-1]
             nodes = nodes.strip('[()]').split(',')
@@ -108,9 +108,9 @@ if __name__=="__main__":
        #    for node in nodes:
        #        alias(int(node))
         else: # "-help"
-            print __doc__
+            print(__doc__)
     else: # "-help"
-        print __doc__
+        print(__doc__)
 
 
 # End of file

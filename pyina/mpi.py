@@ -169,7 +169,7 @@ for the associated launcher (e.g mpirun, mpiexec).
         executable = command.split("|")[-1].split()[0]
         from pox import which
         if not which(executable):
-            raise IOError, "launch failed: %s not found" % executable
+            raise IOError("launch failed: %s not found" % executable)
         return Popen([command], shell=True) #FIXME: shell=True is insecure
     def _launcher(self, kdict={}):
         """prepare launch command based on current settings
@@ -302,11 +302,11 @@ Additional keyword arguments are passed to 'func' along with 'args'.
                     from time import sleep
                     sleep(1); counter += 1
                     if counter >= maxcount:
-                        print "Warning: exceeded timeout (%s s)" % maxcount
+                        print("Warning: exceeded timeout (%s s)" % maxcount)
                         break
                 #print "after wait"
                 # read result back
-                res = dill.load(open(resfilename,'r'))
+                res = dill.load(open(resfilename,'rb'))
                 #print "got result"
             except:
                 error = True
@@ -319,7 +319,7 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         self._cleanup(resfilename, modfile.name, argfile.name)
         if self.scheduler and not _SAVE[0]: self.scheduler._cleanup()
         if error:
-            raise IOError, "launch failed: %s" % command
+            raise IOError("launch failed: %s" % command)
         return res
    #def imap(self, func, *args, **kwds):
    #    """'non-blocking' and 'ordered'

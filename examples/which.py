@@ -14,12 +14,12 @@ mpiexec -np 1 python which.py
 """
 
 import sys
-print(sys.version)
-print(sys.executable)
+print((sys.version))
+print((sys.executable))
 
 try:
     import mpi4py
-    print("mpi4py %s is installed" % getattr(mpi4py, '__version__', ''))
+    print(("mpi4py %s is installed" % getattr(mpi4py, '__version__', '')))
 except ImportError:
     print("mpi4py not installed")
     exit()
@@ -29,7 +29,7 @@ except:
 
 try:
     import pathos
-    print("pathos %s is installed" % getattr(pathos, '__version__', ''))
+    print(("pathos %s is installed" % getattr(pathos, '__version__', '')))
 except ImportError:
     print("pathos not installed")
     exit()
@@ -51,7 +51,7 @@ except:
 
 try:
     import pyina
-    print("pyina %s is installed" % getattr(pyina, '__version__', ''))
+    print(("pyina %s is installed" % getattr(pyina, '__version__', '')))
 except ImportError:
     print("pyina not installed")
 except:
