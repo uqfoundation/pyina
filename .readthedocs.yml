@@ -1,0 +1,8 @@
+requirements_file: docs/source/requirements.txt
+
+python:
+  version: 3
+
+formats:
+  - epub
+  - pdf
