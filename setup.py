@@ -151,7 +151,7 @@ Requirements
 
 ``pyina`` requires:
 
-    - ``python``, **version >= 2.5** and **version < 3.0**
+    - ``python``, **version >= 2.6** or **version >= 3.3**
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.2.1**
     - ``dill``, **version >= 0.2.7.1**
