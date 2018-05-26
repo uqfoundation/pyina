@@ -7,7 +7,7 @@
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
 doc = """
-# Tests parallel, master-slave. Version 0
+# Tests parallel, master-worker. Version 0
 # To run:  (use #nodes >= 2)
 
 alias mpython='mpiexec -np [#nodes] `which python`'

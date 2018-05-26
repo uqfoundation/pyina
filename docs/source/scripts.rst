@@ -4,25 +4,19 @@ pyina scripts documentation
 ezpool script
 -------------
 
-.. automodule:: ezpool
+.. automodule:: _ezpool
     :members:
 
 ezscatter script
 ----------------
 
-.. automodule:: ezscatter
-    :members:
-
-machines script
----------------
-
-.. automodule:: machines
+.. automodule:: _ezscatter
     :members:
 
 mpi_world script
 ----------------
 
-.. automodule:: mpi_world
+.. automodule:: _mpi_world
     :members:
-    :exclude-members: launch, alias, set_master, set_slaves, kill_all
+    :exclude-members: launch, alias, set_master, set_workers, kill_all
 

@@ -5,9 +5,9 @@ MPI parallel map and cluster scheduling
 About Pyina
 -----------
 The ``pyina`` package provides several basic tools to make MPI-based
-high-performance computing more accessable to the end user. The goal
-of ``pyina`` is to allow the user to extend their own code to MPI-based
-high-performance computing with minimal refactoring.
+parallel computing more accessable to the end user. The goal of ``pyina``
+is to allow the user to extend their own code to MPI-based parallel
+computing with minimal refactoring.
 
 The central element of ``pyina`` is the parallel map algorithm.
 ``pyina`` currently provides two strategies for executing the parallel-map,
@@ -60,6 +60,23 @@ You can get the latest development version with all the shiny new features at:
 If you have a new contribution, please submit a pull request.
 
 
+More Information
+----------------
+Probably the best way to get started is to look at the documentation at
+http://pyina.rtfd.io. Also see ``pyina.examples`` and ``pyina.tests``
+for a set of scripts that demonstrate the configuration and launching of
+mpi-based parallel jobs using the *"easy map"* interface. Also see
+``pyina.examples_other`` for a set of scripts that test the more raw
+internals of ``pyina``. You can run the tests with ``python -m pyina.tests``.
+A script is included for querying, setting up, and tearing down an MPI
+environment, see ``python -m pyina`` for more information. The source code
+is generally well documented, so further questions may be resolved by
+inspecting the code itself. Please feel free to submit a ticket on github,
+or ask a question on stackoverflow (**@Mike McKerns**).
+If you would like to share how you use ``pyina`` in your work, please send
+an email (to **mmckerns at uqfoundation dot org**).
+
+
 Citation
 --------
 If you use ``pyina`` to do research that leads to publication, we ask that you
@@ -74,18 +91,6 @@ acknowledge use of ``pyina`` by citing the following in your publication::
     "pathos: a framework for heterogeneous computing", 2010- ;
     http://trac.mystic.cacr.caltech.edu/project/pathos
 
-
-More Information
-----------------
-Probably the best way to get started is to look at a few of the
-examples provided within ``pyina``. See ``pyina.examples`` for a
-set of scripts that demonstrate the configuration and launching of
-mpi-based parallel jobs using the *"easy map"* interface. Also see
-``pyina.examples_other`` for a set of scripts that test the more raw
-internals of ``pyina``. The source code is also generally well documented,
-so further questions may be resolved by inspecting the code itself. Please
-also feel free to submit a ticket on github, or ask a question on
-stackoverflow (**@Mike McKerns**).
-If you would like to share how you use ``pyina`` in your work, please send
-an email (to **mmckerns at uqfoundation dot org**).
+Please see http://trac.mystic.cacr.caltech.edu/project/pathos or
+http://arxiv.org/pdf/1202.1056 for further information.
 

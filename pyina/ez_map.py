@@ -54,7 +54,7 @@ a case where the other may fail.
 """
 
 defaults = {
-    'progname' : 'ezscatter.py',
+    'progname' : 'ezscatter',
     }
 from pyina.mpi import defaults as ezdefaults
 ezdefaults.update(defaults)

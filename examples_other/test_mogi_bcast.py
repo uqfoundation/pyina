@@ -50,16 +50,16 @@ class SimpleApp(Application):
             NJOBS = 100
             assert (EXITTAG > NJOBS)
 
-            # all the "evaluation points" are the same, so broadcast to slaves
+            # all the "evaluation points" are the same, so broadcast to workers
             eval_at = array([[1,2],[2,3]])
             recv = world.bcast(eval_at, master)
             # the universe of params
             params = [[random.random() for _ in range(4)] for _ in range(NJOBS)]
-            # now farm out to the slaves
+            # now farm out to the workers
             numsent = 0
-            for slave in range(1, size):
-                logging.info("MASTER : First Send: Sending job %d to slave %d" % (numsent, slave))
-                world.send(params[numsent], slave, numsent)
+            for worker in range(1, size):
+                logging.info("MASTER : First Send: Sending job %d to worker %d" % (numsent, worker))
+                world.send(params[numsent], worker, numsent)
                 numsent = numsent+1
             # start receiving
             for i in range(NJOBS):  
@@ -68,16 +68,16 @@ class SimpleApp(Application):
                 message = world.recv(source=MPI_ANY_SOURCE, tag=MPI_ANY_TAG, status=status)
                 sender = status.source
                 anstag = status.tag
-                logging.info("MASTER : Received job %d from slave %d" % (anstag, sender))
+                logging.info("MASTER : Received job %d from worker %d" % (anstag, sender))
                 #sleep(3)
                 if (numsent < NJOBS):
                     # send next job
-                    logging.info("MASTER : Sending job %d to slave %d" % (numsent, sender))
+                    logging.info("MASTER : Sending job %d to worker %d" % (numsent, sender))
                     world.send(params[numsent], sender, numsent)
                     numsent = numsent + 1
                 else:
                     # done
-                    logging.info("MASTER : Sending DONE signal to slave %d" % (sender))
+                    logging.info("MASTER : Sending DONE signal to worker %d" % (sender))
                     world.send("", sender, EXITTAG)
         else:
             eval_at = world.bcast("", master)

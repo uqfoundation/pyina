@@ -19,7 +19,14 @@
 import os
 from datetime import datetime
 import sys
-sys.path.insert(0, os.path.abspath('../../scripts'))
+scripts = os.path.abspath('../../scripts')
+sys.path.insert(0, scripts)
+try:
+    os.symlink(scripts+os.sep+'ezscatter', scripts+os.sep+'_ezscatter.py')
+    os.symlink(scripts+os.sep+'ezpool', scripts+os.sep+'_ezpool.py')
+    os.symlink(scripts+os.sep+'mpi_world', scripts+os.sep+'_mpi_world.py')
+except:
+    pass
 
 # Mock mpi4py
 try:

@@ -6,17 +6,17 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 """
-helper script for ``pyina.mpi`` maps using the *'scatter gather'* strategy
+helper script for ``pyina.mpi`` maps using the *'worker pool'* strategy
 
 Notes:
-    this uses the same code as ``ezpool.py``, but with ``pyina.mpi_scatter``.
+    this uses the same code as ``ezscatter``, but with ``pyina.mpi_pool``.
 
 Warning:
     this is a helper script for ``pyina.mpi.Mapper`` -- don't use it directly.
 """
 
 import logging
-log = logging.getLogger("ezscatter")
+log = logging.getLogger("ezpool")
 log.addHandler(logging.StreamHandler())
 def _debug(boolean):
     """print debug statements"""
@@ -27,7 +27,7 @@ def _debug(boolean):
 
 if __name__ == '__main__':
 
-    from pyina.mpi_scatter import parallel_map
+    from pyina.mpi_pool import parallel_map
     import dill as pickle
     import sys
     import os

@@ -6,7 +6,6 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from __future__ import with_statement
 import os
 
 # set version numbers
@@ -56,9 +55,9 @@ About Pyina
 ===========
 
 The ``pyina`` package provides several basic tools to make MPI-based
-high-performance computing more accessable to the end user. The goal
+parallel computing more accessable to the end user. The goal
 of ``pyina`` is to allow the user to extend their own code to MPI-based
-high-performance computing with minimal refactoring.
+parallel computing with minimal refactoring.
 
 The central element of ``pyina`` is the parallel map algorithm.
 ``pyina`` currently provides two strategies for executing the parallel-map,
@@ -99,7 +98,7 @@ to running MPI jobs, with:
 Current Release
 ===============
 
-This is ``pyina-%(relver)s``.
+This documentation is for version ``pyina-%(thisver)s``.
 
 The latest released version of ``pyina`` is available at:
 
@@ -128,8 +127,8 @@ Installation
 download the tarball, unzip, and run the installer::
 
     [download]
-    $ tar -xvzf pyina-%(thisver)s.tar.gz
-    $ cd pyina-%(thisver)s
+    $ tar -xvzf pyina-%(relver)s.tar.gz
+    $ cd pyina-%(relver)s
     $ python setup py build
     $ python setup py install
 
@@ -140,10 +139,9 @@ installed. Launchers in ``pyina`` that submit to a scheduler will throw errors
 if the underlying scheduler is not available, however a scheduler is not
 required for ``pyina`` to execute.
 
-Alternately, ``pyina`` can be installed with ``easy_install``::
+Alternately, ``pyina`` can be installed with ``pip`` or ``easy_install``::
 
-    [download]
-    $ easy_install -f . pyina
+    $ pip install pyina
 
 
 Requirements
@@ -168,15 +166,17 @@ Optional requirements:
 More Information
 ================
 
-Probably the best way to get started is to look at the tests and
-examples provided within ``pyina``. See ``pyina.examples`` and ``pyina.tests``
+Probably the best way to get started is to look at the documentation at
+http://pyina.rtfd.io. Also see ``pyina.examples`` and ``pyina.tests``
 for a set of scripts that demonstrate the configuration and launching of
 mpi-based parallel jobs using the *"easy map"* interface. Also see
 ``pyina.examples_other`` for a set of scripts that test the more raw
-internals of ``pyina``. The source code is also generally well documented,
-so further questions may be resolved by inspecting the code itself. Please
-also feel free to submit a ticket on github, or ask a question on
-stackoverflow (**@Mike McKerns**).
+internals of ``pyina``. You can run the tests with ``python -m pyina.tests``.
+A script is included for querying, setting up, and tearing down an MPI
+environment, see ``python -m pyina`` for more information. The source code
+is generally well documented, so further questions may be resolved by
+inspecting the code itself. Please feel free to submit a ticket on github,
+or ask a question on stackoverflow (**@Mike McKerns**).
 If you would like to share how you use ``pyina`` in your work, please send
 an email (to **mmckerns at uqfoundation dot org**).
 
@@ -191,12 +191,10 @@ Mapping strategies are found here:
     - ``pyina.mpi_scatter``   [the scatter-gather strategy]
     - ``pyina.mpi_pool``      [the worker pool strategy]
 
-``pyina`` also provides two convience scripts that help navigate the
-MPI environment. These scripts are installed to a directory on the
-user's ``$PATH``, and thus can be run from anywhere:
+``pyina`` also provides a convience script that helps navigate the
+MPI environment. This script can be run from anywhere with::
 
-    - ``machines.py``               [list the available MPI nodes]
-    - ``mpi_world.py``              [setup/teardown of the MPI environment]
+    $ mpi_world
 
 If may also be convienent to set a shell alias for the launch of 'raw'
 mpi-python jobs. Set something like the following (for bash)::
@@ -219,7 +217,7 @@ acknowledge use of ``pyina`` by citing the following in your publication::
 
     Michael McKerns and Michael Aivazis,
     "pathos: a framework for heterogeneous computing", 2010- ;
-    http://dev.danse.us/trac/pathos
+    http://trac.mystic.cacr.caltech.edu/project/pathos
 
 Please see http://trac.mystic.cacr.caltech.edu/project/pathos or
 http://arxiv.org/pdf/1202.1056 for further information.
@@ -288,8 +286,8 @@ setup(name="pyina",
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development'),
 
-    packages=['pyina'],
-    package_dir={'pyina':'pyina'},
+    packages=['pyina','pyina.tests'],
+    package_dir={'pyina':'pyina','pyina.tests':'tests'},
 """ % (target_version, long_description)
 
 # add dependencies
@@ -318,8 +316,7 @@ if has_setuptools:
 
 # add the scripts, and close 'setup' call
 setup_code += """
-    scripts=['scripts/ezpool.py','scripts/ezscatter.py',
-             'scripts/machines.py','scripts/mpi_world.py'])
+    scripts=['scripts/ezpool','scripts/ezscatter','scripts/mpi_world'])
 """
 
 # exec the 'setup' code

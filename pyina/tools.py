@@ -164,7 +164,7 @@ if mpich=True only look for mpich, if False only look for openmpi"""
 
 def which_strategy(scatter=True, lazy=False, fullpath=True):
     """try to autodetect an available strategy (scatter or pool)"""
-    target = 'ezscatter.py' if scatter else 'ezpool.py'
+    target = 'ezscatter' if scatter else 'ezpool'
     import sys
     if (sys.platform[:3] == 'win'): lazy=False
     if lazy: target = "`which %s`" % target

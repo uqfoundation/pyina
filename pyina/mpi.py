@@ -102,7 +102,7 @@ def _debug(boolean):
 _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
-    'program' : which_strategy(lazy=True) or 'ezscatter.py', # serialize to tempfile
+    'program' : which_strategy(lazy=True) or 'ezscatter', # serialize to tempfile
     'mpirun' : which_mpirun() or 'mpiexec',
     'python' : which_python(lazy=True) or 'python',
     'progargs' : '',

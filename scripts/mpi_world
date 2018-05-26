@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+#
+# Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
+# Copyright (c) 1997-2016 California Institute of Technology.
+# Copyright (c) 2016-2018 The Uncertainty Quantification Foundation.
+# License: 3-clause BSD.  The full license text is available at:
+#  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
+#
+# helper script to setup your mpi environment
+
+import pyina.__main__
+from pyina.__main__ import *
+__doc__ = pyina.__main__.__doc__
+
+
+if __name__=="__main__":
+    import sys
+    from pyina.launchers import MpiPool
+
+    if sys.argv[-1] == "--kill":
+        print("killing all...")
+        kill_all()
+    elif len(sys.argv) > 2:
+        if sys.argv[1] == "--workers":
+            print("seting up mpi...")
+            MASTERINFO = set_master()
+            nodes = sys.argv[2:]
+            nodes = [node.strip('[()]').strip(',').strip() for node in nodes]
+            #nodes = nodes.strip('[()]').split(',')
+            set_workers(nodes,MASTERINFO)
+       #elif sys.argv[1] == "--alias": 
+       #    print "setting up mpi python..."
+       #    nodes = sys.argv[2:]
+       #    nodes = [node.strip('[()]').strip(',').strip() for node in nodes]
+       #    for node in nodes:
+       #        alias(int(node))
+        elif sys.argv[1] == "--fetch":
+            nnodes = int(sys.argv[2])
+            try:
+                pool = MpiPool()
+                pool.nodes = nnodes
+                hostnames = pool.map(host, range(nnodes))
+                print('\n'.join(hostnames))
+            except: # "--help"
+                print(__doc__)
+        else: # "--help"
+            print(__doc__)
+    else: # "--help"
+        print(__doc__)
+
+
+# End of file
