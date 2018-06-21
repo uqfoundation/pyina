@@ -154,7 +154,7 @@ Requirements
     - ``mpi4py``, **version >= 1.2.1**
     - ``dill``, **version >= 0.2.8.1**
     - ``pox``, **version >= 0.2.4**
-    - ``pathos``, **version >= 0.2.1**
+    - ``pathos``, **version >= 0.2.2**
 
 Optional requirements:
 
@@ -294,7 +294,7 @@ setup(name="pyina",
 numpy_version = '>=1.0'
 dill_version = '>=0.2.8.1'
 pox_version = '>=0.2.4'
-pathos_version = '>=0.2.1'
+pathos_version = '>=0.2.2'
 mpi4py_version = '>=1.2.1'
 if platform[:6] == 'darwin':
   mpi4py_version = '>=1.2.2-pyina'
