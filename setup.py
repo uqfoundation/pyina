@@ -353,14 +353,7 @@ try:
     import mpi4py
 except ImportError:
     print("""
-There is a bug in the ``mpi4py`` installer for MacOSX,
-and a patch has been submitted to the ``mpi4py`` developers.
-Until this patch is accepted in a release,
-a modified version of ``mpi4py`` will be available here:
-  http://dev.danse.us/packages/
-or from the ``external`` directory included in the ``pyina`` source distribution.
-
-Further, you may need to set the environment variable "SDKROOT",
+You may need to set the environment variable "SDKROOT",
 as shown in the instructions for installing ``mpi4py``:
   http://mpi4py.scipy.org/docs/usrman/install.html
 """)
