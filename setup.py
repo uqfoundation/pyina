@@ -9,7 +9,7 @@
 import os
 
 # set version numbers
-stable_version = '0.1a1'
+stable_version = '0.2.0'
 target_version = '0.2.0'
 is_release = stable_version == target_version
 
