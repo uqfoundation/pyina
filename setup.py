@@ -10,7 +10,7 @@ import os
 
 # set version numbers
 stable_version = '0.2.0'
-target_version = '0.2.0'
+target_version = '0.2.1'
 is_release = stable_version == target_version
 
 # check if easy_install is available
@@ -159,7 +159,6 @@ Requirements
 Optional requirements:
 
     - ``setuptools``, **version >= 0.6**
-    - ``pyre``, **version == 0.8**
     - ``mystic``, **version >= 0.3.1**
 
 
