@@ -5,22 +5,16 @@
 # Copyright (c) 2016-2018 The Uncertainty Quantification Foundation.
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
-"""
-Just a basic test. No physics.
 
-To launch... either do, for example
+doc = """
+A basic demonstration of low-level MPI communication.
 
-mpiexec -np 4 `which python` test_mogi_bcast.py
+To launch:
 
-or
-
-python test_mogi_bcast.py
-(with --launcher.nodes defaulting to 4)
-
+mpiexec -np 4 `which python` mpi_bcast.py
 """
 
 import mystic
-from mpi.Application import Application
 import logging
 from time import sleep
 from numpy import array
@@ -29,20 +23,21 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S')
 
-class SimpleApp(Application):
+class SimpleApp(object):
 
-    def main(self):
-        from pyina import mpi
+    def __call__(self):
+        from pyina import mpi, ensure_mpi
         import random
         from mystic.models import mogi; forward_mogi = mogi.evaluate
 
+        ensure_mpi(size=2, doc=doc)
+
         world = mpi.world
         size = world.size
+        stat = mpi.MPI.Status
 
         logging.info("I am rank %d of %d" % (world.rank, size))
         master = 0
-        MPI_ANY_SOURCE = mpi.ANY_SOURCE
-        MPI_ANY_TAG = mpi.ANY_TAG
 
         EXITTAG = 999
         if world.rank == master:
@@ -64,8 +59,8 @@ class SimpleApp(Application):
             # start receiving
             for i in range(NJOBS):  
                 logging.info("MASTER : Top of loop")
-                status = mpi.Status()
-                message = world.recv(source=MPI_ANY_SOURCE, tag=MPI_ANY_TAG, status=status)
+                status = stat()
+                message = world.recv(status=status)
                 sender = status.source
                 anstag = status.tag
                 logging.info("MASTER : Received job %d from worker %d" % (anstag, sender))
@@ -84,39 +79,27 @@ class SimpleApp(Application):
             #logging.info("Rank %d has message %s" % (world.rank, eval_at))
             for iter in range(99999):
                 # receive job
-                logging.info("   SLAVE %d, iteration %d." % (world.rank, iter))
-                status = mpi.Status()
-                param = world.recv(source=master, tag=MPI_ANY_TAG, status=status)
+                logging.info("   WORKER %d, iteration %d." % (world.rank, iter))
+                status = stat()
+                param = world.recv(source=master, status=status)
                 tag = status.tag
                 if tag == EXITTAG:
-                    logging.info("   SLAVE %d: is done." % world.rank)
+                    logging.info("   WORKER %d: is done." % world.rank)
                     return
-                logging.info("   SLAVE %d receiving job %d ... running" % (world.rank, tag))
+                logging.info("   WORKER %d receiving job %d ... running" % (world.rank, tag))
                 res = forward_mogi(param, eval_at)
                 # send result back to master
-                logging.info("   SLAVE %d done running job %d, send results back to master" % (world.rank, tag))
+                logging.info("   WORKER %d done running job %d, send results back to master" % (world.rank, tag))
                 #sleep(2)
                 world.send(res, master, tag)
-
-        return
-
-    def _defaults(self):
-        self.inventory.launcher.inventory.nodes = 4
-
-    def __init__(self):
-        Application.__init__(self, "simple")
         return
 
 
 # main
 
 if __name__ == "__main__":
-    import journal
-    journal.info("mpirun").activate()
-    journal.debug("simple").activate()
-    #journal.debug("pyina.mpi.world.recv").activate()
     
     app = SimpleApp()
-    app.run()
+    app()
 
 # End of file

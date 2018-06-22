@@ -1,1 +1,6 @@
 include LICENSE
+include README
+include tox.ini
+include tests/*py
+include scripts/*
+include examples/*py
