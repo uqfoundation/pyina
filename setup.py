@@ -151,7 +151,7 @@ Requirements
 
     - ``python``, **version >= 2.6** or **version >= 3.3**
     - ``numpy``, **version >= 1.0**
-    - ``mpi4py``, **version >= 1.2.1**
+    - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.2.8.1**
     - ``pox``, **version >= 0.2.4**
     - ``pathos``, **version >= 0.2.2**
@@ -159,7 +159,7 @@ Requirements
 Optional requirements:
 
     - ``setuptools``, **version >= 0.6**
-    - ``mystic``, **version >= 0.3.1**
+    - ``mystic``, **version >= 0.3.2**
 
 
 More Information
@@ -294,11 +294,9 @@ numpy_version = '>=1.0'
 dill_version = '>=0.2.8.1'
 pox_version = '>=0.2.4'
 pathos_version = '>=0.2.2'
-mpi4py_version = '>=1.2.1'
-if platform[:6] == 'darwin':
-  mpi4py_version = '>=1.2.2-pyina'
+mpi4py_version = '>=1.3'
 pypar_version = '>=2.1.4'
-mystic_version = '>=0.3.1'
+mystic_version = '>=0.3.2'
 # rtd fails for mpi4py, mock it instead
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if has_setuptools:
