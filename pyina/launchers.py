@@ -117,7 +117,7 @@ NOTES:
         return str
     def map(self, func, *args, **kwds):
         return Mapper.map(self, func, *args, **kwds)
-    map.__doc__ = Mapper.map.__doc__ + _launcher.__doc__
+    map.__doc__ = ((Mapper.map.__doc__ or '')+(_launcher.__doc__ or '')) or None
     def __repr__(self):
         if self.scheduler:
             scheduler = self.scheduler.__class__.__name__
@@ -152,7 +152,7 @@ for the associated launcher (e.g mpirun, mpiexec).
             else:
                 self.nodes = cpu_count()
         return
-    __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
+    if AbstractWorkerPool.__init__.__doc__: __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def njobs(self, nodes):
         """convert node_string intended for scheduler to int number of nodes
 
@@ -175,7 +175,7 @@ NOTES:
         return str
     def map(self, func, *args, **kwds):
         return Mapper.map(self, func, *args, **kwds)
-    map.__doc__ = Mapper.map.__doc__ + _launcher.__doc__
+    map.__doc__ = ((Mapper.map.__doc__ or '')+(_launcher.__doc__ or '')) or None
     def __repr__(self):
         if self.scheduler:
             scheduler = self.scheduler.__class__.__name__
@@ -232,7 +232,7 @@ NOTES:
         return str
     def map(self, func, *args, **kwds):
         return ParallelMapper.map(self, func, *args, **kwds)
-    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    map.__doc__ = ((ParallelMapper.map.__doc__ or '')+(_launcher.__doc__ or '')) or None
     pass
 
 class Slurm(ParallelMapper):
@@ -275,7 +275,7 @@ NOTES:
         return str
     def map(self, func, *args, **kwds):
         return ParallelMapper.map(self, func, *args, **kwds)
-    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    map.__doc__ = ((ParallelMapper.map.__doc__ or '')+(_launcher.__doc__ or '')) or None
     pass
 
 class Alps(ParallelMapper):
@@ -318,7 +318,7 @@ NOTES:
         return str
     def map(self, func, *args, **kwds):
         return ParallelMapper.map(self, func, *args, **kwds)
-    map.__doc__ = ParallelMapper.map.__doc__ + _launcher.__doc__
+    map.__doc__ = ((ParallelMapper.map.__doc__ or '')+(_launcher.__doc__ or '')) or None
     pass
 
 

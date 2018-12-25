@@ -157,7 +157,7 @@ for the associated launcher (e.g mpirun, mpiexec).
                 self.workdir = os.environ.get('WORKDIR', os.path.curdir)
         self.workdir = os.path.abspath(self.workdir)
         return
-    __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
+    if AbstractWorkerPool.__init__.__doc__: __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def __settings(self):
         """apply default settings, then update with given settings"""
         env = defaults.copy()
