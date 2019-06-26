@@ -53,6 +53,8 @@ The latest released version of ``pyina`` is available at:
 
 
 Development Version 
+[![Travis Build Status](https://img.shields.io/travis/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.org/uqfoundation/pyina)
+[![codecov](https://codecov.io/gh/uqfoundation/pyina/branch/master/graph/badge.svg)](https://codecov.io/gh/uqfoundation/pyina)
 -------------------
 You can get the latest development version with all the shiny new features at:
     https://github.com/uqfoundation
