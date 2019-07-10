@@ -43,7 +43,7 @@ def parallel_map(func, *seq, **kwds):
     skip = not bool(kwds.get('onall', True))
     if skip is False: skip = None
     else:
-        if size is 1:
+        if size == 1:
             raise ValueError("There must be at least one worker node")
         skip = master
     __SKIP[0] = skip
