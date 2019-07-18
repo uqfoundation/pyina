@@ -53,6 +53,7 @@ The latest released version of ``pyina`` is available at:
 
 
 Development Version 
+[![Documentation Status](https://readthedocs.org/projects/pyina/badge/?version=latest)](https://pyina.readthedocs.io/en/latest/?badge=latest)
 [![Travis Build Status](https://img.shields.io/travis/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.org/uqfoundation/pyina)
 [![codecov](https://codecov.io/gh/uqfoundation/pyina/branch/master/graph/badge.svg)](https://codecov.io/gh/uqfoundation/pyina)
 -------------------
