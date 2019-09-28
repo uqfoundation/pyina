@@ -154,7 +154,7 @@ Requirements
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.1**
     - ``pox``, **version >= 0.2.7**
-    - ``pathos``, **version >= 0.2.4**
+    - ``pathos``, **version >= 0.2.5**
 
 Optional requirements:
 
@@ -293,7 +293,7 @@ setup(name="pyina",
 numpy_version = '>=1.0'
 dill_version = '>=0.3.1'
 pox_version = '>=0.2.7'
-pathos_version = '>=0.2.4'
+pathos_version = '>=0.2.5'
 mpi4py_version = '>=1.3'
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.4'
