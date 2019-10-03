@@ -290,7 +290,16 @@ setup(name="pyina",
 """ % (target_version, long_description)
 
 # add dependencies
-numpy_version = '>=1.0'
+from sys import version_info
+sysversion = version_info[:2]
+if sysversion < (2,6) or sysversion == (3,0) or sysversion == (3,1):
+    numpy_version = '>=1.0, <1.8.0'
+elif sysversion == (2,6) or sysversion == (3,2) or sysversion == (3,3):
+    numpy_version = '>=1.0, <1.12.0'
+elif sysversion == (2,7) or sysversion == (3,4):
+    numpy_version = '>=1.0, <1.17.0'
+else:
+    numpy_version = '>=1.0'
 dill_version = '>=0.3.1'
 pox_version = '>=0.2.7'
 pathos_version = '>=0.2.5'
