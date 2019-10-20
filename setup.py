@@ -107,7 +107,7 @@ The latest released version of ``pyina`` is available at:
 ``pyina`` is distributed under a 3-clause BSD license.
 
     >>> import pyina
-    >>> print (pyina.license())
+    >>> pyina.license()
 
 
 Development Version
@@ -282,6 +282,7 @@ setup(name="pyina",
                    'Intended Audience :: Science/Research',
                    'License :: OSI Approved :: BSD License',
                    'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 3',
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development'],
 
