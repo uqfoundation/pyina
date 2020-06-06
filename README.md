@@ -27,9 +27,7 @@ launching a MPI job.
 
 ``pyina`` is part of ``pathos``, a python framework for heterogeneous computing.
 ``pyina`` is in active development, so any user feedback, bug reports, comments,
-or suggestions are highly appreciated.  A list of known issues is maintained
-at http://trac.mystic.cacr.caltech.edu/project/pathos/query.html, with a public
-ticket list at https://github.com/uqfoundation/pyina/issues.
+or suggestions are highly appreciated.  A list of issues is located at https://github.com/uqfoundation/pyina/issues, with a legacy list maintained at https://uqfoundation.github.io/pathos-issues.html.
 
 
 Major Features
@@ -56,6 +54,7 @@ Development Version
 [![Documentation Status](https://readthedocs.org/projects/pyina/badge/?version=latest)](https://pyina.readthedocs.io/en/latest/?badge=latest)
 [![Travis Build Status](https://img.shields.io/travis/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.org/uqfoundation/pyina)
 [![codecov](https://codecov.io/gh/uqfoundation/pyina/branch/master/graph/badge.svg)](https://codecov.io/gh/uqfoundation/pyina)
+[![Downloads](https://pepy.tech/badge/pyina)](https://pepy.tech/project/pyina)
 -------------------
 You can get the latest development version with all the shiny new features at:
     https://github.com/uqfoundation
@@ -92,8 +91,8 @@ acknowledge use of ``pyina`` by citing the following in your publication::
 
     Michael McKerns and Michael Aivazis,
     "pathos: a framework for heterogeneous computing", 2010- ;
-    http://trac.mystic.cacr.caltech.edu/project/pathos
+    https://uqfoundation.github.io/pathos.html
 
-Please see http://trac.mystic.cacr.caltech.edu/project/pathos or
+Please see https://uqfoundation.github.io/pathos.html or
 http://arxiv.org/pdf/1202.1056 for further information.
 

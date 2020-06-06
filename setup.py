@@ -7,6 +7,15 @@
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
 import os
+import sys
+# drop support for older python
+unsupported = None
+if sys.version_info < (2, 7):
+    unsupported = 'Versions of Python before 2.7 are not supported'
+elif (3, 0) <= sys.version_info < (3, 5):
+    unsupported = 'Versions of Python before 3.5 are not supported'
+if unsupported:
+    raise ValueError(unsupported)
 
 # set version numbers
 stable_version = '0.2.2'
@@ -77,9 +86,7 @@ launching a MPI job.
 
 ``pyina`` is part of ``pathos``, a python framework for heterogeneous computing.
 ``pyina`` is in active development, so any user feedback, bug reports, comments,
-or suggestions are highly appreciated.  A list of known issues is maintained
-at http://trac.mystic.cacr.caltech.edu/project/pathos/query.html, with a public
-ticket list at https://github.com/uqfoundation/pyina/issues.
+or suggestions are highly appreciated.  A list of issues is located at https://github.com/uqfoundation/pyina/issues, with a legacy list maintained at https://uqfoundation.github.io/pathos-issues.html.
 
 
 Major Features
@@ -149,7 +156,7 @@ Requirements
 
 ``pyina`` requires:
 
-    - ``python``, **version >= 2.6** or **version >= 3.3**
+    - ``python``, **version >= 2.7** or **version >= 3.5**, or ``pypy``
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.1**
@@ -216,9 +223,9 @@ acknowledge use of ``pyina`` by citing the following in your publication::
 
     Michael McKerns and Michael Aivazis,
     "pathos: a framework for heterogeneous computing", 2010- ;
-    http://trac.mystic.cacr.caltech.edu/project/pathos
+    https://uqfoundation.github.io/pathos.html
 
-Please see http://trac.mystic.cacr.caltech.edu/project/pathos or
+Please see https://uqfoundation.github.io/pathos.html or
 http://arxiv.org/pdf/1202.1056 for further information.
 
 """ % {'relver' : stable_version, 'thisver' : this_version}
