@@ -159,7 +159,7 @@ Requirements
     - ``python``, **version == 2.7** or **version >= 3.5**, or ``pypy``
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
-    - ``dill``, **version >= 0.3.1**
+    - ``dill``, **version >= 0.3.2**
     - ``pox``, **version >= 0.2.8**
     - ``pathos``, **version >= 0.2.5**
 
@@ -315,8 +315,8 @@ elif sysversion == (2,7) or sysversion == (3,4):
     numpy_version = '>=1.0, <1.17.0'
 else:
     numpy_version = '>=1.0'
-dill_version = '>=0.3.1'
-pox_version = '>=0.2.7'
+dill_version = '>=0.3.2'
+pox_version = '>=0.2.8'
 pathos_version = '>=0.2.5'
 mpi4py_version = '>=1.3'
 pypar_version = '>=2.1.4'
