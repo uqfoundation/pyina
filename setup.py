@@ -156,11 +156,11 @@ Requirements
 
 ``pyina`` requires:
 
-    - ``python``, **version >= 2.7** or **version >= 3.5**, or ``pypy``
+    - ``python``, **version == 2.7** or **version >= 3.5**, or ``pypy``
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.1**
-    - ``pox``, **version >= 0.2.7**
+    - ``pox``, **version >= 0.2.8**
     - ``pathos``, **version >= 0.2.5**
 
 Optional requirements:
