@@ -321,6 +321,7 @@ pathos_version = '>=0.2.6'
 mpi4py_version = '>=1.3'
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.6'
+cython_version = '>=0.29.21,<3.0' #NOTE: sync with numpy/tools/cythonize.py
 # rtd fails for mpi4py, mock it instead
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if has_setuptools:
@@ -332,8 +333,9 @@ if has_setuptools:
     else:
         setup_code += """
         zip_safe = False,
+        setup_requires = ('Cython%s',),
         install_requires = ('numpy%s', 'mpi4py%s', 'dill%s', 'pox%s', 'pathos%s'),
-""" % (numpy_version, mpi4py_version, dill_version, pox_version, pathos_version)
+""" % (cython_version, numpy_version, mpi4py_version, dill_version, pox_version, pathos_version)
 
 # add the scripts, and close 'setup' call
 setup_code += """
