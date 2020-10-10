@@ -27,8 +27,6 @@ try:
 #   import __force_distutils__ #XXX: uncomment to force use of distutills
     from setuptools import setup, dist
     has_setuptools = True
-    cython_version = '>=0.29.21,<3.0' # sync with numpy/tools/cythonize.py
-    dist.Distribution(dict(setup_requires=('Cython%s' % cython_version,)))
 except ImportError:
     from distutils.core import setup
     has_setuptools = False
