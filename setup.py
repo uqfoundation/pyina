@@ -160,7 +160,7 @@ Requirements
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.2**
-    - ``pox``, **version >= 0.2.8**
+    - ``pox``, **version >= 0.2.9**
     - ``pathos``, **version >= 0.2.6**
 
 Optional requirements:
@@ -316,7 +316,7 @@ elif sysversion == (2,7) or sysversion == (3,4):
 else:
     numpy_version = '>=1.0'
 dill_version = '>=0.3.2'
-pox_version = '>=0.2.8'
+pox_version = '>=0.2.9'
 pathos_version = '>=0.2.6'
 mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 pypar_version = '>=2.1.4'
