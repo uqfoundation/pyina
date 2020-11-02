@@ -166,7 +166,7 @@ Requirements
 Optional requirements:
 
     - ``setuptools``, **version >= 0.6**
-    - ``mystic``, **version >= 0.3.6**
+    - ``mystic``, **version >= 0.3.7**
 
 
 More Information
@@ -320,7 +320,7 @@ pox_version = '>=0.2.9'
 pathos_version = '>=0.2.7'
 mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 pypar_version = '>=2.1.4'
-mystic_version = '>=0.3.6'
+mystic_version = '>=0.3.7'
 # rtd fails for mpi4py, mock it instead
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if has_setuptools:
