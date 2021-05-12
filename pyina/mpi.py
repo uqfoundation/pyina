@@ -33,7 +33,7 @@ A typical call to a pyina mpi map will roughly follow this example:
     >>> pool = Mpi(scheduler=torque)
     >>>
     >>> # do a blocking map on the chosen function
-    >>> print pool.map(pow, [1,2,3,4], [5,6,7,8])
+    >>> print (pool.map(pow, [1,2,3,4], [5,6,7,8]))
 
 Several common configurations are available as pre-configured maps.
 The following is identical to the above example:
@@ -44,7 +44,7 @@ The following is identical to the above example:
     >>> pool = TorqueMpiPool(**config)
     >>>
     >>> # do a blocking map on the chosen function
-    >>> print pool.map(pow, [1,2,3,4], [5,6,7,8])
+    >>> print (pool.map(pow, [1,2,3,4], [5,6,7,8]))
 
 
 Notes
