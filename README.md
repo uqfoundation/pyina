@@ -27,7 +27,7 @@ launching a MPI job.
 
 ``pyina`` is part of ``pathos``, a python framework for heterogeneous computing.
 ``pyina`` is in active development, so any user feedback, bug reports, comments,
-or suggestions are highly appreciated.  A list of issues is located at https://github.com/uqfoundation/pyina/issues, with a legacy list maintained at https://uqfoundation.github.io/pathos-issues.html.
+or suggestions are highly appreciated.  A list of issues is located at https://github.com/uqfoundation/pyina/issues, with a legacy list maintained at https://uqfoundation.github.io/project/pathos/query.
 
 
 Major Features
@@ -91,8 +91,8 @@ acknowledge use of ``pyina`` by citing the following in your publication::
 
     Michael McKerns and Michael Aivazis,
     "pathos: a framework for heterogeneous computing", 2010- ;
-    https://uqfoundation.github.io/pathos.html
+    https://uqfoundation.github.io/project/pathos
 
-Please see https://uqfoundation.github.io/pathos.html or
+Please see https://uqfoundation.github.io/project/pathos or
 http://arxiv.org/pdf/1202.1056 for further information.
 
