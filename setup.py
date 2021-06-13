@@ -308,16 +308,22 @@ sysversion = version_info[:2]
 try:
     import ctypes # if using `pypy`, pythonapi is not found
     IS_PYPY = not hasattr(ctypes, 'pythonapi')
+    IS_PYPY2 = IS_PYPY and sysversion < (3,0)
 except:
     IS_PYPY = False
+    IS_PYPY2 = False
 if sysversion < (2,6) or sysversion == (3,0) or sysversion == (3,1):
     numpy_version = '>=1.0, <1.8.0'
 elif sysversion == (2,6) or sysversion == (3,2) or sysversion == (3,3):
     numpy_version = '>=1.0, <1.12.0'
-elif IS_PYPY: #XXX: pypy3?
+elif IS_PYPY2:
     numpy_version = '>=1.0, <1.16.0'
 elif sysversion == (2,7) or sysversion == (3,4):
     numpy_version = '>=1.0, <1.17.0'
+elif sysversion == (3,5):
+    numpy_version = '>=1.0, <1.19.0'
+elif sysversion == (3,6):# or IS_PYPY
+    numpy_version = '>=1.0, <1.20.0'
 else:
     numpy_version = '>=1.0'
 dill_version = '>=0.3.4'
