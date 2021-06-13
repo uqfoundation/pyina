@@ -159,7 +159,7 @@ Requirements
     - ``python``, **version == 2.7** or **version >= 3.6**, or ``pypy``
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
-    - ``dill``, **version >= 0.3.3**
+    - ``dill``, **version >= 0.3.4**
     - ``pox``, **version >= 0.3.0**
     - ``pathos``, **version >= 0.2.7**
 
@@ -320,7 +320,7 @@ elif sysversion == (2,7) or sysversion == (3,4):
     numpy_version = '>=1.0, <1.17.0'
 else:
     numpy_version = '>=1.0'
-dill_version = '>=0.3.3'
+dill_version = '>=0.3.4'
 pox_version = '>=0.3.0'
 pathos_version = '>=0.2.7'
 mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
