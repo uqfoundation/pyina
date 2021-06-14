@@ -161,7 +161,7 @@ Requirements
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.4**
     - ``pox``, **version >= 0.3.0**
-    - ``pathos``, **version >= 0.2.7**
+    - ``pathos``, **version >= 0.2.8**
 
 Optional requirements:
 
@@ -328,7 +328,7 @@ else:
     numpy_version = '>=1.0'
 dill_version = '>=0.3.4'
 pox_version = '>=0.3.0'
-pathos_version = '>=0.2.7'
+pathos_version = '>=0.2.8'
 mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.7'
