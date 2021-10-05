@@ -43,6 +43,7 @@ to running MPI jobs, with:
 
 
 Current Release
+[![Downloads](https://static.pepy.tech/personalized-badge/pyina?period=total&units=international_system&left_color=grey&right_color=blue&left_text=pypi%20downloads)](https://pepy.tech/project/pyina)
 ---------------
 The latest released version of ``pyina`` is available at:
     https://pypi.org/project/pyina
@@ -51,10 +52,10 @@ The latest released version of ``pyina`` is available at:
 
 
 Development Version 
+[![Support](https://img.shields.io/badge/support-the%20UQ%20Foundation-purple.svg?style=flat&colorA=grey&colorB=purple)](http://www.uqfoundation.org/pages/donate.html)
 [![Documentation Status](https://readthedocs.org/projects/pyina/badge/?version=latest)](https://pyina.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.com/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.com/uqfoundation/pyina)
 [![codecov](https://codecov.io/gh/uqfoundation/pyina/branch/master/graph/badge.svg)](https://codecov.io/gh/uqfoundation/pyina)
-[![Downloads](https://pepy.tech/badge/pyina)](https://pepy.tech/project/pyina)
 -------------------
 You can get the latest development version with all the shiny new features at:
     https://github.com/uqfoundation
