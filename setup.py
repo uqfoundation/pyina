@@ -314,22 +314,28 @@ except:
     IS_PYPY2 = False
 if sysversion < (2,6) or sysversion == (3,0) or sysversion == (3,1):
     numpy_version = '>=1.0, <1.8.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 elif sysversion == (2,6) or sysversion == (3,2) or sysversion == (3,3):
     numpy_version = '>=1.0, <1.12.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 elif IS_PYPY2:
     numpy_version = '>=1.0, <1.16.0'
+    mpi4py_version = '>=1.3, !=3.0.2, <3.1.1' # segfault 11 on MPI import
 elif sysversion == (2,7) or sysversion == (3,4):
     numpy_version = '>=1.0, <1.17.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 elif sysversion == (3,5):
     numpy_version = '>=1.0, <1.19.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 elif sysversion == (3,6):# or IS_PYPY
     numpy_version = '>=1.0, <1.20.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 else:
     numpy_version = '>=1.0'
+    mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 dill_version = '>=0.3.4'
 pox_version = '>=0.3.0'
 pathos_version = '>=0.2.8'
-mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.8'
 # rtd fails for mpi4py, mock it instead
