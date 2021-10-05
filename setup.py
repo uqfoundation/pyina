@@ -320,7 +320,7 @@ elif sysversion == (2,6) or sysversion == (3,2) or sysversion == (3,3):
     mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
 elif IS_PYPY2:
     numpy_version = '>=1.0, <1.16.0'
-    mpi4py_version = '>=1.3, !=3.0.2, <3.1.1' # segfault 11 on MPI import
+    mpi4py_version = '>=1.3, !=3.0.2, <3.1.0' # segfault 11 on MPI import
 elif sysversion == (2,7) or sysversion == (3,4):
     numpy_version = '>=1.0, <1.17.0'
     mpi4py_version = '>=1.3, !=3.0.2' # segfault 11 on MPI import
