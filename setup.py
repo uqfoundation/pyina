@@ -166,6 +166,7 @@ Requirements
 Optional requirements:
 
     - ``setuptools``, **version >= 0.6**
+    - ``cython``, **version >= 0.29.22**
     - ``mystic``, **version >= 0.3.8**
 
 
@@ -339,6 +340,7 @@ pox_version = '>=0.3.0'
 pathos_version = '>=0.2.8'
 pypar_version = '>=2.1.4'
 mystic_version = '>=0.3.8'
+cython_version = '>=0.29.22' #XXX: required to build numpy from source
 # rtd fails for mpi4py, mock it instead
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if has_setuptools:
@@ -368,6 +370,7 @@ try:
     import pox
     import pathos
     import mpi4py #XXX: throws an error even though ok?
+    #import cython
     #import pypar
 except ImportError:
     print("\n***********************************************************")
@@ -377,6 +380,7 @@ except ImportError:
     print(("    pox %s" % pox_version))
     print(("    pathos %s" % pathos_version))
     print(("    mpi4py %s" % mpi4py_version))
+    print(("    cython %s (optional)" % cython_version))
 #   print("    pypar %s (optional)" % pypar_version)
     print("***********************************************************\n")
 
