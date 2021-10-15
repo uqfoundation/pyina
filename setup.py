@@ -165,7 +165,7 @@ Requirements
 
 Optional requirements:
 
-    - ``setuptools``, **version >= 0.6**
+    - ``setuptools``, **version >= 40.6.0**
     - ``cython``, **version >= 0.29.22**
     - ``mystic``, **version >= 0.3.8**
 

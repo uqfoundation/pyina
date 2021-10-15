@@ -8,3 +8,4 @@ recursive-include examples *
 include .*
 prune .git
 prune .coverage
+prune .eggs
