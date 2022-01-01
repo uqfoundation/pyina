@@ -55,7 +55,7 @@ before_install:
     - sudo apt-get update -q
     - set -x; sudo apt-get install -y -q openmpi-bin libopenmpi-dev
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
-    - if [[ $CYTHON == "true" ]]; then pip install cython; fi
+    - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
 
 install:
     - python setup.py build && python setup.py install
