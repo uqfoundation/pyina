@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 #
-# source code modifed from mpi4py-1.3.1/demo/helloworld.py
-# 
-# Copyright (c) 2013, Lisandro Dalcin.
-# All rights reserved.
+# Author: Mike McKerns (mmckerns @caltech and @uqfoundation)
+# Copyright (c) 2016-2022 The Uncertainty Quantification Foundation.
+# License: 3-clause BSD.  The full license text is available at:
+#  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
+#
+# original source code modifed from mpi4py-1.3.1/demo/helloworld.py
+# helloworld.py: Copyright (c) 2013, Lisandro Dalcin.
+# helloworld.py: All rights reserved.
 """
 # Parallel Hello World, with mpi4py
 # To run:
