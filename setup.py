@@ -156,7 +156,7 @@ Requirements
 
 ``pyina`` requires:
 
-    - ``python``, **version == 2.7** or **version >= 3.6**, or ``pypy``
+    - ``python`` (or ``pypy``), **version == 2.7** or **version >= 3.6**
     - ``numpy``, **version >= 1.0**
     - ``mpi4py``, **version >= 1.3**
     - ``dill``, **version >= 0.3.4**
@@ -297,6 +297,7 @@ setup(name="pyina",
                    'Programming Language :: Python :: 3.8',
                    'Programming Language :: Python :: 3.9',
                    'Programming Language :: Python :: 3.10',
+                   'Programming Language :: Python :: Implementation :: PyPy',
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development'],
 
