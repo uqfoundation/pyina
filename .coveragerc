@@ -15,7 +15,8 @@ branch = true
 [paths]
 source =
     pyina
-    */site-packages/pyina*/pyina
+    */site-packages/pyina
+    */site-packages/pyina-*/pyina
 
 [report]
 include =
