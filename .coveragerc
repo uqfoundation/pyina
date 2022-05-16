@@ -1,6 +1,7 @@
 [run]
 # source = pyina
-include = */pyina/*
+include =
+    */pyina/*
 omit = 
     */tests/*
     */info.py
@@ -11,7 +12,15 @@ branch = true
 # data_file = $TRAVIS_BUILD_DIR/.coverage
 # debug = trace
 
+[paths]
+source =
+    pyina
+    */site-packages/pyina
+    */site-packages/pyina-*/pyina
+
 [report]
+include =
+    */pyina/*
 exclude_lines =
     pragma: no cover
     raise NotImplementedError

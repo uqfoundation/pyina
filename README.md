@@ -63,6 +63,32 @@ You can get the latest development version with all the shiny new features at:
 If you have a new contribution, please submit a pull request.
 
 
+Installation
+------------
+``pyina`` can be installed with ``pip``::
+
+    $ pip install pyina
+
+A version of MPI must also be installed. Launchers in ``pyina`` that
+submit to a scheduler will throw errors if the underlying scheduler is
+not available, however a scheduler is not required for ``pyina`` to execute.
+
+
+Requirements
+------------
+``pyina`` requires:
+
+* ``python`` (or ``pypy``), **==2.7** or **>=3.7**
+* ``setuptools``, **>=42**
+* ``wheel``, **>=0.1**
+* ``cython``, **>=0.29.22**
+* ``numpy``, **>=1.0**
+* ``mpi4py``, **>=1.3**
+* ``dill``, **>=0.3.4**
+* ``pox``, **>=0.3.0**
+* ``pathos``, **>=0.2.8**
+
+
 More Information
 ----------------
 Probably the best way to get started is to look at the documentation at
