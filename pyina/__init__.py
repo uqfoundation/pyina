@@ -204,33 +204,29 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
 
-try:
-    # This is a hack to import a minimal package for the build process
-    __PYINA_SETUP__
-except NameError:
-    # shortcuts
+# shortcuts
 
-    # launchers
-    import pyina.launchers as launchers
-    import pyina.schedulers as schedulers
+# launchers
+import pyina.launchers as launchers
+import pyina.schedulers as schedulers
 
-    # mappers
-    import pyina.mpi as mpi
+# mappers
+import pyina.mpi as mpi
 
-    # strategies
-    import pyina.mpi_scatter as mpi_scatter
-    import pyina.mpi_pool as mpi_pool
+# strategies
+import pyina.mpi_scatter as mpi_scatter
+import pyina.mpi_pool as mpi_pool
 
-    # tools
-    from .tools import *
+# tools
+from .tools import *
 
-    # backward compatibility
-    parallel_map = mpi_pool
-    parallel_map.parallel_map = mpi_pool.parallel_map
-    parallel_map2 = mpi_scatter
-    parallel_map2.parallel_map = mpi_scatter.parallel_map
-    #import ez_map
-    #import mappers
+# backward compatibility
+parallel_map = mpi_pool
+parallel_map.parallel_map = mpi_pool.parallel_map
+parallel_map2 = mpi_scatter
+parallel_map2.parallel_map = mpi_scatter.parallel_map
+#import ez_map
+#import mappers
 
 
 def license():
