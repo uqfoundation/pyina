@@ -135,7 +135,7 @@ class BinaryDistribution(Distribution):
 # define dependencies
 sysversion = sys.version_info[:2]
 dill_version = 'dill>=0.3.4'
-pox_version = 'pox>=0.3.0'
+pox_version = 'pox>=0.3.1'
 pathos_version = 'pathos>=0.2.8'
 mystic_version = 'mystic>=0.3.8'
 cython_version = 'cython>=0.29.22' #XXX: required to build numpy from source
