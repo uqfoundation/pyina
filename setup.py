@@ -134,7 +134,7 @@ class BinaryDistribution(Distribution):
 
 # define dependencies
 sysversion = sys.version_info[:2]
-dill_version = 'dill>=0.3.5'
+dill_version = 'dill>=0.3.5.1'
 pox_version = 'pox>=0.3.1'
 pathos_version = 'pathos>=0.2.8'
 mystic_version = 'mystic>=0.3.8'
