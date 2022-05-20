@@ -96,7 +96,6 @@ Requirements
 
     - ``python`` (or ``pypy``), **==2.7** or **>=3.7**
     - ``setuptools``, **>=42**
-    - ``wheel``, **>=0.1**
     - ``cython``, **>=0.29.22**
     - ``numpy``, **>=1.0**
     - ``mpi4py``, **>=1.3**
