@@ -7,7 +7,7 @@
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
 # author, version, license, and long description
-__version__ = '0.2.6.dev0'
+__version__ = '0.2.6'
 __author__ = 'Mike McKerns'
 
 __doc__ = """
@@ -101,7 +101,7 @@ Requirements
     - ``mpi4py``, **>=1.3**
     - ``dill``, **>=0.3.5.1**
     - ``pox``, **>=0.3.1**
-    - ``pathos``, **>=0.2.8**
+    - ``pathos``, **>=0.2.9**
 
 
 More Information
