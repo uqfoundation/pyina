@@ -7,7 +7,7 @@
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
 # author, version, license, and long description
-__version__ = '0.2.6'
+__version__ = '0.2.7.dev0'
 __author__ = 'Mike McKerns'
 
 __doc__ = """
