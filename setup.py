@@ -9,12 +9,8 @@
 import os
 import sys
 # drop support for older python
-unsupported = None
-if sys.version_info < (2, 7):
-    unsupported = 'Versions of Python before 2.7 are not supported'
-elif (3, 0) <= sys.version_info < (3, 7):
+if sys.version_info < (3, 7):
     unsupported = 'Versions of Python before 3.7 are not supported'
-if unsupported:
     raise ValueError(unsupported)
 
 # get distribution meta info
@@ -103,14 +99,12 @@ setup_kwds = dict(
         'Source Code':'https://github.com/uqfoundation/pyina',
         'Bug Tracker':'https://github.com/uqfoundation/pyina/issues',
     },
-    python_requires = '>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*',
+    python_requires = '>=3.7',
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -133,40 +127,13 @@ class BinaryDistribution(Distribution):
         return True
 
 # define dependencies
-sysversion = sys.version_info[:2]
 dill_version = 'dill>=0.3.5.1'
 pox_version = 'pox>=0.3.1'
 pathos_version = 'pathos>=0.2.9'
 mystic_version = 'mystic>=0.3.9'
 cython_version = 'cython>=0.29.22' #XXX: required to build numpy from source
-try:
-    import ctypes # if using `pypy`, pythonapi is not found
-    IS_PYPY = not hasattr(ctypes, 'pythonapi')
-    IS_PYPY2 = IS_PYPY and sysversion < (3,0)
-except:
-    IS_PYPY = False
-    IS_PYPY2 = False
-if sysversion < (2,6) or sysversion == (3,0) or sysversion == (3,1):
-    numpy_version = 'numpy>=1.0, <1.8.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
-elif sysversion == (2,6) or sysversion == (3,2) or sysversion == (3,3):
-    numpy_version = 'numpy>=1.0, <1.12.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
-elif IS_PYPY2:
-    numpy_version = 'numpy>=1.0, <1.16.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2, <3.1.0' # segfault 11 on MPI import
-elif sysversion == (2,7) or sysversion == (3,4):
-    numpy_version = 'numpy>=1.0, <1.17.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
-elif sysversion == (3,5):
-    numpy_version = 'numpy>=1.0, <1.19.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
-elif sysversion == (3,6):# or IS_PYPY
-    numpy_version = 'numpy>=1.0, <1.20.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
-else:
-    numpy_version = 'numpy>=1.0'
-    mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
+numpy_version = 'numpy>=1.0'
+mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
 # add dependencies
 depend = [numpy_version, dill_version, pox_version, pathos_version, mpi4py_version]
 extras = {'examples': [mystic_version]}
