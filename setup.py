@@ -131,7 +131,7 @@ dill_version = 'dill>=0.3.5.1'
 pox_version = 'pox>=0.3.1'
 pathos_version = 'pathos>=0.2.9'
 mystic_version = 'mystic>=0.3.9'
-cython_version = 'cython>=0.29.22' #XXX: required to build numpy from source
+cython_version = 'cython>=0.29.30' #XXX: required to build numpy from source
 numpy_version = 'numpy>=1.0'
 mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
 # add dependencies
