@@ -6,9 +6,6 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-import sys
-if sys.version < "3":
-    from itertools import izip as zip
 from mpi4py import MPI as mpi
 import dill
 try:
