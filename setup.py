@@ -116,7 +116,7 @@ setup_kwds = dict(
         'Topic :: Software Development',
     ],
     packages=['pyina','pyina.tests'],
-    package_dir={'pyina':'pyina','pyina.tests':'tests'},
+    package_dir={'pyina':'pyina','pyina.tests':'pyina/tests'},
     scripts=['scripts/ezpool','scripts/ezscatter','scripts/mpi_world'],
 )
 
