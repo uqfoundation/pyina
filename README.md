@@ -51,7 +51,7 @@ The latest released version of ``pyina`` is available at:
 ``pyina`` is distributed under a 3-clause BSD license.
 
 
-Development Version 
+Development Version
 [![Support](https://img.shields.io/badge/support-the%20UQ%20Foundation-purple.svg?style=flat&colorA=grey&colorB=purple)](http://www.uqfoundation.org/pages/donate.html)
 [![Documentation Status](https://readthedocs.org/projects/pyina/badge/?version=latest)](https://pyina.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.com/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.com/github/uqfoundation/pyina)
@@ -103,6 +103,29 @@ inspecting the code itself. Please feel free to submit a ticket on github,
 or ask a question on stackoverflow (**@Mike McKerns**).
 If you would like to share how you use ``pyina`` in your work, please send
 an email (to **mmckerns at uqfoundation dot org**).
+
+Important classes and functions are found here:
+
+* ``pyina.mpi``           [the map API definition]
+* ``pyina.schedulers``    [all available schedulers] 
+* ``pyina.launchers``     [all available launchers] 
+
+Mapping strategies are found here:
+
+* ``pyina.mpi_scatter``   [the scatter-gather strategy]
+* ``pyina.mpi_pool``      [the worker pool strategy]
+
+``pyina`` also provides a convience script that helps navigate the
+MPI environment. This script can be run from anywhere with::
+
+    $ mpi_world
+
+If may also be convienent to set a shell alias for the launch of 'raw'
+mpi-python jobs. Set something like the following (for bash)::
+
+    $ alias mpython1='mpiexec -np 1 `which python`'
+    $ alias mpython2='mpiexec -np 2 `which python`'
+    $ ...
 
 
 Citation
