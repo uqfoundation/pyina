@@ -187,6 +187,7 @@ Further Input:
     res = pickle.load(open(resfilename,'rb'))
     subprocess.call('rm -f %s' % resfilename, shell=True)
     subprocess.call('rm -f %sc' % modfile.name, shell=True)
+    modfile.close(); argfile.close() # pypy removes closed tempfiles
     return res
 
 #def ez_map2(func, arglist, nodes=None, launcher=None, mapper=None):
@@ -301,6 +302,7 @@ Further Input:
     # read result back
     res = pickle.load(open(resfilename,'rb'))
     subprocess.call('rm -f %s' % resfilename, shell=True)
+    modfile.close(); argfile.close() # pypy removes closed tempfiles
     return res
     
 

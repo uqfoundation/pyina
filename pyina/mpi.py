@@ -314,8 +314,13 @@ Additional keyword arguments are passed to 'func' along with 'args'.
         ######################################################################
 
         # cleanup files
-        if _SAVE[0] and log.level == logging.WARN:
-            self._save_out(resfilename) # pickled output
+        if _SAVE[0]:
+            if log.level == logging.WARN:
+                self._save_out(resfilename) # pickled output
+        else:
+            modfile.close(); argfile.close() # pypy removes closed tempfiles
+            if modfile in _HOLD: _HOLD.remove(modfile)
+            if argfile in _HOLD: _HOLD.remove(argfile)
         self._cleanup(resfilename, modfile.name, argfile.name)
         if self.scheduler and not _SAVE[0]: self.scheduler._cleanup()
         if error:
