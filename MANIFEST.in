@@ -4,9 +4,9 @@ include MANIFEST.in
 include pyproject.toml
 include tox.ini
 include version.py
-include scripts/*
 recursive-include docs *
 recursive-include examples *
+recursive-include scripts *
 include .*
 prune .git
 prune .coverage
