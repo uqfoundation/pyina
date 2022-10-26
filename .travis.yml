@@ -1,4 +1,4 @@
-dist: bionic
+dist: jammy
 language: python
 
 matrix:
@@ -15,19 +15,28 @@ matrix:
 
         - python: '3.10'
           env:
-            - CYTHON="true" # numpy source build
 
         - python: '3.11-dev'
+          env:
+            - CYTHON="true" # numpy source build
+
+        - python: '3.12-dev'
           env:
             - CYTHON="true" # numpy source build
             - DILL="master"
 
-        - python: 'pypy3.7-7.3.5' # most recent
-          dist: bionic
+        - python: 'pypy3.7-7.3.9'
+          env:
+
+        - python: 'pypy3.8-7.3.9'
+          env:
+
+        - python: 'pypy3.9-7.3.9'
           env:
 
     allow_failures:
         - python: '3.11-dev'
+        - python: '3.12-dev'
     fast_finish: true
 
 cache:
