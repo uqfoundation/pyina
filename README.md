@@ -91,18 +91,16 @@ Requirements
 More Information
 ----------------
 Probably the best way to get started is to look at the documentation at
-http://pyina.rtfd.io. Also see ``pyina.examples`` and ``pyina.tests``
-for a set of scripts that demonstrate the configuration and launching of
-mpi-based parallel jobs using the *"easy map"* interface. Also see
-``pyina.examples_other`` for a set of scripts that test the more raw
-internals of ``pyina``. You can run the tests with ``python -m pyina.tests``.
-A script is included for querying, setting up, and tearing down an MPI
-environment, see ``python -m pyina`` for more information. The source code
-is generally well documented, so further questions may be resolved by
-inspecting the code itself. Please feel free to submit a ticket on github,
-or ask a question on stackoverflow (**@Mike McKerns**).
-If you would like to share how you use ``pyina`` in your work, please send
-an email (to **mmckerns at uqfoundation dot org**).
+http://pyina.rtfd.io. Also see https://github.com/uqfoundation/pyina/tree/master/examples and ``pyina.tests`` for a set of scripts that demonstrate the
+configuration and launching of mpi-based parallel jobs using the *"easy map"*
+interface. You can run the tests with ``python -m pyina.tests``. A script is
+included for querying, setting up, and tearing down an MPI environment, see
+``python -m pyina`` for more information. The source code is generally well
+documented, so further questions may be resolved by inspecting the code itself.
+Please feel free to submit a ticket on github, or ask a question on
+stackoverflow (**@Mike McKerns**). If you would like to share how you use
+``pyina`` in your work, please send an email (to **mmckerns at uqfoundation dot
+org**).
 
 Important classes and functions are found here:
 
