@@ -4,9 +4,7 @@ pyina package documentation
 ===========================
 
 .. automodule:: pyina
-    :members:
-    :undoc-members:
-    :show-inheritance:
+..  :exclude-members: +
 
 .. toctree::
     :maxdepth: 2
