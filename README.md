@@ -17,7 +17,7 @@ jobs across the availble nodes.  These strategies can be used *"in-the-raw"*
 Further, in ``pyina.mpi`` ``pyina`` provides pipe and map implementations
 (known as *"easy map"*) that hide the MPI internals from the user. With the
 *"easy map"*, the user can launch their code in parallel batch mode -- using
-standard python and without ever having to write a line of MPI code.
+standard Python and without ever having to write a line of MPI code.
 
 There are several ways that a user would typically launch their code in
 parallel -- directly with ``mpirun`` or ``mpiexec``, or through the use of a
@@ -25,7 +25,7 @@ scheduler such as *torque* or *slurm*. ``pyina`` encapsulates several of these
 *"launchers"*, and provides a common interface to the different methods of
 launching a MPI job.
 
-``pyina`` is part of ``pathos``, a python framework for heterogeneous computing.
+``pyina`` is part of ``pathos``, a Python framework for heterogeneous computing.
 ``pyina`` is in active development, so any user feedback, bug reports, comments,
 or suggestions are highly appreciated.  A list of issues is located at https://github.com/uqfoundation/pyina/issues, with a legacy list maintained at https://uqfoundation.github.io/project/pathos/query.
 
@@ -35,10 +35,10 @@ Major Features
 ``pyina`` provides a highly configurable parallel map interface
 to running MPI jobs, with:
 
-* a map interface that extends the python ``map`` standard
+* a map interface that extends the Python ``map`` standard
 * the ability to submit batch jobs to a selection of schedulers
 * the ability to customize node and process launch configurations
-* the ability to launch parallel MPI jobs with standard python
+* the ability to launch parallel MPI jobs with standard Python
 * ease in selecting different strategies for processing a work list
 
 
