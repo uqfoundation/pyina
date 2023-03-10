@@ -44,6 +44,7 @@ to running MPI jobs, with:
 
 Current Release
 [![Downloads](https://static.pepy.tech/personalized-badge/pyina?period=total&units=international_system&left_color=grey&right_color=blue&left_text=pypi%20downloads)](https://pepy.tech/project/pyina)
+[![Stack Overflow](https://img.shields.io/badge/stackoverflow-get%20help-black.svg)](https://stackoverflow.com/questions/tagged/pyina)
 ---------------
 The latest released version of ``pyina`` is available at:
     https://pypi.org/project/pyina
