@@ -3,15 +3,16 @@
 pyina package documentation
 ===========================
 
-.. automodule:: pyina
-..  :exclude-members: +
-
 .. toctree::
+    :hidden:
     :maxdepth: 2
-    :caption: Contents:
 
+    self
     pyina
     scripts
+
+.. automodule:: pyina
+..  :exclude-members: +
 
 Indices and tables
 ==================
