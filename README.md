@@ -79,7 +79,7 @@ Requirements
 ------------
 ``pyina`` requires:
 
-* ``python`` (or ``pypy``), **>=3.7**
+* ``python`` (or ``pypy``), **>=3.8**
 * ``setuptools``, **>=42**
 * ``cython``, **>=0.29.30**
 * ``numpy``, **>=1.0**
