@@ -1,4 +1,4 @@
-dist: jammy
+dist: bionic
 language: python
 
 matrix:
