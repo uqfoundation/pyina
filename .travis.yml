@@ -46,10 +46,12 @@ matrix:
 
     allow_failures:
         - python: '3.13-dev'
+        - python: 'pypy3.9-7.3.9' # undefined symbol
         - python: 'pypy3.10-7.3.13' # CI missing
     fast_finish: true
 
 cache:
+    pip: true
     apt: true
 
 before_install:
@@ -61,7 +63,6 @@ before_install:
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
 
 install:
-    - env MPICC=$MPI_CC python -m pip install --no-cache-dir mpi4py
     - python -m pip install .
 
 script:
