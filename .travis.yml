@@ -1,50 +1,63 @@
-dist: bionic
+dist: jammy
+os: linux
+sudo: required
 language: python
 
 matrix:
     include:
         - python: '3.8'
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: '3.9'
           env:
             - COVERAGE="true"
+            - RDMAV_FORK_SAFE=1
 
         - python: '3.10'
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: '3.11'
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: '3.12'
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: '3.13-dev'
           env:
             - CYTHON="true" # numpy source build
             - DILL="master"
+            - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.8-7.3.9' # at 7.3.11
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.9-7.3.9' # at 7.3.13
           env:
+            - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.10-7.3.13'
           env:
+            - RDMAV_FORK_SAFE=1
 
     allow_failures:
         - python: '3.13-dev'
+        - python: 'pypy3.9-7.3.9' # undefined symbol
         - python: 'pypy3.10-7.3.13' # CI missing
     fast_finish: true
 
 cache:
     pip: true
+    apt: true
 
 before_install:
     - set -e  # fail on any error
     - sudo apt-get update -q
-    - set -x; sudo apt-get install -y -q openmpi-bin libopenmpi-dev
+    - set -x; sudo apt-get install -y -q mpich libmpich-dev # openmpi-bin libopenmpi-dev
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
     - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
