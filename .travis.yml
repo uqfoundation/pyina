@@ -1,4 +1,6 @@
-dist: jammy
+dist: xenial
+os: linux
+sudo: required
 language: python
 
 matrix:
@@ -40,11 +42,12 @@ matrix:
 
 cache:
     pip: true
+    apt: true
 
 before_install:
     - set -e  # fail on any error
     - sudo apt-get update -q
-    - set -x; sudo apt-get install -y -q openmpi-bin libopenmpi-dev
+    - set -x; sudo apt-get install -y -q mpich libmpich-dev # openmpi-bin libopenmpi-dev
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
     - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
