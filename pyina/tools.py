@@ -116,7 +116,9 @@ def lookup(inputs, *index):
 
 def isoseconds(time):
     """calculate number of seconds from a given isoformat timestring"""
-    if isinstance(time, int): return time #XXX: allow this?
+    from numbers import Integral
+    if isinstance(time, Integral):
+        return int(time) #XXX: allow this?
     import datetime
     d = 0
     try: # allows seconds up to 59 #XXX: allow 60+ ?

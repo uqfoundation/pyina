@@ -89,7 +89,8 @@ associated scheduler.
         """
         self.__init(*args, **kwds)
         self.timelimit = kwds.get('timelimit', defaults['timelimit'])
-        if isinstance(self.timelimit, int):
+        from numbers import Integral
+        if isinstance(self.timelimit, Integral):
             from pyina.tools import isoformat
             self.timelimit = isoformat(self.timelimit)
         self.queue = kwds.get('queue', defaults['queue'])
