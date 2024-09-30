@@ -104,9 +104,9 @@ class BinaryDistribution(Distribution):
         return True
 
 # define dependencies
-dill_version = 'dill>=0.3.8'
-pox_version = 'pox>=0.3.4'
-pathos_version = 'pathos>=0.3.2'
+dill_version = 'dill>=0.3.9'
+pox_version = 'pox>=0.3.5'
+pathos_version = 'pathos>=0.3.3'
 mystic_version = 'mystic>=0.4.2'
 cython_version = 'cython>=0.29.30' #XXX: required to build numpy from source
 numpy_version = 'numpy>=1.0'
