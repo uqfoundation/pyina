@@ -55,7 +55,7 @@ The latest released version of ``pyina`` is available at:
 Development Version
 [![Support](https://img.shields.io/badge/support-the%20UQ%20Foundation-purple.svg?style=flat&colorA=grey&colorB=purple)](http://www.uqfoundation.org/pages/donate.html)
 [![Documentation Status](https://readthedocs.org/projects/pyina/badge/?version=latest)](https://pyina.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://travis-ci.com/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://travis-ci.com/github/uqfoundation/pyina)
+[![Build Status](https://app.travis-ci.com/uqfoundation/pyina.svg?label=build&logo=travis&branch=master)](https://app.travis-ci.com/github/uqfoundation/pyina)
 [![codecov](https://codecov.io/gh/uqfoundation/pyina/branch/master/graph/badge.svg)](https://codecov.io/gh/uqfoundation/pyina)
 -------------------
 You can get the latest development version with all the shiny new features at:
