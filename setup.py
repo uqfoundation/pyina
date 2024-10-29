@@ -166,9 +166,3 @@ You may need to set the environment variable "SDKROOT",
 as shown in the instructions for installing ``mpi4py``:
   http://mpi4py.scipy.org/docs/usrman/install.html
 """)
-
-
-if __name__=='__main__':
-    pass
-
-# End of file
