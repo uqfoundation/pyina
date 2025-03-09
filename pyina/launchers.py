@@ -80,7 +80,7 @@ __all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
            'AlpsScatter', 'TorqueMpi', 'TorqueSlurm', 'MoabMpi', 'MoabSlurm',
            'TorqueMpiPool', 'TorqueMpiScatter', 'TorqueSlurmPool',
            'TorqueSlurmScatter', 'MoabMpiPool', 'MoabMpiScatter',
-           'MoabSlurmPool', 'MoabSlurmScatter']
+           'MoabSlurmPool', 'MoabSlurmScatter', 'Pool', 'Scatter']
 
 from pyina.mpi import Mapper, defaults
 from pathos.abstract_launcher import AbstractWorkerPool
@@ -438,6 +438,17 @@ class MoabSlurmScatter(MoabSlurm):
         MoabSlurm.__init__(self, *args, **kwds)
     pass
 
+
+# launcher defaults
+if defaults['mpirun'] == 'srun':
+    Pool = SlurmPool
+    Scatter = SlurmScatter
+elif defaults['mpirun'] == 'aprun':
+    Pool = AlpsPool
+    Scatter = AlpsScatter
+else:
+    Pool = MpiPool
+    Scatter = MpiScatter
 
 
 # backward compatibility

@@ -6,7 +6,8 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from pyina.launchers import Mpi
+from pyina.launchers import Pool as Mpi
+
 
 #XXX:: can fail with NameError: global name 'func' is not defined
 #XXX:: can fail with RuntimeError: maximum recursion depth exceeded

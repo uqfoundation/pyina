@@ -165,7 +165,7 @@ def check_ready(pool, maxtries, delay, verbose=True):
 
 
 def test_pool():
-    from pyina.launchers import MpiPool as Pool
+    from pyina.launchers import Pool
     pool = Pool(nodes=4)
     check_sanity( pool )
     check_maps( pool, items, delay )

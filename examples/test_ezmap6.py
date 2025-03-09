@@ -6,9 +6,12 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from pyina.launchers import SerialMapper
-from pyina.schedulers import Torque
 from pyina.mpi import _save, _debug
+from pyina.launchers import SerialMapper
+from pyina.schedulers import Torque, Sheduled
+if Scheduled != Torque:
+    print('Torque scheduler is not available')
+    exit()
 
 #_debug(True)
 #_save(True)

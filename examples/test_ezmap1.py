@@ -6,7 +6,8 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from pyina.launchers import MpiScatter
+from pyina.launchers import Scatter as MpiScatter
+
 
 def host(id):
     import socket

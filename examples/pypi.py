@@ -37,8 +37,7 @@ integration_points = (arange(1,n+1)-0.5)/n
 def f(x):
     return 4.0/(1.0+x*x)
 
-#from pyina.launchers import MpiScatter as Mpi
-from pyina.launchers import MpiPool as Mpi
+from pyina.launchers import Pool as Mpi
 
 
 if __name__ == '__main__':
@@ -49,7 +48,7 @@ if __name__ == '__main__':
     from pyina import mpi
     if mpi.world.rank == 0:
         print("approxmiate pi : ", sum(out)/n)
-        print("calculated on %d nodes " % work.nodes)
+        print("calculated on %d nodes " % int(work.nodes))
 
 
 # end of file

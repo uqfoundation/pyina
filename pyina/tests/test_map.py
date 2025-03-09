@@ -53,13 +53,13 @@ def check_serial(source=False):
     assert res == std
 
 def check_pool(source=False):
-    from pyina.launchers import MpiPool as MPI
+    from pyina.launchers import Pool as MPI
     pool = MPI(4, source=source)
     res = timed_pool(pool, items, delay, verbose)
     assert res == std
 
 def check_scatter(source=False):
-    from pyina.launchers import MpiScatter as MPI
+    from pyina.launchers import Scatter as MPI
     pool = MPI(4, source=source)
     res = timed_pool(pool, items, delay, verbose)
     assert res == std
