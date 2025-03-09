@@ -11,11 +11,17 @@ run some basic tests of the MPI installation
 
 import subprocess
 
-command = 'mpiexec -info'
+from pyina.tools import which_launcher
+mpiexec = which_launcher()
+
+if 'mpi' in mpiexec:
+    command = '%s -info' % mpiexec
+else:
+    command = '%s --version' % mpiexec
 print("\nlaunch: %s" % command)
 subprocess.call(command, shell=True)
 
-command = 'mpiexec -n 4 hostname'
+command = '%s -n 4 hostname' % mpiexec
 print("\nlaunch: %s" % command)
 subprocess.call(command, shell=True)
 

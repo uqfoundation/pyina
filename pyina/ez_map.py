@@ -100,7 +100,15 @@ Further Input:
     if 'queue' in kwds: ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
     if 'launcher' in kwds: launcher = kwds['launcher']
-    else: launcher = mpirun_launcher  #XXX: default = non_mpi?
+    else:
+        from pox import which
+        if which('mpirun') or which('mpiexec'):
+            launcher = mpirun_launcher
+        elif which('srun'):
+            launcher = srun_launcher
+        elif which('aprun'):
+            launcher = aprun_launcher
+        else: launcher = serial_launcher
     if 'scheduler' in kwds: scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)
@@ -224,7 +232,15 @@ Further Input:
     if 'queue' in kwds: ezdefaults['queue'] = kwds['queue']
     # set the scheduler & launcher (or use the given default)
     if 'launcher' in kwds: launcher = kwds['launcher']
-    else: launcher = mpirun_launcher  #XXX: default = non_mpi?
+    else:
+        from pox import which
+        if which('mpirun') or which('mpiexec'):
+            launcher = mpirun_launcher
+        elif which('srun'):
+            launcher = srun_launcher
+        elif which('aprun'):
+            launcher = aprun_launcher
+        else: launcher = serial_launcher
     if 'scheduler' in kwds: scheduler = kwds['scheduler']
     else: scheduler = ''
     # set scratch directory (most often required for queue launcher)

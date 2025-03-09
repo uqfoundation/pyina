@@ -26,7 +26,7 @@ def run_files(obj):
     assert _obj(1.57) == obj(1.57)
 
 def run_pool(obj):
-    from pyina.launchers import Mpi
+    from pyina.launchers import Pool as Mpi
     p = Mpi(2)
     x = [1,2,3]
     y = list(map(obj, x))

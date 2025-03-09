@@ -145,6 +145,40 @@ def isoformat(seconds):
     t = datetime.time(h,m,s).strftime("%H:%M:%S")
     return ("%s:" % d) + t if d else t #XXX: better convert days to hours?
 
+def which_scheduler(fullpath=False):
+    """try to autodetect an available scheduler"""
+    import os
+    from pox import which
+    progs = ['qsub', 'msub', 'bsub']
+    sched = None
+    for prog in progs:
+        sched = which(prog, ignore_errors=True)
+        if sched: break
+    if sched and not fullpath:
+        sched = os.path.split(sched)[-1]
+    return sched
+
+def which_launcher(mpi=None, fullpath=False):
+    """try to autodetect an available launcher
+
+if mpi=True only look for mpi, if False only look for non-mpi"""
+    import os
+    from pox import which
+    progs = ['srun', 'aprun']
+    if mpi == True:
+        return which_mpirun(fullpath=fullpath)
+    elif mpi != False:
+        mpi = which_mpirun(fullpath=fullpath)
+        if mpi: return mpi
+    # is non-mpi
+    mpi = None
+    for prog in progs:
+        mpi = which(prog, ignore_errors=True)
+        if mpi: break
+    if mpi and not fullpath:
+        mpi = os.path.split(mpi)[-1]
+    return mpi #XXX: if None, use serial?
+
 def which_mpirun(mpich=None, fullpath=False):
     """try to autodetect an available mpi launcher
 

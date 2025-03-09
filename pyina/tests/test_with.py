@@ -54,8 +54,8 @@ def run_with_multipool(Pool): #XXX: amap and imap -- NotImplementedError
 
 
 def test_with_mpipool():
-    from pyina.launchers import MpiPool
-    run_with_multipool(MpiPool)
+    from pyina.launchers import Pool
+    run_with_multipool(Pool)
 
 
 if __name__ == '__main__':

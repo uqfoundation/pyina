@@ -50,7 +50,7 @@ provides:
  scheduler_obj = scheduler()  interface
 """
 
-__all__ = ['Scheduler', 'Torque', 'Moab', 'Lsf']
+__all__ = ['Scheduler', 'Torque', 'Moab', 'Lsf', 'Scheduled']
 
 from pyina.mpi import defaults
 from subprocess import Popen, call
@@ -304,6 +304,19 @@ NOTES:
 # http://its2.unc.edu/dci_components/lsf/mpich_parallel.htm
 # http://ait.web.psi.ch/services/linux/hpc/mpich/using_mpich_gm.html
 
+
+# schedule defaults
+from pyina.tools import which_scheduler
+sched = which_scheduler()
+if sched == 'qsub':
+    Scheduled = Torque
+elif sched == 'msub':
+    Scheduled = Moab
+elif sched == 'bsub':
+    Scheduled = Lsf
+else:
+    Scheduled = Scheduler
+del sched, which_scheduler
 
 
 # backward compatibility

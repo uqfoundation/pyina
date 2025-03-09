@@ -6,7 +6,8 @@
 # License: 3-clause BSD.  The full license text is available at:
 #  - https://github.com/uqfoundation/pyina/blob/master/LICENSE
 
-from pyina.launchers import MpiScatter, MpiPool
+from pyina.launchers import Pool as MpiPool
+
 
 def play(Q):
     id, l = Q
@@ -17,9 +18,9 @@ def play2(id,l):
     import numpy
     return "3 x %d = %d" % (id, numpy.sum(l))
 
-args = [ (i, range(3)*i) for i in range(5) ]
+args = [ (i, list(range(3))*i) for i in range(5) ]
 arg1 = [ i for i in range(5) ]
-arg2 = [ range(3)*i for i in range(5) ]
+arg2 = [ list(range(3))*i for i in range(5) ]
 
 print("Using 12 nodes and a worker pool...")
 print('Evaluate a function that expects a n-tuple argument "map(f,args)"')

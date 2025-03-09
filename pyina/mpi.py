@@ -74,7 +74,7 @@ from pathos.helpers import cpu_count
 import os, os.path, sys
 import tempfile
 from dill.temp import dump, dump_source
-from pyina.tools import which_python, which_mpirun, which_strategy
+from pyina.tools import which_python, which_launcher, which_strategy
 
 _HOLD = []
 _SAVE = [False]
@@ -103,7 +103,7 @@ _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
     'program' : which_strategy(lazy=True) or 'ezscatter', # serialize to tempfile
-    'mpirun' : which_mpirun() or 'mpiexec',
+    'mpirun' : which_launcher() or 'mpiexec',
     'python' : which_python(lazy=True) or 'python',
     'progargs' : '',
 
