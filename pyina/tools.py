@@ -151,7 +151,7 @@ def which_scheduler(fullpath=False):
     from pox import which
     progs = ['qsub', 'msub', 'bsub']
     sched = None
-    from prog in progs:
+    for prog in progs:
         sched = which(prog, ignore_errors=True)
         if sched: break
     if sched and not fullpath:
