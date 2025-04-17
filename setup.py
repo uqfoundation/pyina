@@ -104,10 +104,10 @@ class BinaryDistribution(Distribution):
         return True
 
 # define dependencies
-dill_version = 'dill>=0.3.9'
-pox_version = 'pox>=0.3.5'
-pathos_version = 'pathos>=0.3.3'
-mystic_version = 'mystic>=0.4.3'
+dill_version = 'dill>=0.4.0'
+pox_version = 'pox>=0.3.6'
+pathos_version = 'pathos>=0.3.4'
+mystic_version = 'mystic>=0.4.4'
 cython_version = 'cython>=0.29.30' #XXX: required to build numpy from source
 numpy_version = 'numpy>=1.0'
 mpi4py_version = 'mpi4py>=1.3, !=3.0.2' # segfault 11 on MPI import
