@@ -5,10 +5,6 @@ language: python
 
 matrix:
     include:
-        - python: '3.8'
-          env:
-            - RDMAV_FORK_SAFE=1
-
         - python: '3.9'
           env:
             - COVERAGE="true"
@@ -34,10 +30,6 @@ matrix:
           env:
             - CYTHON="true" # numpy source build
             - DILL="master"
-            - RDMAV_FORK_SAFE=1
-
-        - python: 'pypy3.8-7.3.9' # at 7.3.11
-          env:
             - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.9-7.3.9' # at 7.3.16
