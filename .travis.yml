@@ -32,7 +32,13 @@ matrix:
             - DILL="master"
             - RDMAV_FORK_SAFE=1
 
-        - python: 'pypy3.9-7.3.9' # at 7.3.16
+        - python: '3.15-dev'
+          env:
+            - CYTHON="true" # numpy source build
+            - DILL="master"
+            - RDMAV_FORK_SAFE=1
+
+        - python: 'pypy3.9-7.3.15' # at 7.3.16
           env:
             - RDMAV_FORK_SAFE=1
 
@@ -40,15 +46,13 @@ matrix:
           env:
             - RDMAV_FORK_SAFE=1
 
-        - python: 'pypy3.11-7.3.19'
+        - python: 'pypy3.11-7.3.20'
           env:
             - RDMAV_FORK_SAFE=1
 
     allow_failures:
-        - python: '3.14-dev' # CI missing
-        - python: 'pypy3.9-7.3.9' # undefined symbol
-        - python: 'pypy3.10-7.3.19' # CI missing
-        - python: 'pypy3.11-7.3.19' # CI missing
+        - python: '3.15-dev' # prerelease; CI missing
+        - python: 'pypy3.11-7.3.20' # CI missing
     fast_finish: true
 
 cache:
@@ -58,15 +62,18 @@ cache:
 before_install:
     - set -e  # fail on any error
     - sudo apt-get update -q
-    - set -x; sudo apt-get install -y -q mpich libmpich-dev # openmpi-bin libopenmpi-dev
+    - set -x; sudo apt-get install -y -q g++ mpich libmpich-dev # openmpi-bin libopenmpi-dev
+    - export MPICC=$(which mpicc)
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
     - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
 
 install:
+    - python -m pip install --no-binary mpi4py mpi4py
     - python -m pip install .
 
 script:
+    - mpiexec -np 1 python examples/which.py
     - for test in pyina/tests/__init__.py; do echo $test ; if [[ $COVERAGE == "true" ]]; then coverage run -a $test > /dev/null; else python $test > /dev/null; fi ; done
     - for test in pyina/tests/test_*.py; do echo $test ; if [[ $COVERAGE == "true" ]]; then coverage run -a $test > /dev/null; else python $test > /dev/null; fi ; done
 
