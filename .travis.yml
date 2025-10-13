@@ -63,7 +63,7 @@ before_install:
     - set -e  # fail on any error
     - sudo apt-get update -q
     - set -x; sudo apt-get install -y -q g++ openmpi-bin libopenmpi-dev # mpich libmpich-dev
-    - export MPICC=$(which mpicc)
+    - export MPICC=$(which mpicc) #XXX: necessary?
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
     - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
