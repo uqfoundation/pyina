@@ -62,11 +62,12 @@ cache:
 before_install:
     - set -e  # fail on any error
     - sudo apt-get update -q
-    - set -x; sudo apt-get install -y -q g++ openmpi-bin libopenmpi-dev # mpich libmpich-dev
+    - set -x; sudo apt-get install -y -q g++ mpich libmpich-dev # openmpi-bin libopenmpi-dev
     - export MPICC=$(which mpicc) #XXX: necessary?
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
     - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
+    - mpiexec -np 1 python examples/which.py
 
 install:
     - python -m pip install --no-binary mpi4py mpi4py
