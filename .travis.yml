@@ -5,11 +5,6 @@ language: python
 
 matrix:
     include:
-        - python: '3.9'
-          dist: focal
-          env:
-            - RDMAV_FORK_SAFE=1
-
         - python: '3.10'
           dist: jammy
           env:
@@ -39,10 +34,6 @@ matrix:
           env:
             - CYTHON="true" # numpy source build
             - DILL="master"
-            - RDMAV_FORK_SAFE=1
-
-        - python: 'pypy3.9-7.3.15' # at 7.3.16
-          env:
             - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.10-7.3.19'
