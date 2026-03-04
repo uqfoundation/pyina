@@ -15,6 +15,7 @@ Schedulers:
     Torque         - 
     Moab           -
     Lsf            -
+    Sbatch         -
 
 Usage
 =====
@@ -50,7 +51,7 @@ provides:
  scheduler_obj = scheduler()  interface
 """
 
-__all__ = ['Scheduler', 'Torque', 'Moab', 'Lsf', 'Scheduled']
+__all__ = ['Scheduler', 'Torque', 'Moab', 'Lsf', 'Sbatch', 'Scheduled']
 
 from pyina.mpi import defaults
 from subprocess import Popen, call
@@ -203,7 +204,7 @@ NOTES:
         """
         mydict = self.settings.copy()
         mydict.update(kdict)
-        str = """ echo \"""" + command + """\" | """
+        str = """echo \"""" + command + """\" | """
         str += """qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
         return str
     def submit(self, command):
@@ -227,7 +228,7 @@ NOTES:
         """
         mydict = self.settings.copy()
         mydict.update(kdict)
-        str = """ echo \"""" + command + """\" | """
+        str = """echo \"""" + command + """\" | """
         str += """msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
         return str
     def submit(self, command):
@@ -303,7 +304,31 @@ NOTES:
 # http://www.mun.ca/hpc/lsf/examples.html
 # http://its2.unc.edu/dci_components/lsf/mpich_parallel.htm
 # http://ait.web.psi.ch/services/linux/hpc/mpich/using_mpich_gm.html
+# for sbatch
+# https://slurm.schedmd.com/sbatch.html
 
+class Sbatch(Scheduler):
+    """
+Scheduler that leverages the slurm sbatch scheduler.
+    """
+    def _submit(self, command, kdict={}):
+        """prepare the given command for submission with sbatch
+
+equivalent to:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"(command)\"
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'1-16:4', ...}
+        """
+        mydict = self.settings.copy()
+        mydict.update(kdict) #XXX: parse nodes if 'ppn=x' provided
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\" + command + \" &> %(jobfile)s''' % mydict
+        return str
+    def submit(self, command):
+        Scheduler.submit(self, command)
+        return
+    submit.__doc__ = _submit.__doc__.replace('prepare','submit').replace('for submission','') #XXX: hacky
+    pass
 
 # schedule defaults
 from pyina.tools import which_scheduler
@@ -314,6 +339,8 @@ elif sched == 'msub':
     Scheduled = Moab
 elif sched == 'bsub':
     Scheduled = Lsf
+elif sched == 'sbatch':
+    Scheduled = Sbatch
 else:
     Scheduled = Scheduler
 del sched, which_scheduler
@@ -334,6 +361,14 @@ class moab_scheduler(object):
     srun = "moab_srun"
     aprun = "moab_aprun"
     serial = "moab_serial"
+    pass
+
+class sbatch_scheduler(object):
+    """sbatch scheduler -- configured for mpirun, srun, aprun, or serial"""
+    mpirun = "sbatch_mpirun"
+    srun = "sbatch_srun"
+    aprun = "sbatch_aprun"
+    serial = "sbatch_serial"
     pass
 
 def all_schedulers():
