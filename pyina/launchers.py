@@ -19,15 +19,16 @@ Parallel launchers:
     Alps           - 
 
 Pre-built combinations of the above launchers and schedulers:
-    TorqueMpi, TorqueSlurm, MoabMpi, MoabSlurm
+    TorqueMpi, TorqueSlurm, MoabMpi, MoabSlurm, SbatchMpi*, SbatchSlurm*
 
 Pre-configured maps using the 'scatter-gather' strategy:
     MpiScatter, SlurmScatter, AlpsScatter, TorqueMpiScatter,
-    TorqueSlurmScatter, MoabMpiScatter, MoabSlurmScatter
+    TorqueSlurmScatter, MoabMpiScatter, MoabSlurmScatter,
+    SbatchMpiScatter*, SbatchSlurmScatter*
 
 Pre-configured maps using the 'worker pool' strategy:
     MpiPool, SlurmPool, AlpsPool, TorqueMpiPool, TorqueSlurmPool,
-    MoabMpiPool, MoabSlurmPool
+    MoabMpiPool, MoabSlurmPool, SbatchMpiPool*, SbatchSlurmPool*
 
 Usage
 =====
@@ -80,12 +81,14 @@ __all__ = ['SerialMapper', 'ParallelMapper', 'Mpi', 'Slurm', 'Alps',
            'AlpsScatter', 'TorqueMpi', 'TorqueSlurm', 'MoabMpi', 'MoabSlurm',
            'TorqueMpiPool', 'TorqueMpiScatter', 'TorqueSlurmPool',
            'TorqueSlurmScatter', 'MoabMpiPool', 'MoabMpiScatter',
-           'MoabSlurmPool', 'MoabSlurmScatter', 'Pool', 'Scatter']
+           'MoabSlurmPool', 'MoabSlurmScatter', 'Pool', 'Scatter',
+           'SbatchMpi', 'SbatchSlurm', 'SbatchMpiPool', 'SbatchSlurmPool',
+           'SbatchMpiScatter', 'SbatchSlurmScatter']
 
 from pyina.mpi import Mapper, defaults
 from pathos.abstract_launcher import AbstractWorkerPool
 from pathos.helpers import cpu_count
-from pyina.schedulers import Torque, Moab, Lsf
+from pyina.schedulers import Torque, Moab, Lsf, Sbatch
 
 import logging
 log = logging.getLogger("launchers")
@@ -389,6 +392,20 @@ class MoabSlurm(Slurm):
         Slurm.__init__(self, **kwds)
     pass
 
+class SbatchMpi(Mpi):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Sbatch(*args, **kwds)
+        kwds.pop('nodes', None)
+        Mpi.__init__(self, **kwds)
+    pass
+
+class SbatchSlurm(Slurm):
+    def __init__(self, *args, **kwds):
+        kwds['scheduler'] = Sbatch(*args, **kwds)
+        kwds.pop('nodes', None)
+        Slurm.__init__(self, **kwds)
+    pass
+
 # scheduler + launcher + strategy
 class TorqueMpiPool(TorqueMpi):
     def __init__(self, *args, **kwds):
@@ -438,6 +455,29 @@ class MoabSlurmScatter(MoabSlurm):
         MoabSlurm.__init__(self, *args, **kwds)
     pass
 
+class SbatchMpiPool(SbatchMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        SbatchMpi.__init__(self, *args, **kwds)
+    pass
+
+class SbatchMpiScatter(SbatchMpi):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        SbatchMpi.__init__(self, *args, **kwds)
+    pass
+
+class SbatchSlurmPool(SbatchSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = False
+        SbatchSlurm.__init__(self, *args, **kwds)
+    pass
+
+class SbatchSlurmScatter(SbatchSlurm):
+    def __init__(self, *args, **kwds):
+        kwds['scatter'] = True
+        SbatchSlurm.__init__(self, *args, **kwds)
+    pass
 
 # launcher defaults
 if defaults['mpirun'] == 'srun':
@@ -542,6 +582,37 @@ NOTES:
     return mapper._launcher(kdict)
 
 
+def sbatch_launcher(kdict={}): #FIXME: update
+    """
+prepare launch for sbatch submission using mpiexec, srun, aprun, or serial
+
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"mpiexec -np (nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"srun -n(nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"aprun -n (nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"(python) (program) (progargs)\"
+
+NOTES:
+    run non-python commands with: {'python':'', ...} 
+    fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
+    """
+    mydict = defaults.copy()
+    mydict.update(kdict)
+    from .schedulers import sbatch_scheduler
+    sbatch = sbatch_scheduler()  #FIXME: hackery
+    if mydict['scheduler'] == sbatch.srun:
+        mydict['tasks'] = srun_tasks(mydict['nodes'])
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+    elif mydict['scheduler'] == sbatch.mpirun:
+        mydict['tasks'] = mpirun_tasks(mydict['nodes'])
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+    elif mydict['scheduler'] == sbatch.aprun:
+        mydict['tasks'] = aprun_tasks(mydict['nodes'])
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+    else:  # non-mpi launch
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"%(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+    return str
+
+
 def torque_launcher(kdict={}): #FIXME: update
     """
 prepare launch for torque submission using mpiexec, srun, aprun, or serial
@@ -560,15 +631,15 @@ NOTES:
     torque = torque_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == torque.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == torque.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = """ echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else:  # non-mpi launch
-        str = """ echo \"%(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"%(python)s %(program)s %(progargs)s\" | qsub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
@@ -590,15 +661,15 @@ NOTES:
     moab = moab_scheduler()  #FIXME: hackery
     if mydict['scheduler'] == moab.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = """ echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == moab.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = """ echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     elif mydict['scheduler'] == moab.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = """ echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     else: # non-mpi launch
-        str = """ echo \"%(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
+        str = """echo \"%(python)s %(program)s %(progargs)s\" | msub -l nodes=%(nodes)s -l walltime=%(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s &> %(jobfile)s""" % mydict
     return str
 
 
@@ -613,7 +684,7 @@ NOTES:
     mydict = defaults.copy()
     mydict.update(kdict)
     #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(program)s %(progargs)s""" % mydict
-    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(program)s %(progargs)s""" % mydict
+    str = """bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_mx -q %(queue)s -J %(progname)s mpich_mx_wrapper %(python)s %(program)s %(progargs)s""" % mydict
     return str
 
 
@@ -628,7 +699,7 @@ NOTES:
     mydict = defaults.copy()
     mydict.update(kdict)
     #str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o ./%%J.out -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(program)s %(progargs)s""" % mydict
-    str = """ bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(program)s %(progargs)s""" % mydict
+    str = """bsub -K -W%(timelimit)s -n %(nodes)s -o %(outfile)s -a mpich_gm -q %(queue)s -J %(progname)s gmmpirun_wrapper %(python)s %(program)s %(progargs)s""" % mydict
     return str
 
 

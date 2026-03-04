@@ -59,10 +59,11 @@ defaults = {
 from pyina.mpi import defaults as ezdefaults
 ezdefaults.update(defaults)
 
-from .launchers import launch, mpirun_tasks, srun_tasks, aprun_tasks
-from .launchers import serial_launcher, mpirun_launcher, srun_launcher
-from .launchers import aprun_launcher, torque_launcher, moab_launcher
-from .schedulers import torque_scheduler, moab_scheduler
+from .launchers import (launch, mpirun_tasks, srun_tasks, aprun_tasks,
+                        serial_launcher, mpirun_launcher, srun_launcher,
+                        aprun_launcher, torque_launcher, moab_launcher,
+                        sbatch_launcher)
+from .schedulers import torque_scheduler, moab_scheduler, sbatch_scheduler
 
 HOLD = []
 sleeptime = 30  #XXX: the time between checking for results
@@ -114,8 +115,8 @@ Further Input:
     # set scratch directory (most often required for queue launcher)
     if 'workdir' in kwds: ezdefaults['workdir'] = kwds['workdir']
     else:
-        if launcher in [torque_launcher, moab_launcher] \
-        or scheduler in [torque_scheduler, moab_scheduler]:
+        if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+        or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
             ezdefaults['workdir'] = os.path.expanduser("~")
 
     from dill.temp import dump, dump_source
@@ -134,8 +135,8 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher in [torque_launcher, moab_launcher] \
-    or scheduler in [torque_scheduler, moab_scheduler]:
+    if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
@@ -150,12 +151,18 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().mpirun
+    elif scheduler in [sbatch_scheduler] and launcher in [mpirun_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().mpirun
 
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler().srun
+    elif scheduler in [sbatch_scheduler] and launcher in [srun_launcher]:
+        launcher = sbatch_launcher
         ezdefaults['scheduler'] = scheduler().srun
 
     elif scheduler in [torque_scheduler] and launcher in [aprun_launcher]:
@@ -164,6 +171,9 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [aprun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().aprun
+    elif scheduler in [sbatch_scheduler] and launcher in [aprun_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
 
     elif scheduler in [torque_scheduler] and launcher in [serial_launcher]:
         launcher = torque_launcher
@@ -171,14 +181,17 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [serial_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().serial
+    elif scheduler in [sbatch_scheduler] and launcher in [serial_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().serial
     #else: scheduler = None
 
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults)) #FIXME: use subprocessing
 
-    if launcher in [torque_launcher, moab_launcher] \
-    or scheduler in [torque_scheduler, moab_scheduler]:
+    if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
         import time                              #BLOCKING
         while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?
@@ -246,8 +259,8 @@ Further Input:
     # set scratch directory (most often required for queue launcher)
     if 'workdir' in kwds: ezdefaults['workdir'] = kwds['workdir']
     else:
-        if launcher in [torque_launcher, moab_launcher] \
-        or scheduler in [torque_scheduler, moab_scheduler]:
+        if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+        or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
             ezdefaults['workdir'] = os.path.expanduser("~")
 
     from dill.temp import dump
@@ -263,8 +276,8 @@ Further Input:
     #HOLD.append(modfile)
     #HOLD.append(argfile)
 
-    if launcher in [torque_launcher, moab_launcher] \
-    or scheduler in [torque_scheduler, moab_scheduler]:
+    if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
         jobfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         outfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
         errfilename = tempfile.mktemp(dir=ezdefaults['workdir'])
@@ -279,12 +292,18 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [mpirun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().mpirun
+    elif scheduler in [sbatch_scheduler] and launcher in [mpirun_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().mpirun
 
     elif scheduler in [torque_scheduler] and launcher in [srun_launcher]:
         launcher = torque_launcher
         ezdefaults['scheduler'] = scheduler().srun
     elif scheduler in [moab_scheduler] and launcher in [srun_launcher]:
         launcher = moab_launcher
+        ezdefaults['scheduler'] = scheduler().srun
+    elif scheduler in [sbatch_scheduler] and launcher in [srun_launcher]:
+        launcher = sbatch_launcher
         ezdefaults['scheduler'] = scheduler().srun
 
     elif scheduler in [torque_scheduler] and launcher in [aprun_launcher]:
@@ -293,6 +312,9 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [aprun_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().aprun
+    elif scheduler in [sbatch_scheduler] and launcher in [aprun_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().aprun
 
     elif scheduler in [torque_scheduler] and launcher in [serial_launcher]:
         launcher = torque_launcher
@@ -300,14 +322,17 @@ Further Input:
     elif scheduler in [moab_scheduler] and launcher in [serial_launcher]:
         launcher = moab_launcher
         ezdefaults['scheduler'] = scheduler().serial
+    elif scheduler in [sbatch_scheduler] and launcher in [serial_launcher]:
+        launcher = sbatch_launcher
+        ezdefaults['scheduler'] = scheduler().serial
     #else: scheduler = None
 
     # counting on the function below to block until done.
     #print 'executing: ', launcher(ezdefaults)
     launch(launcher(ezdefaults)) #FIXME: use subprocessing
 
-    if launcher in [torque_launcher, moab_launcher] \
-    or scheduler in [torque_scheduler, moab_scheduler]:
+    if launcher in [torque_launcher, moab_launcher, sbatch_launcher] \
+    or scheduler in [torque_scheduler, moab_scheduler, sbatch_scheduler]:
         import time                              #BLOCKING
         while (not os.path.exists(resfilename)): #XXX: or out* to confirm start
             time.sleep(sleeptime) #XXX: wait for results... may infinite loop?

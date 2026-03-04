@@ -89,8 +89,8 @@ returns (begin, end) index vectors"""
     if skip is not None and skip < nproc:
         nproc = nproc - 1
         _skip = True
-    count = np.round(popsize/nproc)
-    counts = count * np.ones(nproc, dtype=np.int)
+    count = int(np.round(popsize/nproc))
+    counts = count * np.ones(nproc, dtype=np.int64)
     diff = popsize - count*nproc
     counts[:diff] += 1
     begin = np.concatenate(([0], np.cumsum(counts)[:-1]))
@@ -102,6 +102,8 @@ returns (begin, end) index vectors"""
         else:
             begin = np.insert(begin, skip, begin[skip])
             counts = np.insert(counts, skip, 0)
+    begin = begin.tolist()
+    counts = counts.tolist()
     if not index:
         return begin, begin+counts #XXX: (begin, end) index for all elements
    #if len(index) > 1:
@@ -149,7 +151,7 @@ def which_scheduler(fullpath=False):
     """try to autodetect an available scheduler"""
     import os
     from pox import which
-    progs = ['qsub', 'msub', 'bsub']
+    progs = ['qsub', 'msub', 'bsub', 'sbatch']
     sched = None
     for prog in progs:
         sched = which(prog, ignore_errors=True)
@@ -232,24 +234,24 @@ from pox import wait_for
 if __name__=='__main__':
     n = 7 #12
     pop = 12 #7 
-    #XXX: note the two ways to calculate
+    #FIXME: the two ways to calculate now have diverged
     assert get_workload(0, n, pop) == balance_workload(n, pop, 0)
     assert [get_workload(i, n, pop) for i in range(n)] == \
-                                         zip(*balance_workload(n, pop))
-    assert [get_workload(i, n, pop) for i in range(0,n/2)] == \
-                                         zip(*balance_workload(n, pop, 0, n/2))
+                                         list(zip(*balance_workload(n, pop)))
+    assert [get_workload(i, n, pop) for i in range(0,n//2)] == \
+                                         list(zip(*balance_workload(n, pop, 0, n//2)))
 
-    assert zip(*balance_workload(n,pop,0,n)) == zip(*balance_workload(n,pop))
-    assert zip(*balance_workload(n,pop,0,1)) == [balance_workload(n,pop,0)]
+    assert list(zip(*balance_workload(n,pop,0,n))) == list(zip(*balance_workload(n,pop)))
+    assert list(zip(*balance_workload(n,pop,0,1))) == [balance_workload(n,pop,0)]
 
     assert get_workload(0,n,pop,skip=0) == balance_workload(n,pop,0,skip=0)
     assert get_workload(0,n,pop,skip=n) == balance_workload(n,pop,0,skip=n)
     assert get_workload(0,n,pop,skip=n+1) == balance_workload(n,pop,0,skip=n+1)
 
     assert [get_workload(i, n, pop, skip=0) for i in range(n)] == \
-                                         zip(*balance_workload(n, pop, skip=0))
+                                         list(zip(*balance_workload(n, pop, skip=0)))
     assert [get_workload(i, n, pop, skip=n) for i in range(n)] == \
-                                         zip(*balance_workload(n, pop, skip=n))
+                                         list(zip(*balance_workload(n, pop, skip=n)))
 
 
 # End of file
