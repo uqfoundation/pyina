@@ -314,16 +314,29 @@ Scheduler that leverages the slurm sbatch scheduler.
     def _submit(self, command, kdict={}):
         """prepare the given command for submission with sbatch
 
-equivalent to:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"(command)\"
+equivalent to:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --reservation=(queue) --wrap=\"(command)\"
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
     fine-grained resource utilization with: {'nodes':'1-16:4', ...}
+    fine-grained resource allocation with: {'queue':'debug:partition=fast', ...}
         """
         mydict = self.settings.copy()
+        mydict['queue'] = self._queue(mydict['queue']) # prep queue flags
         mydict.update(kdict) #XXX: parse nodes if 'ppn=x' provided
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\" + command + \" &> %(jobfile)s''' % mydict
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"''' % mydict + command + '''\" &> %(jobfile)s''' % mydict
         return str
+    def _queue(self, queue):
+        """parse the given queue string into reservation, partition, qos
+        """
+        qstr = queue.split(":")
+        qall = [s for s in qstr if '=' not in s]
+        qdict = dict(reservation=qall[-1], partition=qall[-1], qos=qall[-1]) if qall else {}
+        qall = [s for s in qstr if '=' in s]
+        qdict.update(s.split("=") for s in qall)
+        if 'p' in qdict: qdict['partition'] = qdict.pop('p')
+        if 'q' in qdict: qdict['qos'] = qdict.pop('q')
+        return ' '.join(['--'+k+'='+v for k,v in qdict.items()])
     def submit(self, command):
         Scheduler.submit(self, command)
         return
@@ -347,6 +360,15 @@ del sched, which_scheduler
 
 
 # backward compatibility
+def sbatch_queue(queue):
+    """
+Helper function.
+compute sbatch queue_string from queuestring of pattern = R[:partition=P][qos=Q]
+For example, sbatch_queue("p=foo:q=bar") yields '--partition=foo --qos=bar'
+    """
+    mapper = Sbatch()
+    return mapper._queue(queue)
+
 class torque_scheduler(object):
     """torque scheduler -- configured for mpirun, srun, aprun, or serial"""
     mpirun = "torque_mpirun"
