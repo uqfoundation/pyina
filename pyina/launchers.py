@@ -586,30 +586,32 @@ def sbatch_launcher(kdict={}): #FIXME: update
     """
 prepare launch for sbatch submission using mpiexec, srun, aprun, or serial
 
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"mpiexec -np (nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"srun -n(nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"aprun -n (nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --wrap=\"(python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"mpiexec -np (nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"srun -n(nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"aprun -n (nodes) (python) (program) (progargs)\"
+syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"(python) (program) (progargs)\"
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
     fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
+    fine-grained resource allocation with: {'queue':'debug:partition=fast', ...}
     """
     mydict = defaults.copy()
     mydict.update(kdict)
-    from .schedulers import sbatch_scheduler
+    from .schedulers import sbatch_scheduler, sbatch_queue
     sbatch = sbatch_scheduler()  #FIXME: hackery
+    mydict['queue'] = sbatch_queue(mydict['queue'])
     if mydict['scheduler'] == sbatch.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     elif mydict['scheduler'] == sbatch.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     elif mydict['scheduler'] == sbatch.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     else:  # non-mpi launch
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s -q %(queue)s -p %(queue)s --wrap=\"%(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     return str
 
 
