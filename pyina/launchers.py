@@ -104,6 +104,12 @@ Mapper base class for pipe-based mapping with python.
         self.nodes = 1 # always has one node... it's serial!
         return
     __init__.__doc__ = Mapper.__init__.__doc__
+    def njobs(self, nodes):
+        """convert node_string intended for scheduler to '1'
+
+ignores node string and returns 1, as mapper is serial.
+        """
+        return 1
     def _launcher(self, kdict={}):
         """prepare launch command for pipe-based execution
 
@@ -128,6 +134,14 @@ NOTES:
             scheduler = "None"
         mapargs = (self.__class__.__name__, scheduler)
         return "<pool %s(scheduler=%s)>" % mapargs
+    def _tasks(self, nodes=None):
+        if nodes is None: return self.nodes
+        return nodes
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        if isinstance(tasks, type('')) and tasks.startswith(('"',"'")):
+            tasks = tasks[1:-1]
+        return tasks
     pass
 
 #FIXME: enable user to override 'mpirun'
@@ -151,17 +165,29 @@ for the associated launcher (e.g mpirun, mpiexec).
        #self.nodes = kwds.get('nodes', None)
         if not len(args) and 'nodes' not in kwds:
             if self.scheduler:
-                self.nodes = self.scheduler.nodes
+                self.nodes = self.scheduler._nodes()
             else:
                 self.nodes = cpu_count()
         return
     if AbstractWorkerPool.__init__.__doc__: __init__.__doc__ = AbstractWorkerPool.__init__.__doc__ + __init__.__doc__
     def njobs(self, nodes):
-        """convert node_string intended for scheduler to int number of nodes
+        """convert node_string intended for scheduler to number of nodes
 
-compute int from node string. For example, parallel.njobs("4") yields 4
+compute nodes from node string. For example, parallel.njobs("4") yields 4.
+Node string accepts fine-grained controls ('ppn=' and 'cpp=') as a multiplier
         """
-        return int(str(nodes)) #XXX: this is a dummy function
+        nodestr = str(nodes)
+        if nodestr.startswith(('"',"'")): nodestr = nodestr[1:-1]
+        nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+        nodelst = nodestr.split(":")
+        if ':ppn=' not in nodestr and ':cpp=' not in nodestr: return nodestr
+        n = int(nodelst[0])
+        ppn = 1
+        for i in nodelst:
+            if i.startswith(('ppn=','cpp=')): #XXX: 'N=' has no impact
+                ppn *= int(i.split('=')[1])
+        tasks = n*ppn
+        return str(tasks)
     def _launcher(self, kdict={}):
         """prepare launch command for pipe-based execution
 
@@ -185,7 +211,15 @@ NOTES:
         else:
             scheduler = "None"
         mapargs = (self.__class__.__name__, self.nodes, scheduler)
-        return "<pool %s(ncpus=%s, scheduler=%s)>" % mapargs
+        return "<pool %s(nodes='%s', scheduler=%s)>" % mapargs
+    def _tasks(self, nodes=None):
+        if nodes is None: return self.nodes
+        return self.njobs(nodes)
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        if isinstance(tasks, type('')) and tasks.startswith(('"',"'")):
+            tasks = tasks[1:-1]
+        return tasks
     def __get_nodes(self):
         """get the number of nodes in the pool"""
         return self.__nodes
@@ -201,26 +235,28 @@ class Mpi(ParallelMapper):
     """
     """
     def njobs(self, nodes):
-        """convert node_string intended for scheduler to mpirun node_string
+        """convert node_string intended for scheduler to mpirun task_string
 
 compute mpirun task_string from node string of pattern = N[:TYPE][:ppn=P]
-For example, mpirun.njobs("3:core4:ppn=2") yields 6
+For example, mpirun.njobs("3:core4:ppn=2") yields 6.
+Node string accepts fine-grained controls ('ppn=' and 'cpp=') as a multiplier
         """
         nodestr = str(nodes)
+        if nodestr.startswith(('"',"'")): nodestr = nodestr[1:-1]
         nodestr = nodestr.split(",")[0]  # remove appended -l expressions
         nodelst = nodestr.split(":")
+        if ':ppn=' not in nodestr and ':cpp=' not in nodestr: return nodestr
         n = int(nodelst[0])
-        nodelst = nodestr.split("ppn=")
-        if len(nodelst) > 1:
-            ppn = nodelst[1]
-            ppn = int(ppn.split(":")[0])
-        else: ppn = 1
-        tasks =  n*ppn
-        return tasks
+        ppn = 1
+        for i in nodelst:
+            if i.startswith(('ppn=','cpp=')): #XXX: 'N=' has no impact
+                ppn *= int(i.split('=')[1])   #XXX: no standard threads/nodes
+        tasks = n*ppn
+        return str(tasks)
     def _launcher(self, kdict={}):
         """prepare launch command for parallel execution using mpirun
 
-equivalent to:  mpiexec -np (nodes) (python) (program) (progargs)
+equivalent to:  mpiexec -np (tasks) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -241,28 +277,33 @@ NOTES:
 class Slurm(ParallelMapper):
     """
     """
-    def njobs(self, nodes):
-        """convert node_string intended for scheduler to srun node_string
+    def njobs(self, nodes): #FIXME: not consistent with Mpi/Parallel
+        """convert node_string intended for scheduler to srun task_string
 
 compute srun task_string from node string of pattern = N[:ppn=P][,partition=X]
-For example, srun.njobs("3:ppn=2,partition=foo") yields '3 -N2'
-        """
-        nodestr = str(nodes)
-        nodestr = nodestr.split(",")[0]  # remove appended -l expressions
-        nodelst = nodestr.split(":")
-        n = int(nodelst[0])
-        nodelst = nodestr.split("ppn=")
-        if len(nodelst) > 1:
-            ppn = nodelst[1]
-            ppn = int(ppn.split(":")[0])
-            tasks = "%s -N%s" % (n, ppn)
+For example, srun.njobs("6:ppn=2") yields '12 -N6 --ntasks-per-node=2'.
+Node string accepts fine-grained controls, and ('cpp=') a multiplier
+        """ # CPUS == NTASKS(nodes * ntasks-per-node) * cpus-per-task
+        if nodes is None: nodes = str(nodes) #XXX: ungraceful fail
+        return Sbatch()._tasks(nodes)
+    def __repr__(self):
+        if self.scheduler:
+            scheduler = self.scheduler.__class__.__name__
         else:
-            tasks = "%s" % n
-        return tasks
+            scheduler = "None"
+        nodes = self._nodes()
+        mapargs = (self.__class__.__name__, nodes, scheduler)
+        return "<pool %s(nodes='%s', scheduler=%s)>" % mapargs
+    def _tasks(self, nodes=None):
+        if nodes is None: return self.nodes
+        return self.njobs(nodes)
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        return "%s" % Sbatch()._nodes(tasks)
     def _launcher(self, kdict={}):
         """prepare launch for parallel execution using srun
 
-equivalent to:  srun -n(nodes) (python) (program) (progargs)
+equivalent to:  srun -n(tasks) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -274,6 +315,9 @@ NOTES:
        #    mydict['nodes'] = self.njobs()
         str =  """srun -n%(nodes)s %(python)s %(program)s %(progargs)s""" % mydict
         if self.scheduler:
+            #if isinstance(self.scheduler, Sbatch): # split tasks and nodes
+            #    mydict['tasks'] = self.scheduler._jobs(mydict['nodes'])
+            #    str =  """srun -n%(tasks)s %(python)s %(program)s %(progargs)s""" % mydict #NOTE: srun inherits from sbatch (so no need to repeat flags)
             str = self.scheduler._submit(str)
         return str
     def map(self, func, *args, **kwds):
@@ -284,28 +328,78 @@ NOTES:
 class Alps(ParallelMapper):
     """
     """
-    def njobs(self, nodes):
-        """convert node_string intended for scheduler to aprun node_string
+    def njobs(self, nodes): #FIXME: not consistent with Mpi/Parallel
+        """convert node_string intended for scheduler to aprun task_string
 
 compute aprun task_string from node string of pattern = N[:TYPE][:ppn=P]
-For example, aprun.njobs("3:core4:ppn=2") yields '3 -N 2'
+For example, aprun.njobs("3:core4:ppn=2") yields '6 -N 2'.
+Node string accepts fine-grained controls, and ('cpp=') a multiplier
         """
         nodestr = str(nodes)
+        if nodestr.startswith(('"',"'")): nodestr = nodestr[1:-1]
         nodestr = nodestr.split(",")[0]  # remove appended -l expressions
         nodelst = nodestr.split(":")
+        if ':ppn=' not in nodestr and ':cpp=' not in nodestr: return nodestr
         n = int(nodelst[0])
-        nodelst = nodestr.split("ppn=")
-        if len(nodelst) > 1:
-            ppn = nodelst[1]
-            ppn = int(ppn.split(":")[0])
-            tasks = "%s -N %s" % (n, ppn)
+        ppn = None
+        cpp = None
+        for i in nodelst:
+            if i.startswith('ppn='): #XXX: doesn't handle 'N='
+                ppn = int(i.split('=')[1])
+            elif i.startswith('cpp='):
+                cpp = int(i.split('=')[1])
+        tasks = ""
+        if cpp is not None:
+            tasks += " -d %s" % cpp
+        if ppn is not None:
+            tasks += " -N %s" % ppn
+            n *= ppn
+        tasks = ''.join(["%s" % n, tasks])
+        return tasks #XXX: is str --> '3 -d 2 -N 1" --> 6 jobs into 6 nodes
+    def __repr__(self):
+        if self.scheduler:
+            scheduler = self.scheduler.__class__.__name__
         else:
-            tasks = "%s" % n
-        return tasks
+            scheduler = "None"
+        nodes = self._nodes()
+        mapargs = (self.__class__.__name__, nodes, scheduler)
+        return "<pool %s(nodes='%s', scheduler=%s)>" % mapargs
+    def _tasks(self, nodes=None):
+        if nodes is None: return self.nodes
+        return self.njobs(nodes)
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        nodes = tasks
+        #XXX: short-circuit if missing required string contents?
+        nrepr = None
+        nproc = 1
+        if isinstance(nodes, type("")):
+            if ' -N ' in nodes:
+                nrepr = nodes.replace(' -N ', ':ppn=')
+                nodes,nproc = nodes.split(' -N ')
+                nproc = int(nproc.strip())
+            ## roll into single int ##
+            #n = 1
+            #for i in nodes.split(' -d '):
+            #    n *= int(i)
+            #nodes = n
+            if ' -d ' in nodes:
+                if nrepr is None: nrepr = nodes
+                nrepr = nrepr.replace(' -d ', ':cpp=').strip()
+                nodes,nrepr = nrepr.split(':',1)
+                nrepr = ':'.join(['%s' % (int(nodes.strip())//nproc), nrepr])
+                nodes = "'%s'" % nrepr.strip()
+            else:
+                if nrepr is None: nodes = int(nodes.strip())
+                else:
+                    nodes = int(nodes.strip())//nproc
+                    nodes = ("'%s:ppn=%s'" % (nodes, nproc)).strip()
+        if isinstance(nodes, type('')) and nodes.startswith(('"',"'")): nodes = nodes[1:-1]
+        return nodes
     def _launcher(self, kdict={}):
         """prepare launch for parallel execution using aprun
 
-equivalent to:  aprun -n (nodes) (python) (program) (progargs)
+equivalent to:  aprun -n (tasks) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -512,7 +606,7 @@ For example, mpirun_tasks("3:core4:ppn=2") yields 6
     return mapper.njobs(nodes)
 
 
-def srun_tasks(nodes):
+def srun_tasks(nodes):#, split=False):
     """
 Helper function.
 compute srun task_string from node string of pattern = N[:ppn=P][,partition=X]
@@ -520,13 +614,16 @@ For example, srun_tasks("3:ppn=2,partition=foo") yields '3 -N2'
     """
     mapper = Slurm()
     return mapper.njobs(nodes)
+    #tasks = mapper.njobs(nodes)
+    #if not split: return tasks
+    #return mapper._tasks(tasks)
 
 
 def aprun_tasks(nodes):
     """
 Helper function.
 compute aprun task_string from node string of pattern = N[:TYPE][:ppn=P]
-For example, aprun_tasks("3:core4:ppn=2") yields '3 -N 2'
+For example, aprun_tasks("3:core4:ppn=2") yields '6 -N 2'
     """
     mapper = Alps()
     return mapper.njobs(nodes)
@@ -559,7 +656,7 @@ NOTES:
 def srun_launcher(kdict={}):
     """
 prepare launch for parallel execution using srun
-syntax:  srun -n(nodes) (python) (program) (progargs)
+syntax:  srun -n(tasks) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -572,7 +669,7 @@ NOTES:
 def aprun_launcher(kdict={}):
     """
 prepare launch for parallel execution using aprun
-syntax:  aprun -n(nodes) (python) (program) (progargs)
+syntax:  aprun -n(tasks) (python) (program) (progargs)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -586,14 +683,14 @@ def sbatch_launcher(kdict={}): #FIXME: update
     """
 prepare launch for sbatch submission using mpiexec, srun, aprun, or serial
 
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"mpiexec -np (nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"srun -n(nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"aprun -n (nodes) (python) (program) (progargs)\"
-syntax:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"(python) (program) (progargs)\"
+syntax:  sbatch -n (tasks) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"mpiexec -np (nodes) (python) (program) (progargs)\"
+syntax:  sbatch -n (tasks) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"srun -n(tasks) (python) (program) (progargs)\"
+syntax:  sbatch -n (tasks) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"aprun -n (tasks) (python) (program) (progargs)\"
+syntax:  sbatch -n (tasks) -t (timelimit) -o (outfile) -e (errfile) --qos=(queue) --partition=(queue) --reservation=(queue) --wrap=\"(python) (program) (progargs)\"
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
-    fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
+    fine-grained resource utilization with: {'nodes':'4:ppn=1:cpp=2', ...}
     fine-grained resource allocation with: {'queue':'debug:partition=fast', ...}
     """
     mydict = defaults.copy()
@@ -603,15 +700,23 @@ NOTES:
     mydict['queue'] = sbatch_queue(mydict['queue'])
     if mydict['scheduler'] == sbatch.srun:
         mydict['tasks'] = srun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        nodes = mydict['nodes']
+        mydict['nodes'] = ('-n %s ' % nodes) if nodes else ''
+        str = '''sbatch %(nodes)s-t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"srun -n%(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     elif mydict['scheduler'] == sbatch.mpirun:
         mydict['tasks'] = mpirun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        nodes = mydict['nodes']
+        mydict['nodes'] = ('-n %s ' % nodes) if nodes else ''
+        str = '''sbatch %(nodes)s-t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(mpirun)s -np %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     elif mydict['scheduler'] == sbatch.aprun:
         mydict['tasks'] = aprun_tasks(mydict['nodes'])
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        nodes = mydict['nodes']
+        mydict['nodes'] = ('-n %s ' % nodes) if nodes else ''
+        str = '''sbatch %(nodes)s-t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"aprun -n %(tasks)s %(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     else:  # non-mpi launch
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
+        nodes = mydict['nodes']
+        mydict['nodes'] = ('-n %s ' % nodes) if nodes else ''
+        str = '''sbatch %(nodes)s-t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"%(python)s %(program)s %(progargs)s\" &> %(jobfile)s''' % mydict
     return str
 
 
@@ -619,13 +724,13 @@ def torque_launcher(kdict={}): #FIXME: update
     """
 prepare launch for torque submission using mpiexec, srun, aprun, or serial
 syntax:  echo \"mpiexec -np (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"srun -n(tasks) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (tasks) (python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (program) (progargs)\" | qsub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
-    fine-grained resource utilization with: {'nodes':'4:nodetype:ppn=1', ...}
+    fine-grained resource utilization with: {'nodes':'4:ppn=1:cpp=2', ...}
     """
     mydict = defaults.copy()
     mydict.update(kdict)
@@ -648,9 +753,9 @@ NOTES:
 def moab_launcher(kdict={}): #FIXME: update
     """
 prepare launch for moab submission using srun, mpirun, aprun, or serial
-syntax:  echo \"srun -n(nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"srun -n(tasks) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"%(mpirun)s -np (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
-syntax:  echo \"aprun -n (nodes) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
+syntax:  echo \"aprun -n (tasks) (python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 syntax:  echo \"(python) (program) (progargs)\" | msub -l nodes=(nodes) -l walltime=(timelimit) -o (outfile) -e (errfile) -q (queue)
 
 NOTES:

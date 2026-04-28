@@ -103,7 +103,7 @@ _pid = '.' + str(os.getpid()) + '.'
 defaults = {
     'nodes' : str(cpu_count()),
     'program' : which_strategy(lazy=True) or 'ezscatter', # serialize to tempfile
-    'mpirun' : which_launcher() or 'mpiexec',
+    'mpirun' : which_launcher(mpi=True) or which_launcher() or 'mpiexec',
     'python' : which_python(lazy=True) or 'python',
     'progargs' : '',
 
