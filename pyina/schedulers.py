@@ -182,9 +182,24 @@ equivalent to:  (command)
         if not which(executable):
             raise IOError("launch failed: %s not found" % executable)
         return Popen([command], shell=True) #FIXME: shell=True is insecure
+    def _tasks(self, nodes=None):
+        if nodes is None: nodes = self.nodes
+        return nodes
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        return tasks
     def __repr__(self):
-        subargs = (self.__class__.__name__, self.nodes, self.timelimit, self.queue)
-        return "<scheduler %s(nodes=%s, timelimit=%s, queue=%s)>" % subargs
+        if isinstance(self.nodes, type("")):
+            nodes = "%s" % self._nodes() #XXX: changed so always "'%s'"
+        else: nodes = self.nodes
+        if isinstance(self.timelimit, type("")):
+            timelimit = "'%s'" % self.timelimit
+        else: timelimit = self.timelimit
+        if isinstance(self.queue, type("")):
+            queue = "'%s'" % self.queue
+        else: queue = self.queue
+        subargs = (self.__class__.__name__, nodes, timelimit, queue)
+        return "<scheduler %s(nodes='%s', timelimit=%s, queue=%s)>" % subargs
     # interface
     settings = property(__settings) #XXX: set?
     pass
@@ -249,10 +264,71 @@ Scheduler that leverages the lsf scheduler.
         self.mpich = mpich
         return
     __init__.__doc__ = Scheduler.__init__.__doc__
+    def _tasks(self, nodes=None):
+        if nodes is None: nodes = self.nodes
+
+        # short-circuit if already in correct form
+        if not isinstance(nodes, type('')): return nodes
+        if ' -R ' in nodes: return nodes
+
+        # extract n, ppn, cpp
+        nodestr = str(nodes) #XXX: N=X, where can have X=1,2
+        nodelst = nodestr.split(":")
+        n = int(nodelst[0])
+        nodes = ppn = cpp = None
+        for i in nodelst:
+            if i.startswith('ppn='):
+                ppn = int(i.split('=')[1])
+            elif i.startswith('cpp='):
+                cpp = int(i.split('=')[1])
+
+        # prepare task string from n,ppn,cpp
+        tasks = ''
+        if cpp is not None:
+            tasks += ' -R "affinity[core(%s)]"' % cpp
+        tasks += ' -R "span[hosts=%s' % n
+        if ppn is not None:
+            tasks += ',ptile=%s]"' % ppn
+            n *= ppn
+        else:
+            tasks += ']"'
+        return "".join(["%s" % n, tasks])
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+
+        # short-circuit if already in correct form
+        if not isinstance(tasks, type('')): return tasks
+
+        # split on '-R'
+        _tasks = [n.strip() for n in tasks.split('-R')]
+
+        # first argument has to be tasks
+        task = _tasks[0].split()[0]
+
+        # find argument that contains 'ptile='
+        ppn = [i for i in _tasks if 'ptile=' in i][-1] if 'ptile=' in tasks else None
+        # extract ppn from ptile
+        if ppn: ppn = [i.split('=')[-1].strip() for i in ppn.split('[')[-1].split(']')[0].split(',') if 'ptile' in i][0]
+
+        # find argument that contains 'hosts='
+        n = [i for i in _tasks if 'hosts=' in i][-1] if 'hosts=' in tasks else None
+        # extract n from hosts
+        if n: n = [i.split('=')[-1].strip() for i in n.split('[')[-1].split(']')[0].split(',') if 'hosts' in i][0]
+
+        # find argument that contains 'affinity' / 'core'
+        cpp = [i for i in _tasks if 'core(' in i][-1] if 'core(' in tasks else None
+        # extract cpp from core and affinity
+        if cpp: cpp = [i.split(',')[0].split('(')[-1].split(')')[0].strip() for i in cpp.split('[')[-1].split(']')[0].split(':') if 'core' in i][0]
+
+        # build node string
+        cpp = ':cpp=%s' % cpp if cpp else ''
+        cpp = ''.join([cpp, (':ppn=%s' % ppn) if ppn else ''])
+        ppn = n if n else (("%s" % int(task)//int(ppn)) if ppn else task)
+        return (ppn + cpp) if cpp else ppn
     def _submit(self, command, kdict={}):
         """prepare the given command for submission with bsub
 
-equivalent to:  bsub -K -W (timelimit) -n (nodes) -o (outfile) -e (errfile) -q (queue) -J (progname) "(command)"
+equivalent to:  bsub -K -W (timelimit) -n (tasks) -o (outfile) -e (errfile) -q (queue) -J (progname) "(command)"
 
 NOTES:
     if mpich='mx', uses "-a mpich_mx mpich_mx_wrapper" instead of given launcher
@@ -292,6 +368,8 @@ NOTES:
         else:
             mydict['command'] = command #'"' + command + '"'
             mydict['esubapp'] = ""
+        mydict['nodes'] = self._tasks(mydict['nodes'])
+        # nodes is of the form: '50 -R "span[ptile=5]" -R "affinity[core(2)]"'
         str = """bsub -K -W %(timelimit)s -n %(nodes)s -o %(outfile)s -e %(errfile)s -q %(queue)s -J %(progname)s %(esubapp)s %(command)s &> %(jobfile)s""" % mydict
         return str
     def submit(self, command):
@@ -314,7 +392,7 @@ Scheduler that leverages the slurm sbatch scheduler.
     def _submit(self, command, kdict={}):
         """prepare the given command for submission with sbatch
 
-equivalent to:  sbatch -N (nodes) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --reservation=(queue) --wrap=\"(command)\"
+equivalent to:  sbatch -n (tasks) -t (timelimit) -o (outfile) -e (errfile) -q (queue) -p (queue) --reservation=(queue) --wrap=\"(command)\"
 
 NOTES:
     run non-python commands with: {'python':'', ...} 
@@ -322,13 +400,80 @@ NOTES:
     fine-grained resource allocation with: {'queue':'debug:partition=fast', ...}
         """
         mydict = self.settings.copy()
-        mydict['queue'] = self._queue(mydict['queue']) # prep queue flags
         mydict.update(kdict) #XXX: parse nodes if 'ppn=x' provided
-        str = '''sbatch -N %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"''' % mydict + command + '''\" &> %(jobfile)s''' % mydict
+        mydict['queue'] = self._queue(mydict['queue'])
+        mydict['nodes'] = self._tasks(mydict['nodes'])
+        #mydict['nodes'] = self._nnodes(mydict['nodes'], command)
+        str = '''sbatch -n %(nodes)s -t %(timelimit)s -o %(outfile)s -e %(errfile)s %(queue)s --wrap=\"''' % mydict + command + '''\" &> %(jobfile)s''' % mydict
         return str
+    def _tasks(self, nodes=None):
+        if nodes is None: nodes = self.nodes
+        nodestr = str(nodes) #XXX: N=X, where can have X=1-4 or X=1,2,3
+        if nodestr.startswith(('"',"'")): nodestr = nodestr[1:-1]
+        # short-circuit if missing required string contents?
+        if ':ppn=' not in nodestr and ':cpp=' not in nodestr: return nodes
+        #nodestr = nodestr.split(",")[0]  # remove appended -l expressions
+        nodelst = nodestr.split(":")
+        n = int(nodelst[0])
+        nodes = ppn = cpp = None
+        for i in nodelst:
+            if i.startswith('ppn='):
+                ppn = int(i.split('=')[1])
+            elif i.startswith('cpp='):
+                cpp = int(i.split('=')[1])
+            #elif i.startswith('N='):
+            #    nodes = int(i.split('=')[1])
+        tasks = ""
+        if cpp is not None:
+            tasks += " --cpus-per-task=%s" % cpp
+        #if nodes is not None:
+        tasks += " -N%s" % n # nodes
+        if ppn is not None:
+            tasks += " --ntasks-per-node=%s" % ppn
+            n *= ppn
+        tasks = "".join(["%s" % n, tasks])
+        return tasks
+    def _nodes(self, tasks=None):
+        if tasks is None: tasks = self.nodes
+        nodes = tasks
+        nrepr = None
+        nproc = 1
+        ncpus = None
+        if isinstance(nodes, type("")):
+            # short-circuit if missing required string contents?
+            if ':ppn=' in nodes or ':cpp=' in nodes: return nodes
+            if ' --ntasks-per-node' in nodes:
+                nrepr = nodes.replace(' --ntasks-per-node', ':ppn')
+                nodes,nproc = nodes.split(' --ntasks-per-node=')
+                nproc = int(nproc.strip())
+            if ' -N' in nodes:
+                nodes,ncpus = nodes.split(' -N')
+                ncpus = int(ncpus.strip())
+                if nrepr is not None:
+                    nrepr = nrepr.replace(' -N%s' % ncpus, '')
+            ## roll into single int ##
+            #n = 1
+            #for i in nodes.split(' --cpus-per-task='):
+            #    n *= int(i)
+            #nodes = n
+            if ' --cpus-per-task' in nodes:
+                if nrepr is None: nrepr = nodes
+                nrepr = nrepr.replace(' --cpus-per-task', ':cpp').strip()
+                nodes,nrepr = nrepr.split(':',1)
+                nodes = (int(nodes.strip())//nproc) if ncpus is None else ncpus
+                nrepr = ':'.join(['%s' % nodes, nrepr])
+                nodes = "'%s'" % nrepr.strip()
+            else:
+                if nrepr is None: nodes = int(nodes.strip())
+                else:
+                    nodes = (int(nodes.strip())//nproc) if ncpus is None else ncpus
+                    nodes = ("'%s:ppn=%s'" % (nodes, nproc)).strip()
+        if isinstance(nodes, type('')) and nodes.startswith(("'",'"')): nodes = nodes[1:-1]
+        return nodes
     def _queue(self, queue):
         """parse the given queue string into reservation, partition, qos
         """
+        if queue.startswith('--'): return queue # is already in the right form
         qstr = queue.split(":")
         qall = [s for s in qstr if '=' not in s]
         qdict = dict(reservation=qall[-1], partition=qall[-1], qos=qall[-1]) if qall else {}
@@ -337,6 +482,27 @@ NOTES:
         if 'p' in qdict: qdict['partition'] = qdict.pop('p')
         if 'q' in qdict: qdict['qos'] = qdict.pop('q')
         return ' '.join(['--'+k+'='+v for k,v in qdict.items()])
+    def _jobs(self, nodes):
+        return self._ntasks(nodes)[0]
+    def _nnodes(self, nodes, command):
+        if command.startswith('srun '): # split tasks and nodes
+            nodes = self._ntasks(nodes)[-1]
+            return ('-N %s ' % nodes) if nodes else ''
+        return ('-N %s ' % nodes) if nodes else ''
+    def _ntasks(self, nodes):
+        if isinstance(nodes, int):
+            return str(nodes), ''
+        nodes = nodes.split()
+        if len(nodes) < 2:
+            tasks = ' '.join(nodes)
+            jobs = ''
+        elif nodes[1].startswith('--cpus-per-task='):
+            tasks = ' '.join(nodes[:2])
+            jobs = ' '.join(nodes[2:])
+        else:
+            tasks = nodes[0]
+            jobs = ' '.join(nodes[1:])
+        return tasks, jobs
     def submit(self, command):
         Scheduler.submit(self, command)
         return
