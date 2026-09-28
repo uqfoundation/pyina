@@ -44,8 +44,13 @@ matrix:
           env:
             - RDMAV_FORK_SAFE=1
 
+        - python: 'pypy3.12-8.0.0'
+          env:
+            - RDMAV_FORK_SAFE=1
+
     allow_failures:
         - python: '3.15t-dev' # prerelease
+        - python: 'pypy3.12-8.0.0' # missing
     fast_finish: true
 
 cache:
