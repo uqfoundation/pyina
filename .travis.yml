@@ -17,30 +17,34 @@ matrix:
             - RDMAV_FORK_SAFE=1
 
         - python: '3.12'
+          dist: jammy
           env:
             - RDMAV_FORK_SAFE=1
 
         - python: '3.13'
+          dist: jammy
           env:
             - RDMAV_FORK_SAFE=1
 
         - python: '3.14'
+          dist: jammy
           env:
-            - CYTHON="true" # numpy source build
-            - DILL="master"
             - RDMAV_FORK_SAFE=1
 
         - python: '3.15t-dev'
+          dist: jammy
           env:
-            - CYTHON="true" # numpy source build
+            - CYTHON="true" # cython source build
             - DILL="master"
             - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.10-7.3.19'
+          dist: jammy
           env:
             - RDMAV_FORK_SAFE=1
 
         - python: 'pypy3.11-7.3.20'
+          dist: jammy
           env:
             - RDMAV_FORK_SAFE=1
 
@@ -63,7 +67,7 @@ before_install:
     - set -x; sudo apt-get install -y -q g++ mpich libmpich-dev # openmpi-bin libopenmpi-dev
     - export MPICC=$(which mpicc)
     - if [[ $COVERAGE == "true" ]]; then pip install coverage; fi
-    - if [[ $CYTHON == "true" ]]; then pip install "cython<0.29.25"; fi #FIXME
+    - if [[ $CYTHON == "true" ]]; then pip install cython --no-binary cython --force-reinstall; fi
     - if [[ $DILL == "master" ]]; then pip install "https://github.com/uqfoundation/dill/archive/master.tar.gz"; fi
 
 install:
