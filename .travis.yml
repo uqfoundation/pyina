@@ -38,6 +38,13 @@ matrix:
             - DILL="master"
             - RDMAV_FORK_SAFE=1
 
+        - python: '3.16t-dev'
+          dist: jammy
+          env:
+            - CYTHON="true" # cython source build
+            - DILL="master"
+            - RDMAV_FORK_SAFE=1
+
         - python: 'pypy3.10-7.3.19'
           dist: jammy
           env:
@@ -48,13 +55,14 @@ matrix:
           env:
             - RDMAV_FORK_SAFE=1
 
-        - python: 'pypy3.12-8.0.0'
+        - python: 'pypy3.12-8.0.1'
           env:
             - RDMAV_FORK_SAFE=1
 
     allow_failures:
         - python: '3.15t-dev' # prerelease
-        - python: 'pypy3.12-8.0.0' # missing
+        - python: '3.16t-dev' # missing
+        - python: 'pypy3.12-8.0.1' # missing
     fast_finish: true
 
 cache:
